@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your commute, evolved.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cream: #fbf6ef;
+      --rose: #d9788d;
+      --rose-light: #f2c8d0;
+      --brown: #3b2928;
+      --muted: #806f6c;
+      --white: #fffdf9;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--brown);
+      font-family: "Inter", Arial, sans-serif;
+    }
+
+    /* soft decorative motion */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: var(--rose-light);
+      opacity: 0.22;
+      filter: blur(35px);
+      z-index: -1;
+      animation: float 8s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: 5%;
+      left: -70px;
+    }
+
+    body::after {
+      right: -70px;
+      bottom: 8%;
+      animation-delay: -3s;
+    }
+
+    @keyframes float {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(35px) scale(1.08); }
+    }
+
+    header {
+      padding: 82px 6vw 58px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin-bottom: 14px;
+      color: var(--rose);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(48px, 7vw, 92px);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+    }
+
+    .intro {
+      max-width: 570px;
+      margin: 24px auto 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .accent {
+      width: 48px;
+      height: 2px;
+      margin: 30px auto 0;
+      background: var(--rose);
+      border-radius: 10px;
+    }
+
+    .grid {
+      width: 88%;
+      max-width: 1380px;
+      margin: 0 auto 90px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 62px 38px;
+    }
+
+    .item {
+      margin: 0;
+    }
+
+    .image-wrap {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: var(--white);
+      box-shadow: 0 12px 35px rgba(86, 52, 52, 0.08);
+    }
+
+    .image-wrap::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(217, 120, 141, 0.18);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    .image-wrap img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform 0.7s cubic-bezier(.2,.7,.2,1);
+    }
+
+    .item:hover img {
+      transform: scale(1.025);
+    }
+
+    .caption {
+      padding: 19px 4px 0;
+    }
+
+    .number {
+      color: var(--rose);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 29px;
+      font-weight: 400;
+      line-height: 1.05;
+    }
+
+    .description {
+      max-width: 480px;
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    footer {
+      padding: 0 20px 55px;
+      text-align: center;
+      color: var(--rose);
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 20px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 55px 7vw 45px;
+      }
+
+      .grid {
+        width: 88%;
+        grid-template-columns: 1fr;
+        gap: 45px;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body::before,
+      body::after,
+      .image-wrap img {
+        animation: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="eyebrow">A visual commute story</div>
+    <h1>Your commute,<br>evolved.</h1>
+    <p class="intro">
+      A familiar subway journey slowly transforms into something unexpected.
+      Four ordinary moments, reimagined through Photoshop's generative tools.
+    </p>
+    <div class="accent"></div>
+  </header>
+
+  <main class="grid">
+
+    <figure class="item">
+      <div class="image-wrap">
+        <img src="img1.jpg" alt="The Entrance">
+      </div>
+      <figcaption class="caption">
+        <div class="number">01 — The Beginning</div>
+        <h2>The Entrance</h2>
+        <p class="description">
+          Something strange begins to appear on the way into the station.
+        </p>
+      </figcaption>
+    </figure>
+
+    <figure class="item">
+      <div class="image-wrap">
+        <img src="img2.jpg" alt="The Gate">
+      </div>
+      <figcaption class="caption">
+        <div class="number">02 — The Discovery</div>
+        <h2>The Gate</h2>
+        <p class="description">
+          The station starts to change, revealing a hidden world beyond the gates.
+        </p>
+      </figcaption>
+    </figure>
+
+    <figure class="item">
+      <div class="image-wrap">
+        <img src="img3.jpg" alt="The Descent">
+      </div>
+      <figcaption class="caption">
+        <div class="number">03 — The Descent</div>
+        <h2>The Descent</h2>
+        <p class="description">
+          Going deeper reveals that this ordinary commute is no longer ordinary.
+        </p>
+      </figcaption>
+    </figure>
+
+    <figure class="item">
+      <div class="image-wrap">
+        <img src="img4.jpg" alt="The Train">
+      </div>
+      <figcaption class="caption">
+        <div class="number">04 — The Arrival</div>
+        <h2>The Train</h2>
+        <p class="description">
+          The journey reaches its final moment as the train arrives from somewhere unknown.
+        </p>
+      </figcaption>
+    </figure>
+
+  </main>
+
+  <footer>
+    A commute, reimagined.
+  </footer>
+
+</body>
+</html>
