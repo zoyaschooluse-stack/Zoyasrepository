@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tschichold 1923 Architectural Ribbon Calendar Engine</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600&family=Cinzel:wght@600;700;900&family=Cormorant+Infant:ital,wght@0,500;0,700;1,500&family=Grenze+Gotisch:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --boj-bg: #F4EFEB;
+      --boj-sidebar: #FAF7F2;
+      --boj-card: #FFFFFF;
+      --boj-border: #E3DCD1;
+      --boj-border-light: #ECE5DA;
+      --boj-ink: #2C2825;
+      --boj-muted: #857D74;
+      --boj-accent: #7D9D8F;
+      --boj-accent-hover: #6C8C7E;
+      --boj-shadow: 0 4px 20px rgba(44, 40, 37, 0.06);
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--boj-bg);
+      color: var(--boj-ink);
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    aside {
+      width: 440px;
+      min-width: 400px;
+      height: 100vh;
+      background: var(--boj-sidebar);
+      border-right: 1px solid var(--boj-border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 30;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+    }
+    aside::-webkit-scrollbar { width: 5px; }
+    aside::-webkit-scrollbar-thumb { background: var(--boj-border); border-radius: 3px; }
+
+    .header-bar {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--boj-border);
+      background: rgba(250, 247, 242, 0.98);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    .header-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--boj-ink);
+    }
+    .header-bar p {
+      font-size: 0.74rem;
+      color: var(--boj-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .tabs-bar {
+      display: flex;
+      border-bottom: 1px solid var(--boj-border);
+      background: #F1ECE4;
+      padding: 4px 16px 0;
+      gap: 6px;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      color: var(--boj-muted);
+      font-family: 'Cinzel', serif;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--boj-ink);
+      border-bottom-color: var(--boj-ink);
+      background: var(--boj-sidebar);
+      border-radius: 6px 6px 0 0;
+    }
+
+    .panel-content { padding: 22px; display: flex; flex-direction: column; gap: 20px; }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--boj-muted);
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--boj-border-light);
+      padding-bottom: 4px;
+    }
+
+    .control-card {
+      background: var(--boj-card);
+      border: 1px solid var(--boj-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--boj-shadow);
+    }
+
+    .field-row { display: flex; flex-direction: column; gap: 6px; }
+    .field-row.inline { flex-direction: row; justify-content: space-between; align-items: center; }
+    .field-row label {
+      font-size: 0.71rem;
+      color: var(--boj-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"], select {
+      background: #FAF8F5;
+      border: 1px solid var(--boj-border);
+      color: var(--boj-ink);
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border 0.15s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--boj-accent);
+      background: #FFFFFF;
+    }
+
+    input[type="range"] {
+      accent-color: var(--boj-ink);
+      cursor: pointer;
+      height: 4px;
+    }
+    .range-val { font-family: monospace; font-size: 0.74rem; color: var(--boj-ink); font-weight: 600; }
+
+    .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .color-box { text-align: center; font-size: 0.68rem; color: var(--boj-muted); font-weight: 600; }
+    .color-box input[type="color"] {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--boj-border);
+      border-radius: 5px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+      margin-top: 4px;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      user-select: none;
+      color: var(--boj-ink);
+    }
+    .checkbox-container input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--boj-ink);
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--boj-ink); color: #FFF; }
+    .btn-primary:hover { background: #403B37; }
+    .btn-secondary { background: #FAF7F2; border-color: var(--boj-border); color: var(--boj-ink); }
+    .btn-secondary:hover { background: #EFEAE2; }
+    .btn-matrix { background: var(--boj-accent); color: #FFF; }
+    .btn-matrix:hover { background: var(--boj-accent-hover); }
+
+    .action-bar {
+      padding: 18px 22px;
+      background: rgba(250, 247, 242, 0.98);
+      border-top: 1px solid var(--boj-border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: auto;
+      position: sticky;
+      bottom: 0;
+    }
+
+    main {
+      flex: 1;
+      height: 100vh;
+      background: var(--boj-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-hud {
+      position: absolute;
+      top: 18px;
+      right: 28px;
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--boj-border);
+      padding: 7px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      font-size: 0.75rem;
+      color: var(--boj-muted);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    }
+    .canvas-hud span { color: var(--boj-ink); font-weight: 600; }
+
+    #single-stage {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #poster-frame {
+      height: 95vh;
+      max-width: 92%;
+      aspect-ratio: 800 / 1072;
+      box-shadow: 0 15px 50px rgba(44, 40, 37, 0.12), 0 0 1px rgba(0,0,0,0.1);
+      background: #F6EEDB;
+      position: relative;
+    }
+
+    #matrix-stage {
+      display: none;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 30px;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .matrix-item {
+      background: #FFFFFF;
+      border: 1px solid var(--boj-border);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      box-shadow: var(--boj-shadow);
+    }
+    .matrix-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--boj-accent);
+      box-shadow: 0 10px 30px rgba(125, 157, 143, 0.2);
+    }
+    .matrix-thumb {
+      width: 100%;
+      aspect-ratio: 800 / 1072;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: #F6EEDB;
+    }
+    .matrix-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--boj-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    svg { width: 100%; height: 100%; display: block; user-select: none; }
+
+    .draggable {
+      cursor: grab;
+      transition: filter 0.12s;
+    }
+    .draggable:active {
+      cursor: grabbing;
+    }
+    .draggable:hover {
+      filter: drop-shadow(0 0 6px rgba(125, 157, 143, 0.85));
+    }
+    .editable-text {
+      cursor: text;
+    }
+    .editable-text:hover {
+      filter: drop-shadow(0 0 3px rgba(125, 157, 143, 0.9));
+    }
+
+    #inline-text-editor {
+      position: absolute;
+      display: none;
+      z-index: 100;
+      background: #FFFFFF;
+      border: 2px solid var(--boj-ink);
+      color: var(--boj-ink);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 15px;
+      outline: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div class="header-bar">
+      <h1>Architectural Calendar Engine</h1>
+      <p>Jan Tschichold Leipzig 1923 Specimen Generator</p>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" id="tab-editor">Interactive Editor</button>
+      <button class="tab-btn" id="tab-matrix">9 Variations Grid</button>
+    </div>
+
+    <div class="panel-content">
+      
+      <section>
+        <div class="control-card">
+          <button class="btn btn-matrix" id="btn-generate-9">
+            Generate 9 Variations Matrix
+          </button>
+          <button class="btn btn-secondary" id="btn-randomize-current">
+            Recompose Swirls &amp; Seeds
+          </button>
+          <button class="btn btn-secondary" id="btn-reset-positions">
+            Reset All Dragged Positions
+          </button>
+        </div>
+      </section>
+
+      <!-- Typography Section -->
+      <section>
+        <div class="section-title">Typography &amp; Fonts</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label>Roman Inscriptions Font</label>
+            <select id="sel-font-roman">
+              <option value="'Cinzel', serif" selected>Cinzel (Original Trajan)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant</option>
+              <option value="'Grenze Gotisch', cursive">Grenze Gotisch</option>
+              <option value="'Bodoni Moda', serif">Bodoni Moda</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Ribbon Calligraphy Font</label>
+            <select id="sel-font-fraktur">
+              <option value="'Grenze Gotisch', cursive" selected>Grenze Gotisch (Historical)</option>
+              <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant</option>
+              <option value="'Cinzel', serif">Cinzel</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Calendar Figures Font</label>
+            <select id="sel-font-num">
+              <option value="'Bodoni Moda', serif" selected>Bodoni Moda (Didone Lining)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant</option>
+              <option value="'Cinzel', serif">Cinzel</option>
+              <option value="'Grenze Gotisch', cursive">Grenze Gotisch</option>
+            </select>
+          </div>
+
+          <div class="field-row" style="margin-top: 4px; border-top: 1px dashed var(--boj-border); padding-top: 10px;">
+            <label>Upload Custom Font File (.ttf, .otf, .woff2)</label>
+            <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2" style="font-size:0.75rem; color:var(--boj-muted);" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-archaic-latin" checked />
+              Archaic Latin Orthography (U &rarr; V in Roman Caps)
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Architecture & Structural Grid -->
+      <section>
+        <div class="section-title">1. Architecture &amp; Structural Grid</div>
+        <div class="control-card">
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Doorway Spine Width</label>
+              <span id="val-spine-width" class="range-val">38%</span>
+            </div>
+            <input type="range" id="range-spine-width" min="30" max="46" value="38" />
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Outer Margin Inset</label>
+              <span id="val-margin-width" class="range-val">4.5%</span>
+            </div>
+            <input type="range" id="range-margin-width" min="2.5" max="7.0" step="0.5" value="4.5" />
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Swirl Wave Amplitude</label>
+              <span id="val-wave-amp" class="range-val">8px</span>
+            </div>
+            <input type="range" id="range-wave-amp" min="2" max="22" value="8" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-show-grid" />
+              Show Structural Alignment Grid Lines
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Botanical Motifs & Colors -->
+      <section>
+        <div class="section-title">2. Botanical Motifs &amp; Colors</div>
+        <div class="control-card">
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Field Foliage Density</label>
+              <span id="val-vine-density" class="range-val">36 Sprigs</span>
+            </div>
+            <input type="range" id="range-vine-density" min="10" max="60" value="36" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-texture" checked />
+              Tactile Rag-Paper &amp; Ink Bleed
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-hatching" checked />
+              Woodcut 45° Scroll Turnaround Shading
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-cord" checked />
+              Top Hanging Cord &amp; Eyelet Loop
+            </label>
+          </div>
+
+          <div class="color-grid">
+            <div class="color-box">
+              <span>Ground Wash</span>
+              <input type="color" id="col-field" value="#8FA89B" />
+            </div>
+            <div class="color-box">
+              <span>Aged Paper</span>
+              <input type="color" id="col-paper" value="#F6EEDB" />
+            </div>
+            <div class="color-box">
+              <span>Carbon Ink</span>
+              <input type="color" id="col-ink" value="#1A1C19" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-export-svg">Export SVG</button>
+      <button class="btn btn-secondary" id="btn-export-png">Export PNG</button>
+    </div>
+  </aside>
+
+  <!-- Canvas Stage -->
+  <main>
+    <div class="canvas-hud">
+      <span>Drag</span> any item or ribbon independently &bull; <span>Click</span> text directly to edit inline
+    </div>
+
+    <div id="single-stage">
+      <div id="poster-frame"></div>
+      <input type="text" id="inline-text-editor" />
+    </div>
+
+    <div id="matrix-stage">
+      <div class="matrix-grid" id="matrix-container"></div>
+    </div>
+  </main>
+
+  <script>
+    // State Model: Completely independent offsets for all 16 ribbons + ornaments
+    const state = {
+      seed: 1923,
+      spineWidthPct: 38,
+      marginPct: 4.5,
+      waveAmp: 8,
+      showGrid: false,
+      vineDensity: 36,
+      paperTexture: true,
+      lineHatching: true,
+      hangingCord: true,
+      archaicLatin: true,
+      zodiac: 'leo',
+      fonts: {
+        roman: "'Cinzel', serif",
+        fraktur: "'Grenze Gotisch', cursive",
+        num: "'Bodoni Moda', serif"
+      },
+      colors: {
+        field: '#8FA89B',
+        paper: '#F6EEDB',
+        ink: '#1A1C19'
+      },
+      texts: {
+        sponsorL: 'FISCHER',
+        subL: 'BVCHDRVCKEREI',
+        sponsorR: 'WITTIG',
+        subR1: 'BVCHBINDEREI',
+        subR2: 'KVNSTVERLAG',
+        city: 'LEIPZIG',
+        month: 'Juli',
+        year: '1923',
+        footer: 'Muster u. Preise auf Wunsch',
+        leftRibbons: [
+          'Teubnerstr. 12',
+          'Fernruf 1154',
+          'Herstellung',
+          'jeder Art',
+          'typographischer',
+          'Erzeugnisse',
+          'und Gewerbe.'
+        ],
+        rightRibbons: [
+          'Johannisallee 8',
+          'Gegründet 1862',
+          'Ein- u. Mehrfarben',
+          'Bilderdrudk',
+          'im Buch- und',
+          'Kupferdrudk',
+          'Kataloge'
+        ]
+      },
+      offsets: {
+        shield: { x: 0, y: 0 },
+        city: { x: 0, y: 0 },
+        doorway: { x: 0, y: 0 },
+        cartouche1923: { x: 0, y: 0 },
+        footer: { x: 0, y: 0 },
+        sponsorL: { x: 0, y: 0 },
+        sponsorR: { x: 0, y: 0 },
+        botanicalsLeft: { x: 0, y: 0 },
+        botanicalsRight: { x: 0, y: 0 },
+        // 7 autonomous offsets for Left Ribbons
+        lRibbons: [
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 },
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }
+        ],
+        // 7 autonomous offsets for Right Ribbons
+        rRibbons: [
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 },
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }
+        ]
+      }
+    };
+
+    function createRNG(s) {
+      let m = s;
+      return function() {
+        m = (m * 9301 + 49297) % 233280;
+        return m / 233280;
+      };
+    }
+
+    // Calligraphic Ink Leo Glyph
+    function renderCalligraphicZodiac(type, color) {
+      return `
+        <g transform="translate(150, 442)">
+          <path d="M -34 26 C -48 26 -56 8 -46 -15 C -36 -36 -12 -42 4 -40 C 22 -38 38 -20 38 4 C 38 28 58 26 68 12" 
+                fill="none" stroke="${color}" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="-26" cy="4" r="14.5" fill="none" stroke="${color}" stroke-width="4" />
+        </g>
+      `;
+    }
+
+    // White Botanical Foliage & 5-Petal Blossoms with Open Centers (Covering Field)
+    function renderBotanicals(density, rng, paperCol, offsets) {
+      const offL = offsets.botanicalsLeft || { x: 0, y: 0 };
+      const offR = offsets.botanicalsRight || { x: 0, y: 0 };
+
+      let outL = `<g class="draggable" data-target="botanicalsLeft" transform="translate(${offL.x}, ${offL.y})" opacity="0.88">`;
+      let outR = `<g class="draggable" data-target="botanicalsRight" transform="translate(${offR.x}, ${offR.y})" opacity="0.88">`;
+
+      outL += `<path d="M 60 40 Q 180 180 80 340 T 70 700 T 120 1020" fill="none" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />`;
+      outR += `<path d="M 740 40 Q 620 180 720 340 T 730 700 T 680 1020" fill="none" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />`;
+
+      const sprigCount = Math.max(14, Math.floor(density / 2));
+      for (let i = 0; i < sprigCount; i++) {
+        const y = 50 + (i / sprigCount) * 950 + (rng() * 20 - 10);
+        const wave = Math.sin(i * 1.5) * 35;
+        
+        // Left sprig
+        const lx = 70 + wave;
+        const angL = -20 + rng() * 40;
+        outL += `
+          <g transform="translate(${lx}, ${y}) rotate(${angL}) scale(${0.7 + rng() * 0.4})">
+            <path d="M 0 0 C 12 -6, 22 -4, 34 -10" fill="none" stroke="${paperCol}" stroke-width="1.6" />
+            <path d="M 12 -4 C 8 -12, 16 -18, 24 -16 C 24 -10, 18 -5, 12 -4 Z" fill="${paperCol}" />
+            <path d="M 24 -7 C 28 -16, 38 -18, 44 -12 C 40 -6, 32 -5, 24 -7 Z" fill="${paperCol}" />
+            <path d="M 34 -10 C 44 -14, 50 -8, 46 -3 C 38 -3, 35 -7, 34 -10 Z" fill="${paperCol}" />
+            <g transform="translate(38, -12)">
+              <path d="M 0 -3 C -3 -9 3 -12 6 -6 C 8 -2 5 -1 0 -3 Z M 3 -1 C 9 -4 13 2 8 6 C 5 5 3 2 3 -1 Z M 1 3 C 4 9 -2 12 -5 7 C -4 4 -1 3 1 3 Z M -3 1 C -9 4 -12 -2 -7 -5 C -4 -4 -2 0 -3 1 Z M -1 -3 C -5 -9 1 -11 4 -6 C 3 -3 1 -2 -1 -3 Z" fill="${paperCol}" />
+              <ellipse cx="0" cy="0" rx="3" ry="2" fill="${state.colors.field}" />
+            </g>
+          </g>
+        `;
+
+        // Right sprig
+        const rx = 730 - wave;
+        const angR = 20 - rng() * 40;
+        outR += `
+          <g transform="translate(${rx}, ${y}) rotate(${angR}) scale(${0.7 + rng() * 0.4})">
+            <path d="M 0 0 C -12 -6, -22 -4, -34 -10" fill="none" stroke="${paperCol}" stroke-width="1.6" />
+            <path d="M -12 -4 C -8 -12, -16 -18, -24 -16 C -24 -10, -18 -5, -12 -4 Z" fill="${paperCol}" />
+            <path d="M -24 -7 C -28 -16, -38 -18, -44 -12 C -40 -6, -32 -5, -24 -7 Z" fill="${paperCol}" />
+            <path d="M -34 -10 C -44 -14, -50 -8, -46 -3 C -38 -3, -35 -7, -34 -10 Z" fill="${paperCol}" />
+            <g transform="translate(-38, -12)">
+              <path d="M 0 -3 C -3 -9 3 -12 6 -6 C 8 -2 5 -1 0 -3 Z M 3 -1 C 9 -4 13 2 8 6 C 5 5 3 2 3 -1 Z M 1 3 C 4 9 -2 12 -5 7 C -4 4 -1 3 1 3 Z M -3 1 C -9 4 -12 -2 -7 -5 C -4 -4 -2 0 -3 1 Z M -1 -3 C -5 -9 1 -11 4 -6 C 3 -3 1 -2 -1 -3 Z" fill="${paperCol}" />
+              <ellipse cx="0" cy="0" rx="3" ry="2" fill="${state.colors.field}" />
+            </g>
+          </g>
+        `;
+      }
+
+      outL += `</g>`;
+      outR += `</g>`;
+      return outL + outR;
+    }
+
+    // Calendar Days Grid
+    function renderCalendarDates(monthName, yearNum, inkCol, numFont) {
+      const monthMap = {
+        'januar': 0, 'februar': 1, 'märz': 2, 'april': 3, 'mai': 4, 'juni': 5,
+        'juli': 6, 'july': 6, 'august': 7, 'september': 8, 'oktober': 9, 'november': 10, 'dezember': 11
+      };
+      const cleanMonth = (monthName || 'juli').toLowerCase().trim();
+      const mIdx = monthMap[cleanMonth] !== undefined ? monthMap[cleanMonth] : 6;
+      const yr = parseInt(yearNum, 10) || 1923;
+
+      const firstDay = new Date(yr, mIdx, 1).getDay();
+      const totalDays = new Date(yr, mIdx + 1, 0).getDate();
+
+      const colX = [28, 68, 108, 150, 190, 231, 272];
+      let rowY = 135;
+      const stepY = 38;
+
+      let currentDay = 1;
+      let out = `<g font-family="${numFont}" font-size="15" fill="${inkCol}" text-anchor="middle">`;
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 7; c++) {
+          if (r === 0 && c < firstDay) continue;
+          if (currentDay > totalDays) break;
+          out += `<text x="${colX[c]}" y="${rowY + (r * stepY)}">${currentDay}</text>`;
+          currentDay++;
+        }
+        if (currentDay > totalDays) break;
+      }
+      out += `</g>`;
+      return out;
+    }
+
+    /* 
+      Precision Autonomous Banderole Builder:
+      - S-Curve Front Face using cubic Beziers (M ... C ... L ... C ... Z)
+      - Distinct roll-over curl turnaround strictly on the ends
+      - Fishtail V-cut notches
+      - NO background trapezoids, NO black bars
+    */
+    function buildAutonomousRibbon(x1, x2, cy, waveAmp, paper, ink, hatchUrl, idPrefix, isRight, text, idx, font) {
+      const w = x2 - x1;
+      const h = 21; // Undulating height between 18px and 24px
+      const dir = isRight ? -1 : 1;
+      const curve = dir * waveAmp;
+
+      // Trajectory Path for Text Alignment
+      const pathId = `${idPrefix}curve_${isRight ? 'r' : 'l'}_${idx}`;
+      const pathDef = `
+        <path id="${pathId}" d="M ${x1 + 10} ${cy} C ${x1 + w*0.33} ${cy - curve}, ${x1 + w*0.66} ${cy + curve}, ${x2 - 10} ${cy}" />
+      `;
+
+      // 1. Serpentine Front Parchment Face
+      const frontFace = `
+        <path d="M ${x1} ${cy - h/2} 
+                 C ${x1 + w*0.33} ${cy - curve - h/2}, ${x1 + w*0.66} ${cy + curve - h/2}, ${x2} ${cy - h/2} 
+                 L ${x2} ${cy + h/2} 
+                 C ${x1 + w*0.66} ${cy + curve + h/2}, ${x1 + w*0.33} ${cy - curve + h/2}, ${x1} ${cy + h/2} Z" 
+              fill="${paper}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round" />
+      `;
+
+      // 2. Delicately Confined Turnaround Underfolds & Fishtail Notches
+      let turnaroundAndFishtail = '';
+      if (!isRight) {
+        // Left Banderole Endings
+        turnaroundAndFishtail = `
+          <!-- Tucked Underfold Roll (hatching strictly confined) -->
+          <path d="M ${x1} ${cy - h/2} 
+                   C ${x1 - 10} ${cy - h/2 - 4}, ${x1 - 16} ${cy - 2}, ${x1 - 12} ${cy + 6} 
+                   L ${x1} ${cy + h/2} Z" 
+                fill="${hatchUrl ? `url(#${hatchUrl})` : paper}" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" />
+          <!-- Flowing Fishtail V-Cut Tail -->
+          <path d="M ${x1 - 12} ${cy + 6} 
+                   C ${x1 - 20} ${cy + 10}, ${x1 - 28} ${cy + 4}, ${x1 - 32} ${cy - 2} 
+                   L ${x1 - 24} ${cy + 4} 
+                   L ${x1 - 34} ${cy + 12} 
+                   C ${x1 - 24} ${cy + 16}, ${x1 - 16} ${cy + 14}, ${x1 - 10} ${cy + 8} Z" 
+                fill="${paper}" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" />
+        `;
+      } else {
+        // Right Banderole Endings
+        turnaroundAndFishtail = `
+          <!-- Tucked Underfold Roll (hatching strictly confined) -->
+          <path d="M ${x2} ${cy - h/2} 
+                   C ${x2 + 10} ${cy - h/2 - 4}, ${x2 + 16} ${cy - 2}, ${x2 + 12} ${cy + 6} 
+                   L ${x2} ${cy + h/2} Z" 
+                fill="${hatchUrl ? `url(#${hatchUrl})` : paper}" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" />
+          <!-- Flowing Fishtail V-Cut Tail -->
+          <path d="M ${x2 + 12} ${cy + 6} 
+                   C ${x2 + 20} ${cy + 10}, ${x2 + 28} ${cy + 4}, ${x2 + 32} ${cy - 2} 
+                   L ${x2 + 24} ${cy + 4} 
+                   L ${x2 + 34} ${cy + 12} 
+                   C ${x2 + 24} ${cy + 16}, ${x2 + 16} ${cy + 14}, ${x2 + 10} ${cy + 8} Z" 
+                fill="${paper}" stroke="${ink}" stroke-width="1.6" stroke-linejoin="round" />
+        `;
+      }
+
+      // 3. Bound Text Path
+      const textMarkup = `
+        <text font-size="18.5" font-family="${font}" fill="${ink}" 
+              class="editable-text" data-key="${isRight ? 'r' : 'l'}_${idx}">
+          <textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+            ${text}
+          </textPath>
+        </text>
+      `;
+
+      return {
+        pathDef,
+        markup: `<g>${turnaroundAndFishtail}${frontFace}${textMarkup}</g>`
+      };
+    }
+
+    // Master Assembler
+    function buildPosterSVG(cfg, isThumb = false) {
+      const rng = createRNG(cfg.seed);
+      const { field, paper, ink } = cfg.colors;
+
+      const spineW = (cfg.spineWidthPct / 100) * 800;
+      const spineX = 400 - (spineW / 2);
+      const marginPx = (cfg.marginPct / 100) * 800;
+      const wave = cfg.waveAmp;
+
+      const idPrefix = isThumb ? `th_${Math.floor(rng() * 100000)}_` : 'main_';
+      const hatchId = cfg.lineHatching ? `${idPrefix}hatch` : null;
+
+      const textureDef = cfg.paperTexture ? `
+        <filter id="${idPrefix}grain" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+          <feColorMatrix type="matrix" values="
+            1 0 0 0 0
+            0 1 0 0 0
+            0 0 1 0 0
+            0 0 0 0.08 0" in="noise" result="grainAlpha" />
+          <feComposite in="SourceGraphic" in2="grainAlpha" operator="over" />
+        </filter>
+      ` : '';
+
+      const hatchDef = `
+        <pattern id="${idPrefix}hatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="5" stroke="${ink}" stroke-width="1.3" />
+        </pattern>
+      `;
+
+      const formatRoman = text => {
+        if (!text) return '';
+        return cfg.archaicLatin ? text.toUpperCase().replace(/U/g, 'V') : text.toUpperCase();
+      };
+
+      const botanicals = renderBotanicals(cfg.vineDensity, rng, paper, cfg.offsets);
+      const calendarDates = renderCalendarDates(cfg.texts.month, cfg.texts.year, ink, cfg.fonts.num);
+      const zodiacSymbol = renderCalligraphicZodiac(cfg.zodiac, ink);
+
+      // Render 14 Fully Autonomous Ribbon Groups
+      let defsPool = '';
+      let leftRibbonMarkup = '';
+      let rightRibbonMarkup = '';
+
+      const startY = 222;
+      const stepY = 76;
+
+      for (let i = 0; i < 7; i++) {
+        const cy = startY + (i * stepY);
+
+        // Left Ribbon (Independent Group)
+        const l_x1 = marginPx + 34;
+        const l_x2 = spineX - 16;
+        const lObj = buildAutonomousRibbon(l_x1, l_x2, cy, wave, paper, ink, hatchId, idPrefix, false, cfg.texts.leftRibbons[i] || '', i, cfg.fonts.fraktur);
+        defsPool += lObj.pathDef;
+        const offL = cfg.offsets.lRibbons[i] || { x: 0, y: 0 };
+        leftRibbonMarkup += `<g class="draggable" data-target="lRibbon_${i}" transform="translate(${offL.x}, ${offL.y})">${lObj.markup}</g>`;
+
+        // Right Ribbon (Independent Group)
+        const r_x1 = 800 - spineX + 16;
+        const r_x2 = 800 - marginPx - 34;
+        const rObj = buildAutonomousRibbon(r_x1, r_x2, cy, wave, paper, ink, hatchId, idPrefix, true, cfg.texts.rightRibbons[i] || '', i, cfg.fonts.fraktur);
+        defsPool += rObj.pathDef;
+        const offR = cfg.offsets.rRibbons[i] || { x: 0, y: 0 };
+        rightRibbonMarkup += `<g class="draggable" data-target="rRibbon_${i}" transform="translate(${offR.x}, ${offR.y})">${rObj.markup}</g>`;
+      }
+
+      // Offsets
+      const offShield = cfg.offsets.shield || { x: 0, y: 0 };
+      const offCity = cfg.offsets.city || { x: 0, y: 0 };
+      const offDoor = cfg.offsets.doorway || { x: 0, y: 0 };
+      const offCart1923 = cfg.offsets.cartouche1923 || { x: 0, y: 0 };
+      const offFooter = cfg.offsets.footer || { x: 0, y: 0 };
+      const offSponL = cfg.offsets.sponsorL || { x: 0, y: 0 };
+      const offSponR = cfg.offsets.sponsorR || { x: 0, y: 0 };
+
+      return `
+        <svg viewBox="0 0 800 1072" xmlns="http://www.w3.org/2000/svg" ${cfg.paperTexture ? `filter="url(#${idPrefix}grain)"` : ''}>
+          <defs>
+            ${textureDef}
+            ${hatchDef}
+            ${defsPool}
+            <!-- Top Sponsor Header Trajectories -->
+            <path id="${idPrefix}p_spon_l1" d="M 80 110 C 140 85, 230 85, 295 105" />
+            <path id="${idPrefix}p_spon_l2" d="M 70 148 C 140 128, 230 128, 305 148" />
+            <path id="${idPrefix}p_spon_r1" d="M 505 105 C 570 85, 660 85, 720 110" />
+            <path id="${idPrefix}p_spon_r2" d="M 495 148 C 570 128, 660 128, 730 148" />
+            <path id="${idPrefix}p_spon_r3" d="M 565 190 C 625 174, 695 174, 745 190" />
+            <path id="${idPrefix}p_foot" d="M 230 965 Q 400 955 570 965" />
+          </defs>
+
+          <!-- 1. Background Ground Wash -->
+          <rect width="800" height="1072" fill="${field}" />
+
+          <!-- 2. Abundant Hand-Drawn White Botanicals Covering Field -->
+          ${botanicals}
+
+          <!-- 3. Outer Double Border Frame Rules -->
+          <rect x="${marginPx}" y="${marginPx}" width="${800 - marginPx * 2}" height="${1072 - marginPx * 2}" 
+                fill="none" stroke="${ink}" stroke-width="3.2" />
+          <rect x="${marginPx + 7}" y="${marginPx + 7}" width="${800 - marginPx * 2 - 14}" height="${1072 - marginPx * 2 - 14}" 
+                fill="none" stroke="${ink}" stroke-width="1.2" />
+
+          <!-- 4. Top Hanging Cord & Metal Eyelet Loop -->
+          ${cfg.hangingCord ? `
+            <g stroke="${ink}" fill="none">
+              <path d="M 400 ${marginPx} C 400 ${marginPx - 16}, 408${marginPx - 26}, 400 ${marginPx - 30} C 392${marginPx - 26}, 400 ${marginPx - 16}, 400${marginPx}" stroke-width="2.5" />
+              <circle cx="400" cy="${marginPx + 16}" r="4.5" fill="${paper}" stroke-width="1.6" />
+            </g>
+          ` : ''}
+
+          <!-- 5. Top Heraldic Shield & Monogram -->
+          <g class="draggable" data-target="shield" transform="translate(${400 + offShield.x}, ${105 + offShield.y})">
+            <path d="M -56 -42 C -45 -54 -20 -48 0 -58 C 22 -48 54 -54 58 -44 C 62 10 46 48 0 76 C -46 48 -60 10 -56 -42 Z" 
+                  fill="${paper}" stroke="${ink}" stroke-width="2.8" />
+            <path d="M -50 -38 C -40 -48 -18 -44 0 -52 C 20 -44 48 -48 52 -40" 
+                  fill="none" stroke="${ink}" stroke-width="1.2" />
+            <!-- Central Vertical Staff -->
+            <line x1="0" y1="-44" x2="0" y2="44" stroke="${ink}" stroke-width="2.6" stroke-linecap="round" />
+            <!-- Gothic '4' loop -->
+            <path d="M 0 -38 L -18 -18 L 18 -18" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+            <!-- Middle 'F' horizontal crossbar -->
+            <line x1="0" y1="-5" x2="16" y2="-5" stroke="${ink}" stroke-width="2.6" stroke-linecap="round" />
+            <!-- Bottom 'W' chevron base -->
+            <path d="M -22 20 L -11 44 L 0 26 L 11 44 L 22 20" fill="none" stroke="${ink}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+          </g>
+
+          <!-- 6. Top Sponsor Header Ribbons (FISCHER & WITTIG) -->
+          <g class="draggable" data-target="sponsorL" transform="translate(${offSponL.x}, ${offSponL.y})">
+            <!-- Front Face 1 -->
+            <path d="M 70 88 C 140 65, 230 65, 300 85 L 290 120 C 220 100, 140 100, 80 125 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Curled turnaround fold (shaded) -->
+            <path d="M 80 125 C 64 128 58 140 70 154 L 85 130 Z" fill="${hatchId ? `url(#${hatchId})` : paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Front Face 2 -->
+            <path d="M 60 130 C 140 110, 230 110, 310 130 L 300 162 C 220 144, 140 144, 50 165 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Tucked fishtail tail -->
+            <path d="M 50 165 C 40 180 50 205 65 210 L 80 185 C 65 180 60 170 50 165 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            
+            <text font-family="${cfg.fonts.roman}" font-size="24" font-weight="700" letter-spacing="3" fill="${ink}" 
+                  class="editable-text" data-key="sponsorL">
+              <textPath href="#${idPrefix}p_spon_l1" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.sponsorL)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subL">
+              <textPath href="#${idPrefix}p_spon_l2" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subL)}
+              </textPath>
+            </text>
+          </g>
+
+          <g class="draggable" data-target="sponsorR" transform="translate(${offSponR.x}, ${offSponR.y})">
+            <!-- Front Face 1 -->
+            <path d="M 500 85 C 570 65, 660 65, 730 88 L 720 125 C 660 100, 580 100, 510 120 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Curled turnaround fold (shaded) -->
+            <path d="M 720 125 C 736 128 742 140 730 154 L 715 130 Z" fill="${hatchId ? `url(#${hatchId})` : paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Front Face 2 -->
+            <path d="M 490 130 C 570 110, 660 110, 740 130 L 750 165 C 660 144, 580 144, 500 162 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <!-- Third Tier Banner (KVNSTVERLAG) -->
+            <path d="M 560 175 Q 655 155 750 175 L 740 205 Q 655 188 550 205 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            
+            <text font-family="${cfg.fonts.roman}" font-size="24" font-weight="700" letter-spacing="3" fill="${ink}" 
+                  class="editable-text" data-key="sponsorR">
+              <textPath href="#${idPrefix}p_spon_r1" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.sponsorR)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subR1">
+              <textPath href="#${idPrefix}p_spon_r2" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subR1)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="15" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subR2">
+              <textPath href="#${idPrefix}p_spon_r3" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subR2)}
+              </textPath>
+            </text>
+          </g>
+
+          <!-- 7. City Cartouche (LEIPZIG) -->
+          <g class="draggable" data-target="city" transform="translate(${offCity.x}, ${offCity.y})">
+            <polygon points="290,175 510,175 498,198 302,198" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <text x="400" y="187" font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="4" fill="${ink}" 
+                  text-anchor="middle" dominant-baseline="central" class="editable-text" data-key="city">
+              ${formatRoman(cfg.texts.city)}
+            </text>
+          </g>
+
+          <!-- 8. Central Tabernacle Architectural Calendar Doorway Portal -->
+          <g class="draggable" data-target="doorway" transform="translate(${spineX + offDoor.x}, ${225 + offDoor.y})">
+            <rect x="-10" y="-10" width="${spineW + 20}" height="570" fill="none" stroke="${ink}" stroke-width="1.5" opacity="0.35" />
+            <rect x="0" y="0" width="${spineW}" height="550" fill="${paper}" stroke="${ink}" stroke-width="2.6" />
+
+            <circle cx="10" cy="10" r="2.5" fill="${ink}" />
+            <circle cx="${spineW - 10}" cy="10" r="2.5" fill="${ink}" />
+            <circle cx="10" cy="540" r="2.5" fill="${ink}" />
+            <circle cx="${spineW - 10}" cy="540" r="2.5" fill="${ink}" />
+
+            <!-- Month Heading -->
+            <text x="${spineW / 2}" y="46" font-family="${cfg.fonts.fraktur}" font-size="44" fill="${ink}" 
+                  text-anchor="middle" dominant-baseline="central" class="editable-text" data-key="month">
+              * ${cfg.texts.month} *
+            </text>
+            <line x1="25" y1="74" x2="${spineW - 25}" y2="74" stroke="${ink}" stroke-width="1.4" />
+
+            <!-- Day Headings -->
+            <g font-family="${cfg.fonts.roman}" font-size="11" font-weight="700" fill="${ink}" text-anchor="middle">
+              <text x="28" y="93">SO</text>
+              <text x="68" y="93">MO</text>
+              <text x="108" y="93">DI</text>
+              <text x="150" y="93">MI</text>
+              <text x="190" y="93">DO</text>
+              <text x="231" y="93">FR</text>
+              <text x="272" y="93">SA</text>
+            </g>
+            <line x1="16" y1="106" x2="${spineW - 16}" y2="106" stroke="${ink}" stroke-width="1" />
+
+            <!-- Days Grid -->
+            ${calendarDates}
+
+            <line x1="25" y1="365" x2="${spineW - 25}" y2="365" stroke="${ink}" stroke-width="1.4" />
+            ${zodiacSymbol}
+          </g>
+
+          <!-- 9. 14 Fully Autonomous Swirling Ribbons (7 Left, 7 Right) -->
+          <g id="left-ribbons-layer">${leftRibbonMarkup}</g>
+          <g id="right-ribbons-layer">${rightRibbonMarkup}</g>
+
+          <!-- 10. Distinctive 1923 Notched Bracket Placard (Exact to Specimen) -->
+          <g class="draggable" data-target="cartouche1923" transform="translate(${400 + offCart1923.x}, ${840 + offCart1923.y})">
+            <path d="M -90 -28 
+                     L 90 -28 
+                     L 82 -6 
+                     L 96 -6 
+                     L 92 0 
+                     L 96 6 
+                     L 82 6 
+                     L 90 28 
+                     L -90 28 
+                     L -82 6 
+                     L -96 6 
+                     L -92 0 
+                     L -96 -6 
+                     L -82 -6 Z" 
+                  fill="${paper}" stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" />
+            <circle cx="-88" cy="0" r="2.2" fill="${ink}" />
+            <circle cx="88" cy="0" r="2.2" fill="${ink}" />
+            <text x="0" y="3" font-family="${cfg.fonts.roman}" font-size="30" font-weight="700" letter-spacing="4" fill="${ink}" 
+                  text-anchor="middle" dominant-baseline="central" class="editable-text" data-key="year">
+              ${cfg.texts.year}
+            </text>
+          </g>
+
+          <!-- 11. Bottom Slogan Cartouche -->
+          <g class="draggable" data-target="footer" transform="translate(${offFooter.x}, ${offFooter.y})">
+            <path d="M 220 945 Q 400 935 580 945 L 575 985 Q 400 975 225 985 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <text font-family="${cfg.fonts.fraktur}" font-size="18" fill="${ink}" 
+                  class="editable-text" data-key="footer">
+              <textPath href="#${idPrefix}p_foot" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${cfg.texts.footer}
+              </textPath>
+            </text>
+          </g>
+
+          <!-- 12. Colophon Signature Imprint -->
+          <text x="725" y="1030" font-family="${cfg.fonts.roman}" font-size="9" font-weight="700" letter-spacing="2" fill="${ink}" opacity="0.45" text-anchor="end">
+            TSCHICHOLD
+          </text>
+
+          <!-- 13. Symmetrical Alignment Grid (Toggleable) -->
+          ${cfg.showGrid ? `
+            <g stroke="#e63946" stroke-width="1" stroke-dasharray="4 4" opacity="0.85">
+              <line x1="400" y1="0" x2="400" y2="1072" stroke="#ff0055" stroke-width="1.5" />
+              <line x1="${spineX}" y1="0" x2="${spineX}" y2="1072" />
+              <line x1="${800 - spineX}" y1="0" x2="${800 - spineX}" y2="1072" />
+              <line x1="0" y1="225" x2="800" y2="225" />
+              <line x1="0" y1="775" x2="800" y2="775" />
+              <line x1="0" y1="840" x2="800" y2="840" />
+            </g>
+          ` : ''}
+        </svg>
+      `;
+    }
+
+    // Direct On-Canvas In-Place Text Editor
+    let currentEditKey = null;
+
+    function setupInlineEditor() {
+      const editor = document.getElementById('inline-text-editor');
+      const frame = document.getElementById('poster-frame');
+
+      frame.addEventListener('click', (e) => {
+        const textNode = e.target.closest('.editable-text');
+        if (!textNode) {
+          commitInlineEdit();
+          return;
+        }
+
+        const key = textNode.getAttribute('data-key');
+        if (!key) return;
+
+        currentEditKey = key;
+        let val = '';
+        if (key.startsWith('l_')) {
+          const idx = parseInt(key.split('_')[1], 10);
+          val = state.texts.leftRibbons[idx] || '';
+        } else if (key.startsWith('r_')) {
+          const idx = parseInt(key.split('_')[1], 10);
+          val = state.texts.rightRibbons[idx] || '';
+        } else {
+          val = state.texts[key] || '';
+        }
+
+        const rect = textNode.getBoundingClientRect();
+        const frameRect = frame.getBoundingClientRect();
+
+        editor.value = val;
+        editor.style.left = `${rect.left - frameRect.left + (rect.width / 2) - 100}px`;
+        editor.style.top = `${rect.top - frameRect.top - 8}px`;
+        editor.style.width = `200px`;
+        editor.style.display = 'block';
+        editor.focus();
+        editor.select();
+
+        e.stopPropagation();
+      });
+
+      editor.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          commitInlineEdit();
+        } else if (e.key === 'Escape') {
+          editor.style.display = 'none';
+          currentEditKey = null;
+        }
+      });
+
+      editor.addEventListener('blur', () => {
+        commitInlineEdit();
+      });
+    }
+
+    function commitInlineEdit() {
+      const editor = document.getElementById('inline-text-editor');
+      if (!currentEditKey || editor.style.display === 'none') return;
+
+      const val = editor.value.trim();
+      if (currentEditKey.startsWith('l_')) {
+        const idx = parseInt(currentEditKey.split('_')[1], 10);
+        state.texts.leftRibbons[idx] = val;
+      } else if (currentEditKey.startsWith('r_')) {
+        const idx = parseInt(currentEditKey.split('_')[1], 10);
+        state.texts.rightRibbons[idx] = val;
+      } else {
+        state.texts[currentEditKey] = val;
+        const inpMap = {
+          sponsorL: 'inp-sponsor-left',
+          sponsorR: 'inp-sponsor-right',
+          city: 'inp-city-name',
+          month: 'inp-cal-month',
+          year: 'inp-cal-year',
+          footer: 'inp-footer-slogan'
+        };
+        if (inpMap[currentEditKey]) {
+          const inp = document.getElementById(inpMap[currentEditKey]);
+          if (inp) inp.value = val;
+        }
+      }
+
+      editor.style.display = 'none';
+      currentEditKey = null;
+      renderMain();
+    }
+
+    // Drag-and-Drop Interaction: All 14 ribbons move independently
+    let activeDrag = null;
+
+    function setupDragEngine() {
+      const frame = document.getElementById('poster-frame');
+
+      frame.addEventListener('mousedown', (e) => {
+        if (e.target.closest('#inline-text-editor')) return;
+        const targetGroup = e.target.closest('.draggable');
+        if (!targetGroup) return;
+
+        const target = targetGroup.getAttribute('data-target');
+        activeDrag = {
+          target,
+          startX: e.clientX,
+          startY: e.clientY
+        };
+        e.preventDefault();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!activeDrag) return;
+
+        const dx = e.clientX - activeDrag.startX;
+        const dy = e.clientY - activeDrag.startY;
+
+        const svgEl = document.querySelector('#poster-frame svg');
+        if (!svgEl) return;
+        const rect = svgEl.getBoundingClientRect();
+        const scale = 800 / rect.width;
+
+        const adjX = dx * scale;
+        const adjY = dy * scale;
+
+        if (activeDrag.target.startsWith('lRibbon_')) {
+          const idx = parseInt(activeDrag.target.split('_')[1], 10);
+          state.offsets.lRibbons[idx].x += adjX;
+          state.offsets.lRibbons[idx].y += adjY;
+        } else if (activeDrag.target.startsWith('rRibbon_')) {
+          const idx = parseInt(activeDrag.target.split('_')[1], 10);
+          state.offsets.rRibbons[idx].x += adjX;
+          state.offsets.rRibbons[idx].y += adjY;
+        } else if (state.offsets[activeDrag.target]) {
+          state.offsets[activeDrag.target].x += adjX;
+          state.offsets[activeDrag.target].y += adjY;
+        }
+
+        activeDrag.startX = e.clientX;
+        activeDrag.startY = e.clientY;
+
+        renderMain();
+      });
+
+      window.addEventListener('mouseup', () => {
+        activeDrag = null;
+      });
+    }
+
+    function renderMain() {
+      const container = document.getElementById('poster-frame');
+      container.innerHTML = buildPosterSVG(state, false);
+    }
+
+    function renderMatrix() {
+      const grid = document.getElementById('matrix-container');
+      grid.innerHTML = '';
+
+      const months = ['Januar', 'März', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'Dezember'];
+      const zodiacs = ['leo', 'cancer', 'virgo', 'libra'];
+
+      for (let i = 0; i < 9; i++) {
+        const varCfg = JSON.parse(JSON.stringify(state));
+        varCfg.seed = state.seed + (i * 47) + 13;
+        varCfg.vineDensity = 24 + (i % 6) * 6;
+        varCfg.texts.month = months[i % months.length];
+        varCfg.zodiac = zodiacs[i % zodiacs.length];
+
+        const card = document.createElement('div');
+        card.className = 'matrix-item';
+        card.innerHTML = `
+          <div class="matrix-thumb">${buildPosterSVG(varCfg, true)}</div>
+          <div class="matrix-label">
+            <span>Variation #${i + 1} (${varCfg.texts.month})</span>
+            <span style="color:var(--boj-accent)">Load &rarr;</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          state.seed = varCfg.seed;
+          state.vineDensity = varCfg.vineDensity;
+          state.texts.month = varCfg.texts.month;
+          state.zodiac = varCfg.zodiac;
+
+          document.getElementById('range-vine-density').value = state.vineDensity;
+          document.getElementById('val-vine-density').textContent = `${state.vineDensity} Sprigs`;
+          document.getElementById('inp-cal-month').value = state.texts.month;
+          document.getElementById('select-zodiac').value = state.zodiac;
+
+          document.getElementById('tab-editor').click();
+          renderMain();
+        });
+
+        grid.appendChild(card);
+      }
+    }
+
+    function setupApp() {
+      // Tabs
+      document.getElementById('tab-editor').addEventListener('click', () => {
+        document.getElementById('tab-editor').classList.add('active');
+        document.getElementById('tab-matrix').classList.remove('active');
+        document.getElementById('single-stage').style.display = 'flex';
+        document.getElementById('matrix-stage').style.display = 'none';
+      });
+
+      document.getElementById('tab-matrix').addEventListener('click', () => {
+        document.getElementById('tab-matrix').classList.add('active');
+        document.getElementById('tab-editor').classList.remove('active');
+        document.getElementById('single-stage').style.display = 'none';
+        document.getElementById('matrix-stage').style.display = 'block';
+        renderMatrix();
+      });
+
+      document.getElementById('btn-generate-9').addEventListener('click', () => {
+        state.seed = Math.floor(Math.random() * 10000);
+        document.getElementById('tab-matrix').click();
+      });
+
+      document.getElementById('btn-randomize-current').addEventListener('click', () => {
+        state.seed = Math.floor(Math.random() * 10000);
+        renderMain();
+      });
+
+      document.getElementById('btn-reset-positions').addEventListener('click', () => {
+        state.offsets.shield = { x: 0, y: 0 };
+        state.offsets.city = { x: 0, y: 0 };
+        state.offsets.doorway = { x: 0, y: 0 };
+        state.offsets.cartouche1923 = { x: 0, y: 0 };
+        state.offsets.footer = { x: 0, y: 0 };
+        state.offsets.sponsorL = { x: 0, y: 0 };
+        state.offsets.sponsorR = { x: 0, y: 0 };
+        state.offsets.botanicalsLeft = { x: 0, y: 0 };
+        state.offsets.botanicalsRight = { x: 0, y: 0 };
+        for (let i = 0; i < 7; i++) {
+          state.offsets.lRibbons[i] = { x: 0, y: 0 };
+          state.offsets.rRibbons[i] = { x: 0, y: 0 };
+        }
+        renderMain();
+      });
+
+      // Typography Selectors
+      document.getElementById('sel-font-roman').addEventListener('change', e => {
+        state.fonts.roman = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-font-fraktur').addEventListener('change', e => {
+        state.fonts.fraktur = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-font-num').addEventListener('change', e => {
+        state.fonts.num = e.target.value;
+        renderMain();
+      });
+
+      // Custom Local Font Upload (FileReader + FontFace API)
+      document.getElementById('font-file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const fontName = `UserUploaded_${Date.now()}`;
+          const font = new FontFace(fontName, event.target.result);
+          font.load().then(loadedFont => {
+            document.fonts.add(loadedFont);
+            
+            ['sel-font-roman', 'sel-font-fraktur', 'sel-font-num'].forEach(id => {
+              const sel = document.getElementById(id);
+              const opt = document.createElement('option');
+              opt.value = `'${fontName}', sans-serif`;
+              opt.textContent = `Custom (${file.name.replace(/\.[^/.]+$/, '')})`;
+              sel.appendChild(opt);
+            });
+
+            state.fonts.fraktur = `'${fontName}', sans-serif`;
+            document.getElementById('sel-font-fraktur').value = `'${fontName}', sans-serif`;
+            renderMain();
+          }).catch(err => alert('Font loading error: ' + err.message));
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      // Structural Sliders
+      document.getElementById('range-spine-width').addEventListener('input', e => {
+        state.spineWidthPct = parseInt(e.target.value, 10);
+        document.getElementById('val-spine-width').textContent = `${state.spineWidthPct}%`;
+        renderMain();
+      });
+
+      document.getElementById('range-margin-width').addEventListener('input', e => {
+        state.marginPct = parseFloat(e.target.value);
+        document.getElementById('val-margin-width').textContent = `${state.marginPct}%`;
+        renderMain();
+      });
+
+      document.getElementById('range-wave-amp').addEventListener('input', e => {
+        state.waveAmp = parseInt(e.target.value, 10);
+        document.getElementById('val-wave-amp').textContent = `${state.waveAmp}px`;
+        renderMain();
+      });
+
+      document.getElementById('range-vine-density').addEventListener('input', e => {
+        state.vineDensity = parseInt(e.target.value, 10);
+        document.getElementById('val-vine-density').textContent = `${state.vineDensity} Sprigs`;
+        renderMain();
+      });
+
+      // Checkboxes
+      document.getElementById('check-show-grid').addEventListener('change', e => { state.showGrid = e.target.checked; renderMain(); });
+      document.getElementById('check-texture').addEventListener('change', e => { state.paperTexture = e.target.checked; renderMain(); });
+      document.getElementById('check-hatching').addEventListener('change', e => { state.lineHatching = e.target.checked; renderMain(); });
+      document.getElementById('check-cord').addEventListener('change', e => { state.hangingCord = e.target.checked; renderMain(); });
+      document.getElementById('check-archaic-latin').addEventListener('change', e => { state.archaicLatin = e.target.checked; renderMain(); });
+
+      // Colors
+      ['field', 'paper', 'ink'].forEach(key => {
+        document.getElementById(`col-${key}`).addEventListener('input', e => {
+          state.colors[key] = e.target.value;
+          renderMain();
+        });
+      });
+
+      // Vector & Raster Export
+      document.getElementById('btn-export-svg').addEventListener('click', () => {
+        const svgData = document.querySelector('#poster-frame svg').outerHTML;
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tschichold-1923-poster-${Date.now()}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('btn-export-png').addEventListener('click', () => {
+        const svgEl = document.querySelector('#poster-frame svg');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const canvas = document.createElement('canvas');
+        canvas.width = 1600;
+        canvas.height = 2144;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, 1600, 2144);
+          URL.revokeObjectURL(url);
+          const pngUrl = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = `tschichold-1923-poster-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        };
+        img.src = url;
+      });
+
+      setupDragEngine();
+      setupInlineEditor();
+      renderMain();
+    }
+
+    window.addEventListener('DOMContentLoaded', setupApp);
+  </script>
+</body>
+</html>
