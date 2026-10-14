@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather Almanac — Live Data Poster Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f5eedf;--field:#8fa99b;--ink:#22251f;--accent:#b96f53;--line:#d8d0c1;--panel:#fbf8f0}
+*{box-sizing:border-box}
+body{margin:0;background:#e9e5dc;color:var(--ink);font-family:"DM Sans",sans-serif}
+button,select,input{font:inherit}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:14px 22px;border-bottom:1px solid #d0cabe;background:#f8f5ee}
+.brand{font-size:.72rem;font-weight:700;letter-spacing:.17em;text-transform:uppercase}
+.topbar small{color:#77796f;font:10px "DM Mono",monospace}
+.app{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:calc(100vh - 54px)}
+.controls{padding:22px 20px;background:#f8f5ee;border-right:1px solid #d0cabe}
+.kicker{font:10px "DM Mono",monospace;letter-spacing:.15em;text-transform:uppercase;color:#718578}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif;font-weight:500}
+.controls h1{font-size:2rem;line-height:1.04;margin:.55rem 0 .8rem}
+.intro{font-size:.82rem;color:#77796f;line-height:1.55;margin-bottom:1.5rem}
+.field{margin:1rem 0}
+.field label{display:flex;justify-content:space-between;gap:1rem;font-size:.76rem;font-weight:600;margin-bottom:.45rem}
+.field label span{font:10px "DM Mono",monospace;color:#818278}
+select,input[type=range]{width:100%}
+select{padding:9px;border:1px solid #d7d0c4;background:#fffdf7;color:#2c3029;border-radius:3px}
+input[type=range]{accent-color:#718578}
+.button-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:1.25rem 0}
+button{border:1px solid #687f70;background:#687f70;color:white;padding:10px 12px;border-radius:3px;font-size:.76rem;font-weight:600;cursor:pointer}
+button.secondary{background:transparent;color:#39463d}
+button:hover{filter:brightness(.96)}
+.motion-panel{border:1px solid #d8d0c1;padding:12px;margin-top:12px;background:#fdfbf5}
+.toggle-line{display:flex;align-items:center;gap:8px;font-size:.75rem;font-weight:600;margin:4px 0 10px}
+.toggle-line input{accent-color:#687f70}
+.motion-note{font-size:10px;line-height:1.45;color:#77796f}
+@keyframes drift {0%{transform:translate(0,0)}50%{transform:translate(7px,-4px)}100%{transform:translate(0,0)}}
+@keyframes pulse {0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes dashflow {to{stroke-dashoffset:-36}}
+@keyframes slowturn {to{transform:rotate(360deg)}}
+@keyframes ribbonFloat{0%,100%{transform:translateY(0) translateX(0) skewX(0deg) scaleY(1)}25%{transform:translateY(-5px) translateX(3px) skewX(1deg) scaleY(1.025)}50%{transform:translateY(4px) translateX(8px) skewX(-1.4deg) scaleY(.975)}75%{transform:translateY(-2px) translateX(2px) skewX(.6deg) scaleY(1.015)}}
+@keyframes ribbonFlow{to{stroke-dashoffset:-140}}
+@keyframes ribbonGlow{0%,100%{opacity:.58}50%{opacity:1}}
+@keyframes weatherBreath{0%,100%{opacity:.86}50%{opacity:1}}
+#poster .ribbon-group{transform-box:fill-box;transform-origin:center;animation:ribbonFloat 4.5s ease-in-out infinite}
+#poster .ribbon-group:nth-of-type(2n){animation-delay:-1.6s;animation-duration:6s}
+#poster .ribbon-stroke{stroke-dasharray:24 9 5 9;animation:ribbonFlow 3.2s linear infinite,ribbonGlow 2.2s ease-in-out infinite}
+#poster .ribbon-stroke:nth-child(2n){animation-duration:7s,4s;animation-direction:reverse,alternate}
+#poster .weather-mark{animation:drift 3.4s ease-in-out infinite,weatherBreath 2.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+#poster .signal-dot{filter:drop-shadow(0 0 3px currentColor)}
+#poster .weather-mark{animation:drift 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+#poster .weather-mark:nth-of-type(3n){animation-delay:-1.8s;animation-duration:7s}
+#poster .weather-mark:nth-of-type(4n){animation-delay:-3s;animation-duration:6s}
+#poster .flow-line{stroke-dasharray:8 9;animation:dashflow 4s linear infinite}
+#poster .signal-dot{animation:pulse 2.8s ease-in-out infinite}
+#poster .orbit-ring{transform-origin:400px 515px;animation:slowturn 48s linear infinite}
+@media(prefers-reduced-motion:reduce){#poster *{animation:none!important}}
+.live-card{border:1px solid #d8d0c1;background:#fdfbf5;padding:12px;margin-top:1.5rem}
+.live-top{display:flex;align-items:center;justify-content:space-between;font:10px "DM Mono",monospace;letter-spacing:.08em}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#6c9b74;margin-right:5px;box-shadow:0 0 0 3px #6c9b741b}
+.live-number{font-family:"Playfair Display",serif;font-size:2.2rem;margin:.55rem 0 .2rem}
+.live-sub{font-size:.73rem;color:#73756b}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.metric{border-top:1px solid #e4ded3;padding-top:8px}
+.metric b{display:block;font:14px "DM Mono",monospace}
+.metric span{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#77796f}
+.status{font-size:10px;color:#77796f;margin-top:10px;line-height:1.4}
+.stage{padding:clamp(18px,4vw,54px);display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.stage-head{width:min(100%,900px);display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.stage-head h2{font-size:1.5rem;margin:0}
+.stage-head p{font:10px "DM Mono",monospace;color:#7b7c73;margin:.3rem 0 0}
+.stage-actions{display:flex;gap:7px;flex-wrap:wrap}
+.stage-actions button{padding:8px 10px;font-size:.7rem}
+.poster-wrap{width:min(100%,760px);box-shadow:0 16px 45px #34312622;background:var(--field);transition:background 1.2s ease,box-shadow 1.2s ease}#poster{transition:background 1.2s ease}
+#poster{width:100%;height:auto;display:block;aspect-ratio:800/1072}
+.caption{width:min(100%,760px);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;color:#77796f;font:10px "DM Mono",monospace}
+.caption strong{color:#39463d}
+@media(max-width:800px){.app{grid-template-columns:1fr}.controls{border-right:0;border-bottom:1px solid #d0cabe}.controls h1{font-size:1.8rem}.live-card{max-width:none}.stage{padding:18px}.stage-head{align-items:flex-start;flex-direction:column}.poster-wrap{width:min(100%,600px)}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="brand">Field Notes / Generative Systems</div><small>EXPERIMENT 07.1 · LIVE WEATHER STUDY</small></header>
+<div class="app">
+<aside class="controls">
+  <p class="kicker">01 / Control desk</p>
+  <h1>Weather<br><em>Almanac.</em></h1>
+  <p class="intro">A living poster engine based on the 1923 calendar study. Current New York weather automatically selects a condition-matched palette; the month sets a distinct ribbon style, and wind changes ribbon movement and shape. Generate a new composition without disconnecting the live feed.</p>
+  <div class="field"><label for="layout">Composition <span>LAYOUT</span></label><select id="layout"><option value="classic">Architectural folio</option><option value="split">Split instrument</option><option value="ledger">Weather ledger</option><option value="orbit">Orbital calendar</option></select></div>
+  <div class="field"><label for="palette">Palette family <span>COLOR</span></label><select id="palette"><option value="auto">Follow the weather</option><option value="sage">Sage / ivory</option><option value="night">Blue hour</option><option value="clay">Terracotta / cream</option><option value="lilac">Lilac / graphite</option></select></div>
+  <div class="field"><label for="type">Typography mood <span>TYPE</span></label><select id="type"><option value="heritage">Heritage serif</option><option value="blackletter">Blackletter accent</option><option value="instrument">Instrument mono</option></select></div>
+  <div class="field"><label for="density">Ornament density <span id="densityVal">62%</span></label><input id="density" type="range" min="15" max="100" value="62"></div>
+  <div class="field"><label for="dataWeight">Data prominence <span id="weightVal">72%</span></label><input id="dataWeight" type="range" min="25" max="100" value="72"></div>
+  <div class="button-row"><button id="generate">Generate variation ↻</button><button class="secondary" id="refresh">Refresh data</button></div>
+  <div class="motion-panel">
+    <label class="toggle-line"><input id="autoEvolve" type="checkbox" checked> Auto-evolve composition</label>
+    <div class="field" style="margin:.6rem 0 0"><label for="motionSpeed">Evolution speed <span id="speedVal">8 sec</span></label><input id="motionSpeed" type="range" min="4" max="20" step="2" value="8"></div>
+    <p class="motion-note">The layout, seed, ornamental marks, and data graphics keep changing while the live weather feed runs. Turn this off to study one composition.</p>
+  </div>
+  <div class="live-card">
+    <div class="live-top"><span><i class="dot"></i>LIVE FEED</span><span id="feedState">CONNECTING</span></div>
+    <div class="live-number" id="temperature">--°</div>
+    <div class="live-sub" id="condition">Fetching current conditions…</div>
+    <div class="metrics">
+      <div class="metric"><b id="wind">--</b><span>Wind · km/h</span></div>
+      <div class="metric"><b id="rain">--</b><span>Precip. · mm</span></div>
+      <div class="metric"><b id="humidity">--</b><span>Relative humidity</span></div>
+      <div class="metric"><b id="updated">--:--</b><span>Last update</span></div>
+    </div>
+    <p class="status" id="status">Open-Meteo · New York City · automatic refresh every 60 seconds.</p>
+  </div>
+</aside>
+<main class="stage">
+  <div class="stage-head"><div><p class="kicker">02 / Live output</p><h2>One feed, endless arrangements.</h2><p>40.74° N · 73.98° W · NEW YORK CITY</p></div><div class="stage-actions"><button class="secondary" id="download">Export SVG</button></div></div>
+  <div class="poster-wrap"><svg id="poster" viewBox="0 0 800 1072" role="img" aria-label="Generative weather poster using live New York weather data"></svg></div>
+  <div class="caption"><span><strong id="captionData">WAITING FOR WEATHER</strong> / DATA → DESIGN</span><span id="variationLabel">VARIATION 001</span></div>
+</main>
+</div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const state = { weather:null, variation:1, seed:Math.random()*1e6, layout:"classic", palette:"auto", type:"heritage", density:62, weight:72, lastUpdated:null, autoEvolve:true, evolutionSeconds:8, evolveTimer:null };
+  const palettes = {
+    sage:{paper:"#f5eedf",field:"#8fa99b",ink:"#22251f",accent:"#b96f53"},
+    night:{paper:"#f2eee4",field:"#657181",ink:"#20232b",accent:"#c17a5f"},
+    clay:{paper:"#f6ead7",field:"#b46b4c",ink:"#38231c",accent:"#e2bc6d"},
+    lilac:{paper:"#f4efe7",field:"#89849a",ink:"#27232e",accent:"#bd765f"}
+  };
+  const weatherCode = code => {
+    if(code===0) return "Clear sky";
+    if([1,2].includes(code)) return "Partly cloudy";
+    if(code===3) return "Overcast";
+    if([45,48].includes(code)) return "Fog / mist";
+    if([51,53,55,56,57].includes(code)) return "Drizzle";
+    if([61,63,65,66,67,80,81,82].includes(code)) return "Rain";
+    if([71,73,75,77,85,86].includes(code)) return "Snow";
+    if([95,96,99].includes(code)) return "Thunderstorm";
+    return "Changing conditions";
+  };
+  const getPalette = () => {
+    if(state.palette!=="auto") return palettes[state.palette];
+    const w=weather();
+    const code=w.code, t=w.temperature, rain=w.precipitation, wind=w.wind;
+    // Weather is the color director: distinct, readable palettes for actual conditions.
+    if([95,96,99].includes(code)) return {paper:"#f4e9d8",field:"#514a70",ink:"#211d32",accent:"#f1b85b"}; // storm
+    if([71,73,75,77,85,86].includes(code) || t<=0) return {paper:"#f3f5f0",field:"#a9c7d3",ink:"#203746",accent:"#547e9a"}; // snow / freezing
+    if([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code) || rain>.2) return {paper:"#e8f0ef",field:"#557f91",ink:"#172f3a",accent:"#d5b6a0"}; // rain
+    if([45,48].includes(code)) return {paper:"#f0eee5",field:"#a4aaa5",ink:"#303c3a",accent:"#778c88"}; // fog
+    if(wind>=25) return {paper:"#f1e9f2",field:"#827b9c",ink:"#292438",accent:"#d9a26f"}; // strong wind
+    if(t>=28) return {paper:"#fff0d2",field:"#d98550",ink:"#48271e",accent:"#f7cb68"}; // hot sun
+    if(t>=20 && [0,1,2].includes(code)) return {paper:"#fff3d8",field:"#d7a65d",ink:"#44301e",accent:"#c75d43"}; // warm / clear
+    if([0,1,2].includes(code)) return {paper:"#f7f0de",field:"#91ad91",ink:"#26352b",accent:"#e2a15c"}; // mild / clear
+    return {paper:"#f0eee5",field:"#738b89",ink:"#243331",accent:"#c88969"}; // overcast
+  };
+  const rand = (min,max) => min + Math.random()*(max-min);
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+  const weather = () => state.weather || {temperature:16,wind:10,precipitation:0,humidity:50,code:2};
+  function fetchWeather(){
+    $("feedState").textContent="UPDATING";
+    const url="https://api.open-meteo.com/v1/forecast?latitude=40.74&longitude=-73.98&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m,weather_code&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm";
+    fetch(url,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Weather feed returned "+r.status);return r.json()}).then(data=>{
+      const c=data.current;
+      state.weather={temperature:c.temperature_2m,wind:c.wind_speed_10m,windDirection:c.wind_direction_10m,precipitation:c.precipitation,humidity:c.relative_humidity_2m,code:c.weather_code,time:c.time};
+      state.lastUpdated=new Date();
+      $("temperature").textContent=Math.round(c.temperature_2m)+"°C";
+      $("condition").textContent=weatherCode(c.weather_code);
+      $("wind").textContent=Math.round(c.wind_speed_10m);
+      $("rain").textContent=Number(c.precipitation).toFixed(1);
+      $("humidity").textContent=Math.round(c.relative_humidity_2m)+"%";
+      $("updated").textContent=state.lastUpdated.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+      $("feedState").textContent="LIVE";
+      $("status").textContent="Open-Meteo · New York City · refreshed "+state.lastUpdated.toLocaleTimeString()+". Next automatic update in about 60 seconds.";
+      render();
+    }).catch(err=>{
+      $("feedState").textContent="OFFLINE";
+      $("status").textContent="Could not reach Open-Meteo. The poster remains usable with its last known or fallback values. "+err.message;
+      if(!state.weather) state.weather={temperature:16,wind:10,precipitation:0,humidity:50,code:2};
+      render();
+    });
+  }
+  function render(){
+    const w=weather(), p=getPalette(), density=state.density/100, weight=state.weight/100;
+    const svg=$("poster"); svg.style.background=p.field;
+    const temp=Math.round(w.temperature), wind=Math.max(0,w.wind), rain=Math.max(0,w.precipitation);
+    const font=state.type==="blackletter"?"UnifrakturMaguntia,serif":state.type==="instrument"?"DM Mono,monospace":"Playfair Display,Georgia,serif";
+    const sans=state.type==="instrument"?"DM Mono,monospace":"DM Sans,sans-serif";
+    const month=new Date().toLocaleDateString("en-US",{month:"long"}).toUpperCase();
+    const date=new Date().toLocaleDateString("en-US",{weekday:"short",month:"short",day:"2-digit"}).toUpperCase();
+    const serial=String(Math.floor(state.seed)%9999).padStart(4,"0");
+    const title=temp>=27?"HEAT INDEX":temp<=3?"COLD FRONT":rain>0.5?"PRECIPITATION":wind>=25?"WIND STUDY":"ATMOSPHERIC NOTES";
+    let s=`<title>Live New York weather poster</title><style>.weather-mark{animation:drift 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}.flow-line{stroke-dasharray:8 9;animation:dashflow 4s linear infinite}.signal-dot{animation:pulse 2.8s ease-in-out infinite}.orbit-ring{transform-origin:400px 515px;animation:slowturn 48s linear infinite}@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-4px)}}@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}@keyframes dashflow{to{stroke-dashoffset:-36}}@keyframes slowturn{to{transform:rotate(360deg)}}</style><rect width="800" height="1072" fill="${p.field}"/>`;
+    s+=`<rect x="24" y="24" width="752" height="1024" fill="none" stroke="${p.ink}" stroke-width="2.2"/><rect x="34" y="34" width="732" height="1004" fill="none" stroke="${p.paper}" stroke-width="1"/>`;
+    // Weather-responsive edge marks: wind increases slant/length, precipitation increases count.
+    const marks=Math.round(12+density*40+rain*2+wind*.25);
+    for(let i=0;i<marks;i++){
+      const side=i%2, x=side?rand(710,750):rand(45,90), y=rand(80,985);
+      const len=rand(12,28)+wind*.5, tilt=(side?1:-1)*(rand(5,20)+wind*.22);
+      s+=`<path class="weather-mark" d="M ${x} ${y} l ${tilt} ${len}" stroke="${p.paper}" stroke-width="${rand(.8,1.8)}" fill="none" opacity="${rand(.45,.9)}"/>`;
+      if(density>.42) s+=`<circle class="signal-dot" cx="${x+tilt}" cy="${y+len}" r="${rand(1.2,2.5)}" fill="${p.paper}" opacity=".8"/>`;
+    }
+    // Header and instrument label.
+    s+=`<g fill="${p.paper}" stroke="${p.ink}" stroke-width="2"><path d="M75 91 Q180 56 285 91 L275 126 Q180 103 85 126 Z"/><path d="M515 91 Q620 56 725 91 L715 126 Q620 103 525 126 Z"/><path d="M330 80 Q400 47 470 80 L457 170 Q400 199 343 170 Z"/></g>`;
+    s+=`<g fill="${p.ink}" text-anchor="middle"><text x="180" y="101" font-family="Cinzel,serif" font-size="24" font-weight="700" letter-spacing="3">FIELD</text><text x="620" y="101" font-family="Cinzel,serif" font-size="24" font-weight="700" letter-spacing="3">STATION</text><text x="400" y="105" font-family="${font}" font-size="37">${temp>0?"+":""}${temp}°</text><text x="400" y="143" font-family="${sans}" font-size="10" letter-spacing="3">NYC / 40.74 N</text><text x="400" y="225" font-family="Cinzel,serif" font-size="18" letter-spacing="5">NEW YORK</text></g>`;
+    s+=`<path d="M280 238 H520" stroke="${p.ink}" stroke-width="1.5"/><text x="400" y="263" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="10" letter-spacing="3">${date} · LIVE OBSERVATION</text>`;
+    // Layout family changes actual geometry, not just color.
+    if(state.layout==="classic"){
+      s+=`<path d="M255 303 L545 303 L568 326 L568 742 L545 765 L255 765 L232 742 L232 326 Z" fill="${p.paper}" stroke="${p.ink}" stroke-width="2.5"/><rect x="250" y="348" width="300" height="355" fill="none" stroke="${p.ink}" stroke-width="1.2"/>`;
+      s+=`<text x="400" y="390" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="28">${esc(month)}</text>`;
+    } else if(state.layout==="split"){
+      s+=`<rect x="105" y="310" width="590" height="425" fill="${p.paper}" stroke="${p.ink}" stroke-width="2.5"/><rect x="125" y="330" width="260" height="385" fill="${p.field}" stroke="${p.ink}" stroke-width="1.4"/><rect x="405" y="330" width="270" height="385" fill="${p.paper}" stroke="${p.ink}" stroke-width="1.4"/>`;
+      s+=`<text x="260" y="380" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="22">${esc(month)}</text><text x="540" y="380" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="11" letter-spacing="2">LIVE METRICS</text>`;
+    } else if(state.layout==="ledger"){
+      s+=`<rect x="118" y="300" width="564" height="480" fill="${p.paper}" stroke="${p.ink}" stroke-width="2.5"/><path d="M145 350 H655 M145 425 H655 M145 500 H655 M145 575 H655 M145 650 H655 M145 725 H655" stroke="${p.ink}" stroke-width=".8"/>`;
+      s+=`<text x="150" y="335" fill="${p.ink}" font-family="${font}" font-size="25">${esc(month)} / REGISTER</text>`;
+    } else {
+      s+=`<rect x="125" y="300" width="550" height="470" rx="4" fill="${p.paper}" stroke="${p.ink}" stroke-width="2.5"/><circle cx="400" cy="515" r="${110+Math.min(40,wind)}" fill="none" stroke="${p.accent}" stroke-width="3"/><circle cx="400" cy="515" r="78" fill="none" stroke="${p.ink}" stroke-width="1.3"/>`;
+      s+=`<text x="400" y="385" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="24">${esc(month)}</text>`;
+    }
+    // Main metric typography reacts to data prominence and temperature magnitude.
+    const mainSize=48+Math.min(50,Math.abs(temp)*1.1)*weight;
+    if(state.layout==="split"){
+      s+=`<text x="255" y="510" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="${mainSize}">${temp}°</text><text x="255" y="544" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="11">AIR TEMPERATURE</text>`;
+      s+=`<text x="540" y="460" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="40">${Math.round(wind)}</text><text x="540" y="485" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="10">WIND KM/H</text><text x="540" y="555" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="36">${Number(rain).toFixed(1)}</text><text x="540" y="580" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="10">PRECIP. MM</text>`;
+    } else if(state.layout==="ledger"){
+      s+=`<text x="155" y="395" fill="${p.ink}" font-family="${font}" font-size="39">${temp}°C</text><text x="480" y="395" fill="${p.ink}" font-family="${font}" font-size="27">${Math.round(wind)} km/h</text><text x="155" y="470" fill="${p.ink}" font-family="${sans}" font-size="11">TEMPERATURE / CURRENT</text><text x="480" y="470" fill="${p.ink}" font-family="${sans}" font-size="11">WIND / CURRENT</text><text x="155" y="545" fill="${p.ink}" font-family="${font}" font-size="27">${Number(rain).toFixed(1)} mm</text><text x="480" y="545" fill="${p.ink}" font-family="${font}" font-size="27">${Math.round(w.humidity)}%</text>`;
+    } else {
+      s+=`<text x="400" y="${state.layout==="orbit"?525:470}" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="${mainSize}">${temp}°</text><text x="400" y="${state.layout==="orbit"?555:498}" text-anchor="middle" fill="${p.ink}" font-family="${sans}" font-size="11" letter-spacing="2">CELSIUS / CURRENT</text>`;
+    }
+    // Weather-specific shapes: rain, snow, sun, or wind become part of the composition.
+    const code=w.code;
+    if([51,53,55,61,63,65,80,81,82,95,96,99].includes(code)||rain>0.2){
+      const count=Math.round(8+density*24+rain*2);
+      for(let i=0;i<count;i++){let x=rand(155,645),y=rand(405,700);s+=`<path class="weather-mark" d="M${x} ${y} l ${-4-wind*.08} ${10+rain}" stroke="${p.accent}" stroke-width="${rand(1,2.2)}" opacity="${rand(.35,.8)}"/>`;}
+    } else if([71,73,75,77,85,86].includes(code)){
+      const count=Math.round(10+density*30);
+      for(let i=0;i<count;i++){let x=rand(155,645),y=rand(405,700),r=rand(2,4);s+=`<path class="weather-mark" d="M${x-r} ${y} H${x+r} M${x} ${y-r} V${y+r} M${x-r*.7} ${y-r*.7} L${x+r*.7} ${y+r*.7} M${x-r*.7} ${y+r*.7} L${x+r*.7} ${y-r*.7}" stroke="${p.accent}" stroke-width="1"/>`;}
+    } else {
+      const rays=Math.round(8+density*14);
+      for(let i=0;i<rays;i++){let a=(Math.PI*2*i/rays),cx=400,cy=610,r1=48,r2=70+wind*.4;s+=`<path d="M${cx+Math.cos(a)*r1} ${cy+Math.sin(a)*r1} L${cx+Math.cos(a)*r2} ${cy+Math.sin(a)*r2}" stroke="${p.accent}" stroke-width="${rand(1,2.2)}" opacity=".85"/>`;}
+      s+=`<circle cx="400" cy="610" r="36" fill="${p.accent}" opacity=".92"/>`;
+    }
+    // Month-specific ribbon grammar: each month has its own silhouette, while wind controls amplitude and speed.
+    const monthIndex=new Date().getMonth();
+    const monthRibbonNames=["ice-fold","frost-loop","bud-curl","rain-braid","leaf-loop","sun-arc","heat-wave","double-wave","harvest-fold","fall-spiral","long-loop","star-fold"];
+    const ribbonName=monthRibbonNames[monthIndex];
+    const direction=Number.isFinite(w.windDirection)?w.windDirection:225; const directionalLean=Math.sin(direction*Math.PI/180); const wave=9+wind*1.05, speed=Math.max(.75,5.8-wind*.17);
+    const ribbonGroup=(y,idx)=>{
+      const amp=wave*(.55+idx*.24), phase=(monthIndex%3)*12, lean=directionalLean*(wind*.32+3);
+      let d;
+      if([0,1,11].includes(monthIndex)) d=`M70 ${y+lean} L155 ${y-amp+lean*.7} L240 ${y+amp*.55+lean*.4} L325 ${y-amp*.72} L410 ${y+amp*.7-lean*.3} L495 ${y-amp*.5-lean*.5} L580 ${y+amp*.7-lean*.7} L730 ${y-amp*.25-lean}`;
+      else if([2,3,4].includes(monthIndex)) d=`M70 ${y+lean} C140 ${y-amp*1.8+lean},170 ${y+amp*1.8},240 ${y+lean*.6} S340 ${y-amp*1.8-lean},410 ${y} S510 ${y+amp*1.8+lean},580 ${y-lean*.5} S670 ${y-amp-lean},730 ${y+phase*.08-lean}`;
+      else if([5,6,7].includes(monthIndex)) d=`M70 ${y+amp*.5+lean} C160 ${y-amp*2.2+lean},220 ${y-amp*2.2-lean},300 ${y+lean*.4} S430 ${y+amp*2.2-lean},510 ${y} S650 ${y-amp*2.2+lean},730 ${y+amp*.3-lean}`;
+      else d=`M70 ${y+lean} C135 ${y-amp*1.8+lean},155 ${y+amp*1.8-lean},220 ${y} C285 ${y-amp*1.8-lean},305 ${y+amp*1.8+lean},370 ${y} S455 ${y-amp*1.8+lean},520 ${y} S640 ${y+amp*1.8-lean},730 ${y-amp*.25-lean}`;
+      return `<g class="ribbon-group" style="animation-duration:${speed+idx*.45}s;animation-delay:${-idx*.9}s"><path class="ribbon-stroke" d="${d}" transform="translate(0 ${idx*1.8})" fill="none" stroke="${idx%2?p.accent:p.paper}" stroke-width="${5+idx*1.65+Math.min(6,wind*.08)}" stroke-linecap="round" stroke-linejoin="round" opacity="${.9-idx*.1}"/><path d="${d}" transform="translate(0 ${idx*1.8})" fill="none" stroke="${p.ink}" stroke-width=".8" stroke-dasharray="2 11" opacity=".48"/></g>`;
+    };
+    s+=`<g aria-label="${ribbonName} ribbons">${[0,1,2,3,4].map((i)=>ribbonGroup(790+i*18,i)).join("")}</g>`;
+    // Bottom data cartouche and dynamic bar graph.
+    s+=`<path d="M220 875 L580 875 L560 922 L240 922 Z" fill="${p.paper}" stroke="${p.ink}" stroke-width="2"/><text x="400" y="905" text-anchor="middle" fill="${p.ink}" font-family="${font}" font-size="22">${esc(title)}</text>`;
+    const bars=20;
+    for(let i=0;i<bars;i++){
+      const val=Math.abs(Math.sin((i+1)*(temp+12)*.14)+Math.cos((i+2)*(wind+3)*.09));
+      const h=10+val*(15+wind*.7)+rain*2;
+      s+=`<rect x="${155+i*25}" y="${980-h}" width="11" height="${h}" fill="${i%5===0?p.accent:p.ink}" opacity="${.5+(i%3)*.15}"/>`;
+    }
+    s+=`<text x="80" y="963" fill="${p.paper}" font-family="${sans}" font-size="10" letter-spacing="2">WX / 1923–NOW</text><text x="720" y="963" text-anchor="end" fill="${p.paper}" font-family="${sans}" font-size="10">${serial} / LIVE</text>`;
+    s+=`<text x="400" y="1018" text-anchor="middle" fill="${p.paper}" font-family="Cinzel,serif" font-size="12" letter-spacing="5">FIELD NOTES · NEW YORK</text><text x="400" y="1040" text-anchor="middle" fill="${p.paper}" font-family="DM Mono,monospace" font-size="8" letter-spacing="2">${esc(ribbonName.toUpperCase())} / WIND-DRIVEN RIBBON STUDY</text>`;
+    svg.innerHTML=s;
+    $("captionData").textContent=`${title} / ${temp}°C / WIND ${Math.round(wind)} KM/H`;
+    $("variationLabel").textContent=`VARIATION ${String(state.variation).padStart(3,"0")} · SEED ${serial}`;
+  }
+  function randomize(){
+    state.variation++;
+    state.seed=Math.random()*1e6;
+    const layouts=["classic","split","ledger","orbit"];
+    if(Math.random()<.8) state.layout=layouts[Math.floor(Math.random()*layouts.length)];
+    if(Math.random()<.65) state.type=["heritage","blackletter","instrument"][Math.floor(Math.random()*3)];
+    if(state.palette==="auto"&&Math.random()<.25){} 
+    $("layout").value=state.layout;$("type").value=state.type;
+    render();
+  }
+  function scheduleEvolution(){
+    if(state.evolveTimer) clearInterval(state.evolveTimer);
+    if(!state.autoEvolve) return;
+    state.evolveTimer=setInterval(()=>{
+      state.variation++;
+      state.seed=Math.random()*1e6;
+      // Recompose gently: live measurements stay real, but the visual grammar keeps exploring.
+      if(Math.random()<.42){const layouts=["classic","split","ledger","orbit"];state.layout=layouts[Math.floor(Math.random()*layouts.length)];$("layout").value=state.layout;}
+      if(Math.random()<.28){state.type=["heritage","blackletter","instrument"][Math.floor(Math.random()*3)];$("type").value=state.type;}
+      render();
+    },state.evolutionSeconds*1000);
+  }
+  $("autoEvolve").addEventListener("change",e=>{state.autoEvolve=e.target.checked;scheduleEvolution();});
+  $("motionSpeed").addEventListener("input",e=>{state.evolutionSeconds=+e.target.value;$("speedVal").textContent=state.evolutionSeconds+" sec";scheduleEvolution();});
+  $("generate").addEventListener("click",randomize);
+  $("refresh").addEventListener("click",fetchWeather);
+  $("layout").addEventListener("change",e=>{state.layout=e.target.value;state.variation++;render()});
+  $("palette").addEventListener("change",e=>{state.palette=e.target.value;state.variation++;render()});
+  $("type").addEventListener("change",e=>{state.type=e.target.value;state.variation++;render()});
+  $("density").addEventListener("input",e=>{state.density=+e.target.value;$("densityVal").textContent=state.density+"%";render()});
+  $("dataWeight").addEventListener("input",e=>{state.weight=+e.target.value;$("weightVal").textContent=state.weight+"%";render()});
+  $("download").addEventListener("click",()=>{
+    const svg=$("poster").cloneNode(true);
+    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+    const blob=new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="weather-almanac-live-poster.svg";a.click();URL.revokeObjectURL(a.href);
+  });
+  render();fetchWeather();setInterval(fetchWeather,60000);scheduleEvolution();
+})();
+</script>
+</body>
+</html>
