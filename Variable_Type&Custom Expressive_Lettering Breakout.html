@@ -1,0 +1,3267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tschichold 1923 Poster Generator — Sprint A Live Weather</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&family=Cinzel:wght@600;700;900&family=Cormorant+Infant:ital,wght@0,500;0,700;1,500&family=Grenze+Gotisch:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --boj-bg: #F4EFEB;
+      --boj-sidebar: #FAF7F2;
+      --boj-card: #FFFFFF;
+      --boj-border: #E3DCD1;
+      --boj-border-light: #ECE5DA;
+      --boj-ink: #2C2825;
+      --boj-muted: #857D74;
+      --boj-accent: #7D9D8F;
+      --boj-accent-hover: #6C8C7E;
+      --boj-shadow: 0 4px 20px rgba(44, 40, 37, 0.06);
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--boj-bg);
+      color: var(--boj-ink);
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    aside {
+      width: 440px;
+      min-width: 400px;
+      height: 100vh;
+      background: var(--boj-sidebar);
+      border-right: 1px solid var(--boj-border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 30;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+    }
+    aside::-webkit-scrollbar { width: 5px; }
+    aside::-webkit-scrollbar-thumb { background: var(--boj-border); border-radius: 3px; }
+
+    .header-bar {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--boj-border);
+      background: rgba(250, 247, 242, 0.98);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+    .header-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--boj-ink);
+    }
+    .header-bar p {
+      font-size: 0.74rem;
+      color: var(--boj-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .tabs-bar {
+      display: flex;
+      border-bottom: 1px solid var(--boj-border);
+      background: #F1ECE4;
+      padding: 4px 16px 0;
+      gap: 6px;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      color: var(--boj-muted);
+      font-family: 'Cinzel', serif;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      color: var(--boj-ink);
+      border-bottom-color: var(--boj-ink);
+      background: var(--boj-sidebar);
+      border-radius: 6px 6px 0 0;
+    }
+
+    .panel-content { padding: 22px; display: flex; flex-direction: column; gap: 20px; }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--boj-muted);
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--boj-border-light);
+      padding-bottom: 4px;
+    }
+
+    .control-card {
+      background: var(--boj-card);
+      border: 1px solid var(--boj-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--boj-shadow);
+    }
+
+    .field-row { display: flex; flex-direction: column; gap: 6px; }
+    .field-row.inline { flex-direction: row; justify-content: space-between; align-items: center; }
+    .field-row label {
+      font-size: 0.71rem;
+      color: var(--boj-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"], select {
+      background: #FAF8F5;
+      border: 1px solid var(--boj-border);
+      color: var(--boj-ink);
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border 0.15s;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--boj-accent);
+      background: #FFFFFF;
+    }
+
+    input[type="range"] {
+      accent-color: var(--boj-ink);
+      cursor: pointer;
+      height: 4px;
+    }
+    .range-val { font-family: monospace; font-size: 0.74rem; color: var(--boj-ink); font-weight: 600; }
+
+    .color-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .color-box { text-align: center; font-size: 0.68rem; color: var(--boj-muted); font-weight: 600; }
+    .color-box input[type="color"] {
+      width: 100%;
+      height: 36px;
+      border: 1px solid var(--boj-border);
+      border-radius: 5px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+      margin-top: 4px;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      user-select: none;
+      color: var(--boj-ink);
+    }
+    .checkbox-container input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--boj-ink);
+      cursor: pointer;
+    }
+
+    .btn {
+      padding: 11px 16px;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-generate {
+      background: #202722;
+      color: #FFF;
+      font-size: 0.84rem;
+      letter-spacing: 0.08em;
+      box-shadow: 0 4px 14px rgba(32, 39, 34, 0.25);
+    }
+    .btn-generate:hover {
+      background: #36423a;
+    }
+    .btn-primary { background: var(--boj-ink); color: #FFF; }
+    .btn-primary:hover { background: #403B37; }
+    .btn-secondary { background: #FAF7F2; border-color: var(--boj-border); color: var(--boj-ink); }
+    .btn-secondary:hover { background: #EFEAE2; }
+    .btn-matrix { background: var(--boj-accent); color: #FFF; }
+    .btn-matrix:hover { background: var(--boj-accent-hover); }
+
+    .season-indicator {
+      font-size: 0.71rem;
+      color: var(--boj-muted);
+      text-align: center;
+      font-style: italic;
+      padding-top: 2px;
+    }
+
+    .action-bar {
+      padding: 18px 22px;
+      background: rgba(250, 247, 242, 0.98);
+      border-top: 1px solid var(--boj-border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: auto;
+      position: sticky;
+      bottom: 0;
+    }
+
+    main {
+      flex: 1;
+      height: 100vh;
+      background: var(--boj-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-hud {
+      position: absolute;
+      top: 18px;
+      right: 28px;
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--boj-border);
+      padding: 7px 16px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+      font-size: 0.75rem;
+      color: var(--boj-muted);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+    }
+    .canvas-hud span { color: var(--boj-ink); font-weight: 600; }
+
+    #single-stage {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    #poster-frame {
+      height: 95vh;
+      max-width: 92%;
+      aspect-ratio: 800 / 1072;
+      box-shadow: 0 15px 50px rgba(44, 40, 37, 0.12), 0 0 1px rgba(0,0,0,0.1);
+      background: #F6EEDB;
+      position: relative;
+    }
+
+    #matrix-stage {
+      display: none;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 30px;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .matrix-item {
+      background: #FFFFFF;
+      border: 1px solid var(--boj-border);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      box-shadow: var(--boj-shadow);
+    }
+    .matrix-item:hover {
+      transform: translateY(-4px);
+      border-color: var(--boj-accent);
+      box-shadow: 0 10px 30px rgba(125, 157, 143, 0.2);
+    }
+    .matrix-thumb {
+      width: 100%;
+      aspect-ratio: 800 / 1072;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background: #F6EEDB;
+    }
+    .matrix-label {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--boj-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    svg { width: 100%; height: 100%; display: block; user-select: none; }
+
+    .draggable {
+      cursor: grab;
+      transition: filter 0.12s;
+      touch-action: none;
+      pointer-events: all;
+    }
+    .draggable:active {
+      cursor: grabbing;
+    }
+    .draggable:hover {
+      filter: drop-shadow(0 0 5px rgba(125, 157, 143, 0.85));
+    }
+    .editable-text {
+      cursor: text;
+    }
+    .editable-text:hover {
+      filter: drop-shadow(0 0 3px rgba(125, 157, 143, 0.9));
+    }
+    /* Sprint A: SVG month lettering responds to weather and has a visible hover morph. */
+    .weather-responsive-type {
+      cursor: pointer;
+      pointer-events: visiblePainted;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: scale(var(--weather-scale, 1));
+      font-variation-settings: 'wght' var(--base-wght, 640),
+        'SOFT' var(--base-soft, 18), 'WONK' var(--base-wonk, 0.05),
+        'opsz' var(--base-opsz, 118);
+      transition: transform 320ms cubic-bezier(.2,.8,.2,1),
+        letter-spacing 320ms ease, stroke-width 320ms ease, filter 320ms ease,
+        font-variation-settings 320ms ease;
+      animation: weatherTypeBreath 5s ease-in-out infinite;
+    }
+    .weather-responsive-type:hover {
+      animation: hoverTypeMorph 850ms ease-in-out infinite alternate;
+      filter: drop-shadow(0 2px 3px rgba(26,28,25,.3));
+    }
+    @keyframes weatherTypeBreath {
+      0%, 100% { opacity: .96; }
+      50% { opacity: 1; }
+    }
+    @keyframes hoverTypeMorph {
+      0% {
+        transform: scale(1.08) skewX(-2deg);
+        font-variation-settings: 'wght' 450, 'SOFT' 70, 'WONK' 0, 'opsz' 120;
+        letter-spacing: 1px;
+        stroke-width: .2px;
+      }
+      100% {
+        transform: scale(1.22) skewX(2deg);
+        font-variation-settings: 'wght' 950, 'SOFT' 0, 'WONK' 1, 'opsz' 18;
+        letter-spacing: 3px;
+        stroke-width: 1.1px;
+      }
+    }
+    /* Sprint A playful interaction: ALL poster lettering gets the same goofy hover morph,
+       not just the weather-driven month heading. The animation uses real SVG text
+       properties (transform, weight, spacing and outline) so it remains visible on
+       both variable and non-variable fonts. */
+    #poster-frame svg text.poster-goofy-type {
+      cursor: pointer;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: filter 180ms ease;
+    }
+    #poster-frame svg text.poster-goofy-type:hover {
+      animation: goofyPosterType 680ms cubic-bezier(.35,.05,.45,1.4) infinite alternate;
+      filter: drop-shadow(1px 2px 1px rgba(26,28,25,.24));
+    }
+    @keyframes goofyPosterType {
+      0% {
+        transform: translateY(0) rotate(-3deg) scale(1.05, .94) skewX(-4deg);
+        font-weight: 450;
+        letter-spacing: 1.4px;
+        stroke-width: .2px;
+      }
+      45% {
+        transform: translateY(-5px) rotate(3deg) scale(1.16, 1.12) skewX(4deg);
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        stroke-width: 1px;
+      }
+      100% {
+        transform: translateY(2px) rotate(-1deg) scale(1.08, 1.2) skewX(-2deg);
+        font-weight: 700;
+        letter-spacing: 2.2px;
+        stroke-width: .5px;
+      }
+    }
+    /* Sprint A: live weather is a continuous motion director, not just a hover effect.
+       Once weather is fetched, all poster text moves according to that location's
+       conditions. The hover animation temporarily takes precedence while the pointer is over text. */
+    #poster-frame svg text.weather-motion-clear { animation: typeSunnyFloat 5.8s ease-in-out infinite; }
+    #poster-frame svg text.weather-motion-cloud { animation: typeCloudSquish 4.8s ease-in-out infinite; }
+    #poster-frame svg text.weather-motion-fog { animation: typeFogDrift 6.8s ease-in-out infinite; }
+    #poster-frame svg text.weather-motion-rain { animation: typeRainWiggle 1.45s ease-in-out infinite; }
+    #poster-frame svg text.weather-motion-snow { animation: typeSnowBob 4.2s ease-in-out infinite; }
+    #poster-frame svg text.weather-motion-storm { animation: typeStormJolt .72s steps(2, end) infinite; }
+    #poster-frame svg text.weather-motion-wind { animation: typeWindLean 1.8s ease-in-out infinite alternate; }
+    #poster-frame svg text.weather-motion-heat { animation: typeHeatRipple 2.2s ease-in-out infinite; }
+    @keyframes typeSunnyFloat {
+      0%,100% { transform: translateY(0) rotate(0deg) scale(1,1); font-variation-settings: 'wght' 420, 'SOFT' 12, 'WONK' .08, 'opsz' 118; }
+      50% { transform: translateY(-2px) rotate(1deg) scale(1.025,1.015); font-variation-settings: 'wght' 590, 'SOFT' 28, 'WONK' .22, 'opsz' 96; }
+    }
+    @keyframes typeCloudSquish {
+      0%,100% { transform: scale(1,1); font-variation-settings: 'wght' 680, 'SOFT' 85, 'WONK' .5, 'opsz' 74; letter-spacing: 0; }
+      50% { transform: scale(1.045,.96) skewX(-1.5deg); font-variation-settings: 'wght' 820, 'SOFT' 100, 'WONK' .9, 'opsz' 42; letter-spacing: -.35px; }
+    }
+    @keyframes typeFogDrift {
+      0%,100% { transform: translateX(-1px); opacity: .88; letter-spacing: .4px; }
+      50% { transform: translateX(2px); opacity: 1; letter-spacing: 1.8px; }
+    }
+    @keyframes typeRainWiggle {
+      0%,100% { transform: translateY(-1px) skewX(-1deg) scaleY(1.02); font-variation-settings: 'wght' 660, 'SOFT' 12, 'WONK' .9, 'opsz' 52; }
+      50% { transform: translateY(2px) skewX(2.5deg) scaleY(.96); font-variation-settings: 'wght' 900, 'SOFT' 0, 'WONK' 1, 'opsz' 28; }
+    }
+    @keyframes typeSnowBob {
+      0%,100% { transform: translateY(1px) rotate(-.6deg); font-variation-settings: 'wght' 340, 'SOFT' 100, 'WONK' .08, 'opsz' 132; letter-spacing: 1.2px; }
+      50% { transform: translateY(-3px) rotate(.7deg); font-variation-settings: 'wght' 460, 'SOFT' 100, 'WONK' .25, 'opsz' 144; letter-spacing: 2.1px; }
+    }
+    @keyframes typeStormJolt {
+      0%,100% { transform: translate(0,0) rotate(0deg) scale(1); font-variation-settings: 'wght' 1000, 'SOFT' 0, 'WONK' 1, 'opsz' 18; }
+      25% { transform: translate(-1px,1px) rotate(-1deg) scale(1.035, .97); }
+      50% { transform: translate(2px,-1px) rotate(1deg) scale(.98,1.04); font-variation-settings: 'wght' 760, 'SOFT' 4, 'WONK' .7, 'opsz' 38; }
+      75% { transform: translate(-1px,0) rotate(-.5deg); }
+    }
+    @keyframes typeWindLean {
+      0% { transform: translateX(-2px) skewX(-4deg) rotate(-1deg); letter-spacing: .3px; }
+      100% { transform: translateX(3px) skewX(4deg) rotate(1deg); letter-spacing: 1.8px; }
+    }
+    @keyframes typeHeatRipple {
+      0%,100% { transform: translateY(1px) skewX(-1deg) scaleY(.98); font-variation-settings: 'wght' 720, 'SOFT' 8, 'WONK' .95, 'opsz' 30; }
+      50% { transform: translateY(-2px) skewX(1.5deg) scaleY(1.035); font-variation-settings: 'wght' 900, 'SOFT' 0, 'WONK' 1, 'opsz' 18; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .weather-responsive-type { animation: none; transition: none; }
+      .weather-responsive-type:hover { transform: scale(1.08); }
+      #poster-frame svg text.poster-goofy-type:hover { animation: none; transform: scale(1.08); }
+    }
+
+    #inline-text-editor {
+      position: fixed;
+      display: none;
+      z-index: 9999;
+      background: #FFFFFF;
+      border: 2px solid var(--boj-ink);
+      color: var(--boj-ink);
+      padding: 7px 9px;
+      border-radius: 6px;
+      font-size: 15px;
+      outline: none;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      min-width: 190px;
+    }
+    .text-editor-note {
+      font-size: 0.72rem;
+      color: var(--boj-muted);
+      line-height: 1.4;
+      margin-top: 4px;
+    }
+    .text-editor-grid {
+      display: grid;
+      gap: 7px;
+    }
+    .text-editor-grid input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .text-editor-group-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--boj-muted);
+      margin: 10px 0 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div class="header-bar">
+      <h1>Architectural Calendar Engine</h1>
+      <p>Jan Tschichold Leipzig 1923 Specimen Generator</p>
+    </div>
+
+    <div class="tabs-bar">
+      <button class="tab-btn active" id="tab-editor">Interactive Editor</button>
+      <button class="tab-btn" id="tab-matrix">9 Variations Grid</button>
+    </div>
+
+    <div class="panel-content">
+      
+      <!-- Primary Generative Controls -->
+      <section>
+        <div class="control-card">
+          <button class="btn btn-generate" id="btn-generate-seasonal">
+            Generate New Poster
+          </button>
+          <div class="season-indicator" id="season-status-label">
+            Active: July 1923 &bull; Summer Mineral Wash
+          </div>
+          <button class="btn btn-matrix" id="btn-generate-9">
+            Generate 12 Monthly Variations
+          </button>
+          <button class="btn btn-secondary" id="btn-randomize-current">
+            Randomize Current Design
+          </button>
+          <button class="btn btn-secondary" id="btn-reset-positions">
+            Reset All Dragged Positions
+          </button>
+        </div>
+      </section>
+
+      <!-- Live weather data stream for Sprint A -->
+      <section>
+        <div class="section-title">Live Weather Data Stream</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label for="weather-location-input">Weather location</label>
+            <input id="weather-location-input" type="text" value="New York, NY" placeholder="Enter a city or place" style="width:100%; box-sizing:border-box; padding:9px; border:1px solid var(--boj-border); border-radius:6px; background:var(--boj-panel); color:var(--boj-text);" />
+          </div>
+          <button class="btn btn-secondary" id="btn-fetch-live-weather" type="button">Fetch Live Weather</button>
+          <p id="live-weather-status" role="status" aria-live="polite" style="font-size:0.75rem; line-height:1.5; color:var(--boj-muted); margin:8px 0 0; overflow-wrap:anywhere;">Not connected yet. Fetch current conditions to drive the poster's variable month lettering and weather motifs. If this file is opened directly from Downloads and the request fails, try the GitHub Pages version.</p>
+          <p style="font-size:0.68rem; line-height:1.45; color:var(--boj-muted); margin:7px 0 0;">Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> · no API key required.</p>
+        </div>
+      </section>
+
+      <!-- Typography Section -->
+      <section>
+        <div class="section-title">Typography &amp; Fonts</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label for="sel-weather-font">Sprint A Weather-Responsive Month Font</label>
+            <select id="sel-weather-font">
+              <option value="'Fraunces', serif" selected>Fraunces Variable (weather axes)</option>
+              <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia (Session notes: Fraktur)</option>
+              <option value="'Cinzel', serif">Cinzel (Session notes: Roman caps)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant (editorial)</option>
+              <option value="'Bodoni Moda', serif">Bodoni Moda (Didone)</option>
+              <option value="'Grenze Gotisch', cursive">Grenze Gotisch (Gothic)</option>
+            </select>
+            <p style="font-size:0.7rem;line-height:1.4;color:var(--boj-muted);margin:5px 0 0;">Fraunces is the variable-font option. The other project typefaces can still respond through size, spacing, and hover motion.</p>
+          </div>
+          <div class="field-row">
+            <label>Roman Inscriptions Font</label>
+            <select id="sel-font-roman">
+              <option value="'Cinzel', serif" selected>Cinzel (Original Trajan)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant (Editorial Roman)</option>
+              <option value="'Grenze Gotisch', cursive">Grenze Gotisch</option>
+              <option value="'Bodoni Moda', serif">Bodoni Moda</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Ribbon Calligraphy Font</label>
+            <select id="sel-font-fraktur">
+              <option value="'Grenze Gotisch', cursive" selected>Grenze Gotisch (Historical)</option>
+              <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia (Broken Ductus)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant</option>
+              <option value="'Cinzel', serif">Cinzel</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Calendar Figures Font</label>
+            <select id="sel-font-num">
+              <option value="'Bodoni Moda', serif" selected>Bodoni Moda (Didone Lining)</option>
+              <option value="'Cormorant Infant', serif">Cormorant Infant</option>
+              <option value="'Cinzel', serif">Cinzel</option>
+              <option value="'Grenze Gotisch', cursive">Grenze Gotisch</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label>Numeral System</label>
+            <select id="sel-numeral-system">
+              <option value="tabular" selected>Tabular Arabic (1, 2, 3...)</option>
+              <option value="roman">Classical Roman (I, II, III...)</option>
+            </select>
+          </div>
+
+          <div class="field-row" style="margin-top: 4px; border-top: 1px dashed var(--boj-border); padding-top: 10px;">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-weather-type" checked />
+              Weather-responsive variable month lettering
+            </label>
+            <p id="weather-type-readout" style="font-size:0.72rem; line-height:1.5; color:var(--boj-muted);">Live weather changes the month lettering’s weight, softness, and character shapes.</p>
+          </div>
+
+          <div class="field-row" style="margin-top: 4px; border-top: 1px dashed var(--boj-border); padding-top: 10px;">
+            <label>Upload Custom Font File (.ttf, .otf, .woff2)</label>
+            <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2" style="font-size:0.75rem; color:var(--boj-muted);" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-archaic-latin" checked />
+              Archaic Latin Orthography (U &rarr; V in Roman Caps)
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Architecture & Structural Grid -->
+      <section>
+        <div class="section-title">1. Architecture &amp; Structural Grid</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label>Portal Pediment Style</label>
+            <select id="sel-pediment-style">
+              <option value="lintel" selected>Classical Lintel (1923 Baseline)</option>
+              <option value="triangular">Triangular Renaissance Pediment</option>
+              <option value="segmental">Segmental Curved Architrave</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Doorway Spine Width</label>
+              <span id="val-spine-width" class="range-val">38%</span>
+            </div>
+            <input type="range" id="range-spine-width" min="30" max="46" value="38" />
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Outer Margin Inset</label>
+              <span id="val-margin-width" class="range-val">4.5%</span>
+            </div>
+            <input type="range" id="range-margin-width" min="2.5" max="7.0" step="0.5" value="4.5" />
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Swirl Wave Amplitude</label>
+              <span id="val-wave-amp" class="range-val">8px</span>
+            </div>
+            <input type="range" id="range-wave-amp" min="2" max="40" value="8" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-show-grid" />
+              Show Structural Alignment Grid Lines
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Botanical Species & Materiality -->
+      <section>
+        <div class="section-title">2. Botanical Species &amp; Motifs</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label>Foliage Species</label>
+            <select id="sel-botanical-species">
+              <option value="specimen" selected>Wild Rose &amp; Slender Willow (1923 Specimen)</option>
+              <option value="spring">Vernal Budding Willow Shoots</option>
+              <option value="autumn">Grapevine Leaves &amp; Tendrils</option>
+              <option value="winter">Holly Sprigs &amp; Conifer Needles</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <div class="field-row inline">
+              <label>Field Foliage Density</label>
+              <span id="val-vine-density" class="range-val">36 Sprigs</span>
+            </div>
+            <input type="range" id="range-vine-density" min="10" max="60" value="36" />
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-texture" checked />
+              Tactile Rag-Paper &amp; Ink Bleed
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-hatching" checked />
+              Woodcut 45° Scroll Turnaround Shading
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label class="checkbox-container">
+              <input type="checkbox" id="check-cord" checked />
+              Top Hanging Cord &amp; Eyelet Loop
+            </label>
+          </div>
+
+          <div class="color-grid">
+            <div class="color-box">
+              <span>Ground Wash</span>
+              <input type="color" id="col-field" value="#8FA89B" />
+            </div>
+            <div class="color-box">
+              <span>Aged Paper</span>
+              <input type="color" id="col-paper" value="#F6EEDB" />
+            </div>
+            <div class="color-box">
+              <span>Carbon Ink</span>
+              <input type="color" id="col-ink" value="#1A1C19" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Poster Text Editor -->
+      <section>
+        <div class="section-title">3. Poster Text</div>
+        <div class="control-card">
+          <div class="text-editor-note">Edit any wording here. You can also double-click text directly on the poster.</div>
+
+          <div class="text-editor-group-title">Header</div>
+          <div class="text-editor-grid">
+            <input type="text" data-poster-text="sponsorL" value="FISCHER" aria-label="Left header text" />
+            <input type="text" data-poster-text="subL" value="BVCHDRVCKEREI" aria-label="Left header subtext" />
+            <input type="text" data-poster-text="sponsorR" value="WITTIG" aria-label="Right header text" />
+            <input type="text" data-poster-text="subR1" value="BVCHBINDEREI" aria-label="Right header subtext" />
+            <input type="text" data-poster-text="subR2" value="KVNSTVERLAG" aria-label="Right header secondary text" />
+            <input type="text" data-poster-text="city" value="LEIPZIG" aria-label="City text" />
+          </div>
+
+          <div class="text-editor-group-title">Calendar</div>
+          <div class="text-editor-grid">
+            <input type="text" data-poster-text="month" value="Juli" aria-label="Calendar month" />
+            <input type="text" data-poster-text="year" value="1923" aria-label="Calendar year" />
+          </div>
+
+          <div class="text-editor-group-title">Left ribbons</div>
+          <div class="text-editor-grid">
+            <input type="text" data-ribbon-side="left" data-ribbon-index="0" aria-label="Left ribbon 1" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="1" aria-label="Left ribbon 2" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="2" aria-label="Left ribbon 3" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="3" aria-label="Left ribbon 4" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="4" aria-label="Left ribbon 5" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="5" aria-label="Left ribbon 6" />
+            <input type="text" data-ribbon-side="left" data-ribbon-index="6" aria-label="Left ribbon 7" />
+          </div>
+
+          <div class="text-editor-group-title">Right ribbons</div>
+          <div class="text-editor-grid">
+            <input type="text" data-ribbon-side="right" data-ribbon-index="0" aria-label="Right ribbon 1" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="1" aria-label="Right ribbon 2" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="2" aria-label="Right ribbon 3" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="3" aria-label="Right ribbon 4" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="4" aria-label="Right ribbon 5" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="5" aria-label="Right ribbon 6" />
+            <input type="text" data-ribbon-side="right" data-ribbon-index="6" aria-label="Right ribbon 7" />
+          </div>
+
+          <div class="text-editor-group-title">Footer</div>
+          <div class="text-editor-grid">
+            <input type="text" data-poster-text="footer" value="Muster u. Preise auf Wunsch" aria-label="Footer slogan" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Calendar Coordinates -->
+      <section>
+        <div class="section-title">3. Calendar Coordinates</div>
+        <div class="control-card">
+          <div class="field-row">
+            <label>Month &amp; Year</label>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px;">
+              <input type="text" id="inp-cal-month" value="Juli" />
+              <input type="text" id="inp-cal-year" value="1923" />
+            </div>
+          </div>
+
+          <div class="field-row">
+            <label>Zodiac Sign Glyph</label>
+            <select id="select-zodiac">
+              <option value="leo" selected>Leo / Löwe (Calligraphic Loop)</option>
+              <option value="cancer">Cancer / Krebs (Double Arch)</option>
+              <option value="virgo">Virgo / Jungfrau (Script Flourish)</option>
+              <option value="libra">Libra / Waage (Geometric Balance)</option>
+              <option value="capricorn">Capricorn / Steinbock</option>
+              <option value="aquarius">Aquarius / Wassermann</option>
+              <option value="taurus">Taurus / Stier</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-export-svg">Export SVG</button>
+      <button class="btn btn-secondary" id="btn-export-png">Export PNG</button>
+    </div>
+  </aside>
+
+  <!-- Canvas Stage -->
+  <main>
+    <div class="canvas-hud">
+      <span>Drag</span> any ribbon or plant independently &bull; <span>Click</span> text directly on canvas to edit inline
+    </div>
+
+    <div id="single-stage">
+      <div id="poster-frame"></div>
+      <input type="text" id="inline-text-editor" />
+    </div>
+
+    <div id="matrix-stage">
+      <div class="matrix-grid" id="matrix-container"></div>
+    </div>
+  </main>
+
+  <script>
+    const state = {
+      seed: 1923,
+      spineWidthPct: 38,
+      marginPct: 4.5,
+      waveAmp: 8,
+      weatherTheme: 'summer',
+      weatherTypography: true,
+      weatherFont: "'Fraunces', serif",
+      liveWeather: null,
+      dynamicData: { climate: 'temperate', climateIntensity: 0.5, moisture: 0.5, wind: 0.4, daylight: 0.6, printPressure: 0.55, registration: 0.18, botanicalGrowth: 0.55, symmetry: 0.7, ornamentDensity: 0.55, ribbonTension: 0.55, hybridIntensity: 0.55, hybridMode: 'manuscript-console', dataPulse: 0 },
+      showGrid: false,
+      vineDensity: 36,
+      paperTexture: true,
+      lineHatching: true,
+      hangingCord: true,
+      archaicLatin: true,
+      pedimentStyle: 'lintel',
+      numeralSystem: 'tabular',
+      botanicalSpecies: 'specimen',
+      zodiac: 'leo',
+      fonts: {
+        roman: "'Cinzel', serif",
+        fraktur: "'Grenze Gotisch', cursive",
+        num: "'Bodoni Moda', serif"
+      },
+      colors: {
+        field: '#8FA89B',
+        paper: '#F6EEDB',
+        ink: '#1A1C19'
+      },
+      variation: {
+        ribbonStyle: 'wave',
+        ribbonCount: 7,
+        ribbonStartY: 222,
+        ribbonStepY: 76,
+        ribbonLean: 0,
+        headerStyle: 'shield',
+        portalStyle: 'classic',
+        borderStyle: 'double',
+        calendarShiftX: 0,
+        calendarShiftY: 0,
+        cityStyle: 'classic',
+        footerStyle: 'notched',
+        ornamentStyle: 'stars',
+        botanicalScale: 1,
+        sponsorScale: 1,
+        layoutMode: 'classic',
+        leftRibbonWidth: 1,
+        rightRibbonWidth: 1,
+        leftRibbonSpread: 1,
+        rightRibbonSpread: 1,
+        ribbonCenterBias: 0
+      },
+      texts: {
+        sponsorL: 'FISCHER',
+        subL: 'BVCHDRVCKEREI',
+        sponsorR: 'WITTIG',
+        subR1: 'BVCHBINDEREI',
+        subR2: 'KVNSTVERLAG',
+        city: 'LEIPZIG',
+        month: 'Juli',
+        year: '1923',
+        footer: 'Muster u. Preise auf Wunsch',
+        leftRibbons: [
+          'Teubnerstr. 12',
+          'Fernruf 1154',
+          'Herstellung',
+          'jeder Art',
+          'typographischer',
+          'Erzeugnisse',
+          'und Gewerbe.'
+        ],
+        rightRibbons: [
+          'Johannisallee 8',
+          'Gegründet 1862',
+          'Ein- u. Mehrfarben',
+          'Bilderdrudk',
+          'im Buch- und',
+          'Kupferdrudk',
+          'Kataloge'
+        ]
+      },
+      offsets: {
+        weather: { x: 0, y: 0 },
+        hybrid: { x: 0, y: 0 },
+        shield: { x: 0, y: 0 },
+        city: { x: 0, y: 0 },
+        doorway: { x: 0, y: 0 },
+        calendarArtwork: { x: 0, y: 0 },
+        cartouche1923: { x: 0, y: 0 },
+        footer: { x: 0, y: 0 },
+        sponsorL: { x: 0, y: 0 },
+        sponsorR: { x: 0, y: 0 },
+        botanicalsLeft: { x: 0, y: 0 },
+        botanicalsRight: { x: 0, y: 0 },
+        lRibbons: [
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 },
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }
+        ],
+        rRibbons: [
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 },
+          { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }
+        ]
+      }
+    };
+
+    function createRNG(s) {
+      let m = s;
+      return function() {
+        m = (m * 9301 + 49297) % 233280;
+        return m / 233280;
+      };
+    }
+
+    const romanNumerals = [
+      '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
+      'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
+      'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX', 'XXXI'
+    ];
+
+    function renderCalligraphicZodiac(type, color) {
+      if (type === 'leo') {
+        return `
+          <g transform="translate(150, 442)">
+            <path d="M -34 26 C -48 26 -56 8 -46 -15 C -36 -36 -12 -42 4 -40 C 22 -38 38 -20 38 4 C 38 28 58 26 68 12" 
+                  fill="none" stroke="${color}" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="-26" cy="4" r="14.5" fill="none" stroke="${color}" stroke-width="4" />
+          </g>
+        `;
+      } else if (type === 'cancer') {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.2" fill="none" stroke-linecap="round">
+            <circle cx="-20" cy="-14" r="12" />
+            <path d="M -20 -26 C 18 -26 40 -8 44 8" />
+            <circle cx="20" cy="14" r="12" />
+            <path d="M 20 26 C -18 26 -40 8 -44 -8" />
+          </g>
+        `;
+      } else if (type === 'virgo') {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.2" fill="none" stroke-linecap="round">
+            <path d="M -42 22 L -42 -22 C -42 -38 -22 -38 -22 -16 L -22 22" />
+            <path d="M -22 -16 C -22 -38 0 -38 0 -16 L 0 22" />
+            <path d="M 0 -16 C 0 -38 22 -38 22 -16 L 22 26 C 22 42 38 42 46 22 L 52 38" />
+          </g>
+        `;
+      } else if (type === 'capricorn') {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.5" fill="none" stroke-linecap="round">
+            <path d="M -44 -16 L -24 24 L -4 -16 L 16 16 C 26 26 44 14 36 -6 C 28 -24 8 -18 16 8" />
+          </g>
+        `;
+      } else if (type === 'aquarius') {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.2" fill="none" stroke-linecap="round">
+            <path d="M -44 -12 L -28 4 L -12 -12 L 4 4 L 20 -12 L 36 4 L 48 -6" />
+            <path d="M -44 12 L -28 28 L -12 12 L 4 28 L 20 12 L 36 28 L 48 18" />
+          </g>
+        `;
+      } else if (type === 'taurus') {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.5" fill="none">
+            <circle cx="0" cy="12" r="18" />
+            <path d="M -32 -18 C -24 -2 24 -2 32 -18" stroke-linecap="round" />
+          </g>
+        `;
+      } else {
+        return `
+          <g transform="translate(150, 442)" stroke="${color}" stroke-width="4.5" fill="none" stroke-linecap="round">
+            <line x1="-48" y1="16" x2="48" y2="16" />
+            <path d="M -48 -6 L -16 -6 C -16 -28 16 -28 16 -6 L 48 -6" />
+          </g>
+        `;
+      }
+    }
+
+    function renderBotanicals(density, rng, paperCol, offsets, species) {
+      const offL = offsets.botanicalsLeft || { x: 0, y: 0 };
+      const offR = offsets.botanicalsRight || { x: 0, y: 0 };
+
+      let outL = `<g class="draggable" data-target="botanicalsLeft" transform="translate(${offL.x}, ${offL.y})" opacity="0.88">`;
+      let outR = `<g class="draggable" data-target="botanicalsRight" transform="translate(${offR.x}, ${offR.y})" opacity="0.88">`;
+
+      outL += `<path d="M 60 40 Q 180 180 80 340 T 70 700 T 120 1020" fill="none" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />`;
+      outR += `<path d="M 740 40 Q 620 180 720 340 T 730 700 T 680 1020" fill="none" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />`;
+
+      const sprigCount = Math.max(14, Math.floor(density / 2));
+      for (let i = 0; i < sprigCount; i++) {
+        const y = 50 + (i / sprigCount) * 950 + (rng() * 20 - 10);
+        const wave = Math.sin(i * 1.5) * 35;
+        const lx = 70 + wave;
+        const rx = 730 - wave;
+        const angL = -20 + rng() * 40;
+        const angR = 20 - rng() * 40;
+        const sc = 0.7 + rng() * 0.4;
+
+        if (species === 'autumn') {
+          // Grapevine leaves and coiling curling tendrils
+          outL += `
+            <g transform="translate(${lx}, ${y}) rotate(${angL}) scale(${sc})">
+              <path d="M 0 0 C 8 -14, 26 -16, 32 -6" fill="none" stroke="${paperCol}" stroke-width="1.5" />
+              <path d="M 32 -6 C 38 0, 36 8, 42 6 C 46 4, 44 -2, 48 -2" fill="none" stroke="${paperCol}" stroke-width="1.2" />
+              <!-- Serrated vine leaf -->
+              <path d="M 16 -8 C 12 -18, 22 -24, 28 -18 C 34 -24, 38 -16, 32 -10 C 38 -6, 30 2, 22 -4 Z" fill="${paperCol}" />
+            </g>
+          `;
+          outR += `
+            <g transform="translate(${rx}, ${y}) rotate(${angR}) scale(${sc})">
+              <path d="M 0 0 C -8 -14, -26 -16, -32 -6" fill="none" stroke="${paperCol}" stroke-width="1.5" />
+              <path d="M -32 -6 C -38 0, -36 8, -42 6 C -46 4, -44 -2, -48 -2" fill="none" stroke="${paperCol}" stroke-width="1.2" />
+              <path d="M -16 -8 C -12 -18, -22 -24, -28 -18 C -34 -24, -38 -16, -32 -10 C -38 -6, -30 2, -22 -4 Z" fill="${paperCol}" />
+            </g>
+          `;
+        } else if (species === 'winter') {
+          // Conifer needles and thorny holly sprigs
+          outL += `
+            <g transform="translate(${lx}, ${y}) rotate(${angL}) scale(${sc})">
+              <path d="M 0 0 L 36 -14" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="8" y1="-3" x2="4" y2="-12" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="16" y1="-6" x2="20" y2="-16" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="24" y1="-9" x2="18" y2="-20" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="32" y1="-12" x2="38" y2="-22" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <circle cx="12" cy="4" r="2.5" fill="${paperCol}" />
+            </g>
+          `;
+          outR += `
+            <g transform="translate(${rx}, ${y}) rotate(${angR}) scale(${sc})">
+              <path d="M 0 0 L -36 -14" stroke="${paperCol}" stroke-width="1.8" stroke-linecap="round" />
+              <line x1="-8" y1="-3" x2="-4" y2="-12" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="-16" y1="-6" x2="-20" y2="-16" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="-24" y1="-9" x2="-18" y2="-20" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <line x1="-32" y1="-12" x2="-38" y2="-22" stroke="${paperCol}" stroke-width="1.4" stroke-linecap="round" />
+              <circle cx="-12" cy="4" r="2.5" fill="${paperCol}" />
+            </g>
+          `;
+        } else if (species === 'spring') {
+          // Budding shoots with closed nodes
+          outL += `
+            <g transform="translate(${lx}, ${y}) rotate(${angL}) scale(${sc})">
+              <path d="M 0 0 C 14 -4, 24 -2, 34 -8" fill="none" stroke="${paperCol}" stroke-width="1.5" />
+              <ellipse cx="16" cy="-4" rx="4" ry="2" transform="rotate(-30 16 -4)" fill="${paperCol}" />
+              <ellipse cx="28" cy="-6" rx="4" ry="2" transform="rotate(-30 28 -6)" fill="${paperCol}" />
+              <circle cx="36" cy="-9" r="2.5" fill="${paperCol}" />
+            </g>
+          `;
+          outR += `
+            <g transform="translate(${rx}, ${y}) rotate(${angR}) scale(${sc})">
+              <path d="M 0 0 C -14 -4, -24 -2, -34 -8" fill="none" stroke="${paperCol}" stroke-width="1.5" />
+              <ellipse cx="-16" cy="-4" rx="4" ry="2" transform="rotate(30 -16 -4)" fill="${paperCol}" />
+              <ellipse cx="-28" cy="-6" rx="4" ry="2" transform="rotate(30 -28 -6)" fill="${paperCol}" />
+              <circle cx="-36" cy="-9" r="2.5" fill="${paperCol}" />
+            </g>
+          `;
+        } else {
+          // Specimen 1923: Willow sprigs with open 5-petal wild roses
+          outL += `
+            <g transform="translate(${lx}, ${y}) rotate(${angL}) scale(${sc})">
+              <path d="M 0 0 C 12 -6, 22 -4, 34 -10" fill="none" stroke="${paperCol}" stroke-width="1.6" />
+              <path d="M 12 -4 C 8 -12, 16 -18, 24 -16 C 24 -10, 18 -5, 12 -4 Z" fill="${paperCol}" />
+              <path d="M 24 -7 C 28 -16, 38 -18, 44 -12 C 40 -6, 32 -5, 24 -7 Z" fill="${paperCol}" />
+              <path d="M 34 -10 C 44 -14, 50 -8, 46 -3 C 38 -3, 35 -7, 34 -10 Z" fill="${paperCol}" />
+              <g transform="translate(38, -12)">
+                <path d="M 0 -3 C -3 -9 3 -12 6 -6 C 8 -2 5 -1 0 -3 Z M 3 -1 C 9 -4 13 2 8 6 C 5 5 3 2 3 -1 Z M 1 3 C 4 9 -2 12 -5 7 C -4 4 -1 3 1 3 Z M -3 1 C -9 4 -12 -2 -7 -5 C -4 -4 -2 0 -3 1 Z M -1 -3 C -5 -9 1 -11 4 -6 C 3 -3 1 -2 -1 -3 Z" fill="${paperCol}" />
+                <ellipse cx="0" cy="0" rx="3" ry="2" fill="${state.colors.field}" />
+              </g>
+            </g>
+          `;
+          outR += `
+            <g transform="translate(${rx}, ${y}) rotate(${angR}) scale(${sc})">
+              <path d="M 0 0 C -12 -6, -22 -4, -34 -10" fill="none" stroke="${paperCol}" stroke-width="1.6" />
+              <path d="M -12 -4 C -8 -12, -16 -18, -24 -16 C -24 -10, -18 -5, -12 -4 Z" fill="${paperCol}" />
+              <path d="M -24 -7 C -28 -16, -38 -18, -44 -12 C -40 -6, -32 -5, -24 -7 Z" fill="${paperCol}" />
+              <path d="M -34 -10 C -44 -14, -50 -8, -46 -3 C -38 -3, -35 -7, -34 -10 Z" fill="${paperCol}" />
+              <g transform="translate(-38, -12)">
+                <path d="M 0 -3 C -3 -9 3 -12 6 -6 C 8 -2 5 -1 0 -3 Z M 3 -1 C 9 -4 13 2 8 6 C 5 5 3 2 3 -1 Z M 1 3 C 4 9 -2 12 -5 7 C -4 4 -1 3 1 3 Z M -3 1 C -9 4 -12 -2 -7 -5 C -4 -4 -2 0 -3 1 Z M -1 -3 C -5 -9 1 -11 4 -6 C 3 -3 1 -2 -1 -3 Z" fill="${paperCol}" />
+                <ellipse cx="0" cy="0" rx="3" ry="2" fill="${state.colors.field}" />
+              </g>
+            </g>
+          `;
+        }
+      }
+
+      outL += `</g>`;
+      outR += `</g>`;
+      return outL + outR;
+    }
+
+    // Month-specific calendar art system. The reference images suggest several
+    // historical calendar families: illustrated portrait calendars, dense ornamental
+    // grids, split image/calendar panels, botanical frames, and ledger-like tables.
+    // Each month gets a base family, then the generator shifts the family slightly
+    // using the live data pools so the same month does not always look identical.
+    const monthCalendarProfiles = {
+      Januar:    { family:'illustrated', motif:'winter', accent:'#536B72', title:'WINTER FOLIO' },
+      Februar:   { family:'portrait', motif:'hourglass', accent:'#8C4D3D', title:'TEMPVS' },
+      März:      { family:'ornamental-grid', motif:'rain', accent:'#718A65', title:'VERNAL TABLE' },
+      April:     { family:'split', motif:'garden', accent:'#657C68', title:'APRIL STUDY' },
+      Mai:       { family:'botanical-frame', motif:'bloom', accent:'#9A713B', title:'FLORAL KALENDER' },
+      Juni:      { family:'scene', motif:'sun', accent:'#B06A3F', title:'SOLSTICIVM' },
+      Juli:      { family:'split', motif:'sun', accent:'#B36A32', title:'SOMMERBLATT' },
+      August:    { family:'portrait', motif:'harvest', accent:'#9A593B', title:'ERNTE' },
+      September: { family:'ledger', motif:'wind', accent:'#75604B', title:'HERBST REGISTER' },
+      Oktober:   { family:'botanical-frame', motif:'leaves', accent:'#9A4F35', title:'BLÄTTER' },
+      November:  { family:'illustrated', motif:'rain', accent:'#675950', title:'NOVEMBER TAFEL' },
+      Dezember:  { family:'ornamental-grid', motif:'snow', accent:'#526878', title:'WINTER NACHT' }
+    };
+
+    // Master month profiles: the month now acts as the visual director for the poster.
+    // Randomness is layered on top of these rules so the 12-month collection stays coherent.
+    const monthVisualProfiles = {
+      Januar: { layouts:['framed','border'], ribbons:['Quiet Arc','Archive Strip','Engraved Scroll'], density:.42, symmetry:.78, modern:.22, motion:.28, botanical:.30, calendarScale:1.00 },
+      Februar:{ layouts:['hero','central'], ribbons:['Engraved Scroll','Calendar Band','Quiet Arc'], density:.46, symmetry:.62, modern:.30, motion:.38, botanical:.34, calendarScale:1.02 },
+      März:{ layouts:['modular','split'], ribbons:['Calendar Band','Botanical Sash','Art Nouveau Serpent'], density:.60, symmetry:.58, modern:.28, motion:.55, botanical:.62, calendarScale:1.00 },
+      April:{ layouts:['split','framed'], ribbons:['Art Nouveau Serpent','Botanical Sash','Quiet Arc'], density:.54, symmetry:.48, modern:.34, motion:.72, botanical:.68, calendarScale:.98 },
+      Mai:{ layouts:['framed','hero'], ribbons:['Botanical Sash','Art Nouveau Serpent','Engraved Scroll'], density:.72, symmetry:.56, modern:.25, motion:.52, botanical:.90, calendarScale:1.00 },
+      Juni:{ layouts:['hero','split'], ribbons:['Broad Lithograph Wave','Engraved Scroll','Art Nouveau Serpent'], density:.64, symmetry:.50, modern:.38, motion:.62, botanical:.58, calendarScale:1.04 },
+      Juli:{ layouts:['split','hero','central'], ribbons:['Broad Lithograph Wave','Art Nouveau Serpent','Botanical Sash'], density:.70, symmetry:.42, modern:.48, motion:.78, botanical:.54, calendarScale:1.05 },
+      August:{ layouts:['hero','modular'], ribbons:['Broad Lithograph Wave','Calendar Band','Botanical Sash'], density:.66, symmetry:.52, modern:.36, motion:.60, botanical:.70, calendarScale:1.03 },
+      September:{ layouts:['modular','central'], ribbons:['Archive Strip','Calendar Band','Quiet Arc'], density:.58, symmetry:.68, modern:.56, motion:.74, botanical:.46, calendarScale:.98 },
+      Oktober:{ layouts:['border','framed'], ribbons:['Art Nouveau Serpent','Botanical Sash','Broad Lithograph Wave'], density:.76, symmetry:.44, modern:.40, motion:.70, botanical:.82, calendarScale:1.00 },
+      November:{ layouts:['hero','modular'], ribbons:['Archive Strip','Quiet Arc','Engraved Scroll'], density:.48, symmetry:.74, modern:.52, motion:.50, botanical:.38, calendarScale:.97 },
+      Dezember:{ layouts:['central','border'], ribbons:['Quiet Arc','Engraved Scroll','Calendar Band'], density:.82, symmetry:.86, modern:.34, motion:.32, botanical:.56, calendarScale:1.02 }
+    };
+
+    function chooseMonthVisualProfile(month) {
+      return monthVisualProfiles[month] || monthVisualProfiles.Juli;
+    }
+
+    function chooseRibbonForMonth(profile, rng) {
+      const allowed = profile.ribbons || [];
+      const pool = ribbonFamilies.filter(r => allowed.includes(r.name));
+      return (pool.length ? pool : ribbonFamilies)[Math.floor(rng() * (pool.length ? pool.length : ribbonFamilies.length))];
+    }
+
+    const compositionFamilies = {
+      central: { name:'Central Calendar', layoutMode:'central', ribbonStyle:'wave', ribbonCount:7, ribbonStartY:220, ribbonStepY:76, ribbonLean:2, headerStyle:'shield', portalStyle:'double', borderStyle:'double', cityStyle:'classic', footerStyle:'notched', ornamentStyle:'stars', monthSize:43, leftRibbonWidth:1, rightRibbonWidth:1 },
+      split: { name:'Split Calendar', layoutMode:'split', ribbonStyle:'serpentine', ribbonCount:6, ribbonStartY:215, ribbonStepY:82, ribbonLean:5, headerStyle:'diamond', portalStyle:'arched', borderStyle:'corner', cityStyle:'ribbon', footerStyle:'arch', ornamentStyle:'rosette', monthSize:40, leftRibbonWidth:1.25, rightRibbonWidth:.78 },
+      framed: { name:'Framed Calendar', layoutMode:'framed', ribbonStyle:'arc', ribbonCount:6, ribbonStartY:235, ribbonStepY:70, ribbonLean:1, headerStyle:'arch', portalStyle:'double', borderStyle:'triple', cityStyle:'classic', footerStyle:'oval', ornamentStyle:'rosette', monthSize:39, leftRibbonWidth:1.05, rightRibbonWidth:1.05 },
+      hero: { name:'Calendar + Hero Illustration', layoutMode:'hero', ribbonStyle:'broad', ribbonCount:5, ribbonStartY:205, ribbonStepY:88, ribbonLean:6, headerStyle:'medallion', portalStyle:'arched', borderStyle:'corner', cityStyle:'arch', footerStyle:'notched', ornamentStyle:'stars', monthSize:44, leftRibbonWidth:1.25, rightRibbonWidth:1.25 },
+      border: { name:'Border Calendar', layoutMode:'border', ribbonStyle:'wave', ribbonCount:5, ribbonStartY:150, ribbonStepY:190, ribbonLean:0, headerStyle:'shield', portalStyle:'notched', borderStyle:'triple', cityStyle:'classic', footerStyle:'arch', ornamentStyle:'cross', monthSize:41, leftRibbonWidth:1, rightRibbonWidth:1 },
+      modular: { name:'Modular Calendar', layoutMode:'modular', ribbonStyle:'straight', ribbonCount:5, ribbonStartY:205, ribbonStepY:95, ribbonLean:-3, headerStyle:'diamond', portalStyle:'double', borderStyle:'corner', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'stars', monthSize:38, leftRibbonWidth:.78, rightRibbonWidth:1.42 }
+    };
+
+    function chooseDesignForMonth(profile, rng) {
+      const allowed = profile.layouts || ['central'];
+      const family = allowed[Math.floor(rng() * allowed.length)] || 'central';
+      const base = compositionFamilies[family] || compositionFamilies.central;
+      // Keep small historical shifts from the existing design profile pool.
+      const compatible = designProfiles.filter(d => d.layoutMode === 'classic' || d.layoutMode === 'calendar-left' || d.layoutMode === 'calendar-right' || d.layoutMode === 'bottom-center' || d.layoutMode === 'ribbon-column');
+      const accent = compatible[Math.floor(rng() * compatible.length)] || {};
+      return { ...base, ...accent, name:base.name, layoutMode:base.layoutMode,
+        ribbonStyle:base.ribbonStyle, ribbonCount:base.ribbonCount, ribbonStartY:base.ribbonStartY, ribbonStepY:base.ribbonStepY,
+        leftRibbonWidth:base.leftRibbonWidth, rightRibbonWidth:base.rightRibbonWidth, monthSize:base.monthSize };
+    }
+
+    function renderMiniCalendarGrid(monthName, yearNum, inkCol, numFont, numSystem, x, y, w, h, options = {}) {
+      const monthMap = {
+        'januar':0,'februar':1,'märz':2,'april':3,'mai':4,'juni':5,
+        'juli':6,'july':6,'august':7,'september':8,'oktober':9,'november':10,'dezember':11
+      };
+      const idx = monthMap[(monthName || 'juli').toLowerCase().trim()] ?? 6;
+      const yr = parseInt(yearNum,10) || 1923;
+      const first = new Date(yr, idx, 1).getDay();
+      const days = new Date(yr, idx + 1, 0).getDate();
+      const cols = 7, rows = 6;
+      const cellW = w / cols, cellH = h / rows;
+      const line = options.line || inkCol;
+      const fill = options.fill || 'none';
+      const accent = options.accent || inkCol;
+      const weekend = options.weekend !== false;
+      let out = `<g>`;
+      out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${line}" stroke-width="1.3"/>`;
+      for(let c=1;c<cols;c++) out += `<line x1="${x+c*cellW}" y1="${y}" x2="${x+c*cellW}" y2="${y+h}" stroke="${line}" stroke-width=".65" opacity=".72"/>`;
+      for(let r=1;r<rows;r++) out += `<line x1="${x}" y1="${y+r*cellH}" x2="${x+w}" y2="${y+r*cellH}" stroke="${line}" stroke-width=".65" opacity=".72"/>`;
+      const heads=['SO','MO','DI','MI','DO','FR','SA'];
+      heads.forEach((d,c)=> out += `<text x="${x+c*cellW+cellW/2}" y="${y+9}" text-anchor="middle" font-family="${options.headerFont || numFont}" font-size="6.5" font-weight="700" fill="${line}">${d}</text>`);
+      let day=1;
+      for(let r=0;r<6;r++){
+        for(let c=0;c<7;c++){
+          if(r===0 && c<first) continue;
+          if(day>days) continue;
+          const yy=y+(r+.72)*cellH;
+          const xx=x+c*cellW+cellW/2;
+          const isWeekend=weekend && (c===0||c===6);
+          const val=numSystem==='roman' ? romanNumerals[day] : day;
+          out += `<text x="${xx}" y="${yy}" text-anchor="middle" font-family="${numFont}" font-size="${Math.min(10,cellH*.42)}" fill="${isWeekend?accent:line}">${val}</text>`;
+          day++;
+        }
+      }
+      out += `</g>`;
+      return out;
+    }
+
+    function renderCalendarIllustration(motif, x, y, w, h, ink, paper, accent, rng) {
+      const cx=x+w/2, cy=y+h/2;
+      const thin=`stroke="${ink}" stroke-width="1.5"`;
+      if(motif==='hourglass') return `<g>
+        <circle cx="${cx}" cy="${cy}" r="${Math.min(w,h)*.39}" fill="none" stroke="${accent}" stroke-width="2.2"/>
+        <path d="M ${cx-27} ${cy-48} H ${cx+27} M ${cx-27} ${cy+48} H ${cx+27}" ${thin}/>
+        <path d="M ${cx-20} ${cy-42} C ${cx-19} ${cy-15} ${cx+19} ${cy-15} ${cx+20} ${cy+42}" fill="${paper}" ${thin}/>
+        <path d="M ${cx+20} ${cy-42} C ${cx+19} ${cy-15} ${cx-19} ${cy-15} ${cx-20} ${cy+42}" fill="${paper}" ${thin}/>
+        <path d="M ${cx-8} ${cy+12} Q ${cx} ${cy+4} ${cx+8} ${cy+12} L ${cx+8} ${cy+34} H ${cx-8} Z" fill="${accent}" opacity=".82"/>
+      </g>`;
+      if(motif==='winter') return `<g>
+        <path d="M ${cx} ${y+h-10} C ${cx-8} ${cy+15} ${cx-14} ${cy-5} ${cx-4} ${cy-34} C ${cx+8} ${cy-57} ${cx+1} ${cy-75} ${cx+10} ${y+12}" fill="none" ${thin}/>
+        <path d="M ${cx-3} ${cy-18} L ${cx-36} ${cy-43} M ${cx+1} ${cy-1} L ${cx+34} ${cy-28} M ${cx+4} ${cy+17} L ${cx-30} ${cy+3}" fill="none" ${thin}/>
+        ${Array.from({length:14},(_,i)=>{const a=rng()*Math.PI*2, r=20+rng()*48; return `<circle cx="${cx+Math.cos(a)*r}" cy="${cy+Math.sin(a)*r}" r="${1.2+rng()*1.7}" fill="${paper}" stroke="${ink}" stroke-width=".8"/>`;}).join('')}
+      </g>`;
+      if(motif==='rain') return `<g fill="none" ${thin}>
+        <path d="M ${x+12} ${cy-18} Q ${x+35} ${cy-42} ${x+58} ${cy-18} Q ${x+78} ${cy-40} ${x+104} ${cy-18} Q ${x+126} ${cy-38} ${x+150} ${cy-14}"/>
+        ${[0,1,2,3,4,5].map(i=>`<path d="M ${x+24+i*28} ${cy+2} l -8 24"/>`).join('')}
+        <circle cx="${cx}" cy="${cy+38}" r="18" stroke="${accent}"/>
+      </g>`;
+      if(motif==='garden' || motif==='bloom') return `<g>
+        <path d="M ${x+18} ${y+h-16} C ${x+45} ${cy+18} ${x+58} ${cy-16} ${x+83} ${cy+4} C ${x+112} ${cy+28} ${x+130} ${cy-28} ${x+w-15} ${y+h-18}" fill="none" ${thin}/>
+        ${[0,1,2,3,4].map(i=>{const fx=x+35+i*(w-70)/4, fy=y+30+rng()*35; return `<g transform="translate(${fx},${fy})"><circle r="6" fill="${paper}" ${thin}/><circle cx="0" cy="0" r="2.2" fill="${accent}"/><path d="M 0 6 V 26" ${thin}/></g>`}).join('')}
+      </g>`;
+      if(motif==='sun') return `<g>
+        <circle cx="${cx}" cy="${cy-4}" r="38" fill="${paper}" stroke="${accent}" stroke-width="2.3"/>
+        ${Array.from({length:12},(_,i)=>{const a=i*Math.PI/6; return `<line x1="${cx+Math.cos(a)*46}" y1="${cy-4+Math.sin(a)*46}" x2="${cx+Math.cos(a)*58}" y2="${cy-4+Math.sin(a)*58}" ${thin}/>`}).join('')}
+        <path d="M ${cx-65} ${y+h-16} Q ${cx} ${cy+22} ${cx+65} ${y+h-16}" fill="none" ${thin}/>
+      </g>`;
+      if(motif==='harvest' || motif==='leaves') return `<g>
+        <path d="M ${cx} ${y+h-10} C ${cx-8} ${cy+18} ${cx+5} ${cy-12} ${cx} ${y+16}" fill="none" ${thin}/>
+        ${Array.from({length:10},(_,i)=>{const side=i%2?-1:1, yy=cy-45+i*11, xx=cx+side*(18+i*2); return `<path d="M ${cx} ${yy} Q ${xx} ${yy-10} ${xx+side*18} ${yy+1} Q ${xx} ${yy+8} ${cx} ${yy}" fill="${paper}" ${thin}/>`}).join('')}
+      </g>`;
+      if(motif==='wind') return `<g fill="none" ${thin}>
+        <path d="M ${x+12} ${cy-20} C ${x+65} ${cy-55} ${x+86} ${cy+14} ${x+w-10} ${cy-18}"/>
+        <path d="M ${x+20} ${cy+5} C ${x+58} ${cy-18} ${x+98} ${cy+34} ${x+w-20} ${cy+5}"/>
+        <path d="M ${x+42} ${cy+31} C ${x+70} ${cy+8} ${x+108} ${cy+48} ${x+w-8} ${cy+28}"/>
+      </g>`;
+      if(motif==='snow') return `<g ${thin} fill="none">
+        ${[0,1,2,3,4,5].map(i=>{const xx=x+25+i*(w-50)/5; const yy=y+25+(i%2)*22; return `<path d="M ${xx-10} ${yy} H ${xx+10} M ${xx} ${yy-10} V ${yy+10} M ${xx-7} ${yy-7} L ${xx+7} ${yy+7} M ${xx+7} ${yy-7} L ${xx-7} ${yy+7}"/>`}).join('')}
+      </g>`;
+      return `<g><circle cx="${cx}" cy="${cy}" r="34" fill="${paper}" ${thin}/><text x="${cx}" y="${cy+7}" text-anchor="middle" font-family="serif" font-size="26" fill="${accent}">✦</text></g>`;
+    }
+
+    function renderCalendarArtwork(monthName, yearNum, cfg, spineW, ink, paper, field, rng) {
+      const profile = monthCalendarProfiles[monthName] || monthCalendarProfiles.Juli;
+      const dd = cfg.dynamicData || {};
+      const familyShift = Math.floor(rng()*3);
+      const family = profile.family;
+      const accent = profile.accent;
+      const numFont = cfg.fonts.num;
+      // Sprint A: real weather codes select distinct Fraunces variable-font settings.
+      // Weight + SOFT + WONK + optical size make the difference visible; ribbons keep their chosen font.
+      const weatherTypeOn = cfg.weatherTypography !== false;
+      const monthFont = weatherTypeOn ? (cfg.weatherFont || "'Fraunces', serif") : cfg.fonts.fraktur;
+      const live = cfg.liveWeather;
+      const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+      let weatherAxes = { wght: 640, soft: 18, wonk: 0.05, opsz: 118, tracking: 0.5, outline: 0, scale: 1 };
+      if (live) {
+        const code = Number(live.code);
+        const temp = Number.isFinite(Number(live.temperature)) ? Number(live.temperature) : 15;
+        const humidity = Number.isFinite(Number(live.humidity)) ? Number(live.humidity) : 50;
+        const wind = Number.isFinite(Number(live.windSpeed)) ? Number(live.windSpeed) : 10;
+        const clouds = Number.isFinite(Number(live.cloudCover)) ? Number(live.cloudCover) : 50;
+        // Distinct weather signatures plus continuous measurements: changing cities
+        // changes the typography whenever their actual conditions differ.
+        let base;
+        if ([0,1].includes(code)) base = { wght: 300, soft: 4, wonk: 0.02, opsz: 144, tracking: 1.7, outline: 0, scale: 1.02 };
+        else if ([2,3].includes(code)) base = { wght: 900, soft: 100, wonk: 0.95, opsz: 24, tracking: -0.7, outline: 0.25, scale: 1.02 };
+        else if ([45,48].includes(code)) base = { wght: 700, soft: 100, wonk: 0.45, opsz: 92, tracking: 1.1, outline: 0.12, scale: 1.03 };
+        else if ([71,73,75,77,85,86].includes(code)) base = { wght: 300, soft: 100, wonk: 0.05, opsz: 144, tracking: 2.0, outline: 0, scale: 1.04 };
+        else if ([95,96,99].includes(code)) base = { wght: 950, soft: 0, wonk: 1, opsz: 9, tracking: -1.3, outline: 0.7, scale: 1.04 };
+        else base = { wght: 900, soft: 5, wonk: 1, opsz: 12, tracking: -1.0, outline: 0.4, scale: 1.03 };
+        // A small location signature guarantees a visible typographic difference
+        // between cities even when their current weather codes happen to match.
+        // Current temperature, humidity, wind and cloud cover remain the main drivers.
+        const placeSignature = Array.from(String(live.place || '')).reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+        const placeShift = (placeSignature % 900) / 900;
+        weatherAxes = {
+          wght: Math.round(clamp(base.wght + (wind - 10) * 5 + (humidity - 50) * 1.2 + (placeShift - 0.5) * 220, 100, 1000)),
+          soft: Math.round(clamp(base.soft + (humidity - 50) * 0.8 + (clouds - 50) * 0.35 + (placeShift - 0.5) * 30, 0, 100)),
+          wonk: Number(clamp(base.wonk + (wind - 10) / 65 + (clouds - 50) / 160 + (placeShift - 0.5) * 0.35, 0, 1).toFixed(2)),
+          opsz: Math.round(clamp(base.opsz + (temp - 15) * 2.2 - clouds * 0.22 + (placeShift - 0.5) * 48, 9, 144)),
+          tracking: Number(clamp(base.tracking + (temp - 15) * 0.06 + (humidity - 50) * 0.014 + (placeShift - 0.5) * 1.5, -1.8, 2.5).toFixed(2)),
+          outline: Number(clamp(base.outline + Math.max(0, wind - 15) * 0.02 + placeShift * 0.18, 0, 1.1).toFixed(2)),
+          scale: Number(clamp(base.scale + Math.abs(temp - 15) * 0.0025 + wind * 0.0012 + placeShift * 0.025, 1, 1.1).toFixed(3))
+        };
+      } else {
+        weatherAxes = {
+          wght: Math.round(560 + (dd.wind ?? 0.4) * 340),
+          soft: Math.round(5 + (dd.moisture ?? 0.5) * 95),
+          wonk: Math.max(0, Math.min(1, Number(((dd.wind ?? 0.4) * 0.7 + (dd.moisture ?? 0.5) * 0.3).toFixed(2)))),
+          opsz: Math.round(34 + (dd.daylight ?? 0.6) * 98), tracking: 0.5, outline: 0, scale: 1
+        };
+      }
+      const { wght: weightAxis, soft: softAxis, wonk: wonkAxis, opsz: opszAxis, tracking: trackingAxis = 0, outline: outlineAxis = 0, scale: weatherScale = 1 } = weatherAxes;
+      const isFraunces = monthFont.includes('Fraunces');
+      const monthVariation = weatherTypeOn ? `class="weather-responsive-type" style="--weather-scale:${weatherScale}; --base-wght:${weightAxis}; --base-soft:${softAxis}; --base-wonk:${wonkAxis}; --base-opsz:${opszAxis}; font-weight: ${weightAxis}; letter-spacing: ${trackingAxis}px; stroke: ${ink}; stroke-width: ${outlineAxis}px; paint-order: stroke fill; "` : '';
+      const romanFont = cfg.fonts.roman;
+      const W = spineW - 28;
+      const X = 14;
+      const year = yearNum || 1923;
+      let out = `<g class="draggable" data-target="calendarArtwork" data-calendar-family="${family}" data-month="${monthName}">`;
+
+      // Every family is intentionally related to one of the uploaded references,
+      // but drawn as original SVG so the generator can continuously recombine it.
+      if(family==='illustrated') {
+        out += `<rect x="${X}" y="78" width="${W}" height="255" fill="${field}" stroke="${ink}" stroke-width="1.6"/>
+          <text x="${spineW/2}" y="105" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="22" fill="${paper}">${monthName}</text>`;
+        out += renderCalendarIllustration(profile.motif, X+10, 119, W-20, 190, ink, paper, accent, rng);
+        out += `<rect x="${X}" y="345" width="${W}" height="122" fill="${paper}" stroke="${ink}" stroke-width="1.4"/>
+          <text x="${spineW/2}" y="362" text-anchor="middle" font-family="${romanFont}" font-size="8" letter-spacing="2" fill="${ink}">${monthName.toUpperCase()} · ${year}</text>`;
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+10, 372, W-20, 88, {fill:'none',accent:accent,headerFont:romanFont});
+      } else if(family==='portrait') {
+        out += `<rect x="${X}" y="78" width="${W}" height="290" fill="${field}" stroke="${ink}" stroke-width="1.7"/>`;
+        out += renderCalendarIllustration(profile.motif, X+12, 92, W-24, 245, ink, paper, accent, rng);
+        out += `<text x="${spineW/2}" y="392" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="25" fill="${ink}">${monthName}</text>
+          <text x="${spineW/2}" y="414" text-anchor="middle" font-family="${romanFont}" font-size="8" fill="${accent}" letter-spacing="3">${profile.title} · ${year}</text>`;
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+16, 430, W-32, 62, {fill:paper,accent:accent,headerFont:romanFont});
+      } else if(family==='ornamental-grid') {
+        out += `<rect x="${X}" y="80" width="${W}" height="390" fill="${paper}" stroke="${ink}" stroke-width="1.5"/>`;
+        for(let yy=92;yy<465;yy+=22) { out += `<circle cx="${X+7}" cy="${yy}" r="2.8" fill="none" stroke="${accent}" stroke-width="1"/><circle cx="${X+W-7}" cy="${yy}" r="2.8" fill="none" stroke="${accent}" stroke-width="1"/>`; }
+        out += `<text x="${spineW/2}" y="106" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="27" fill="${ink}">${monthName}</text>`;
+        out += `<path d="M ${X+22} 118 H ${X+W-22}" stroke="${accent}" stroke-width="2"/>`;
+        out += renderCalendarIllustration(profile.motif, X+18, 128, W-36, 72, ink, paper, accent, rng);
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+18, 210, W-36, 240, {fill:'none',accent:accent,headerFont:romanFont});
+      } else if(family==='split') {
+        const gap=8, leftW=W*.48, rightW=W-leftW-gap;
+        out += `<rect x="${X}" y="80" width="${leftW}" height="382" fill="${field}" stroke="${ink}" stroke-width="1.5"/>
+          <rect x="${X+leftW+gap}" y="80" width="${rightW}" height="382" fill="${paper}" stroke="${ink}" stroke-width="1.5"/>`;
+        out += renderCalendarIllustration(profile.motif, X+8, 96, leftW-16, 230, ink, paper, accent, rng);
+        out += `<text x="${X+leftW+gap+rightW/2}" y="111" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="22" fill="${ink}">${monthName}</text>
+          <text x="${X+leftW+gap+rightW/2}" y="128" text-anchor="middle" font-family="${romanFont}" font-size="7" fill="${accent}" letter-spacing="2">${year} · ${profile.title}</text>`;
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+leftW+gap+7, 145, rightW-14, 185, {fill:'none',accent:accent,headerFont:romanFont});
+        out += `<path d="M ${X+leftW+gap+12} 350 H ${X+W-12}" stroke="${accent}" stroke-width="1.3"/><text x="${X+leftW+gap+rightW/2}" y="376" text-anchor="middle" font-family="${romanFont}" font-size="7" fill="${ink}" letter-spacing="2">${profile.title}</text>`;
+        out += renderCalendarIllustration('wind', X+leftW+gap+12, 386, rightW-24, 52, ink, paper, accent, rng);
+      } else if(family==='botanical-frame') {
+        out += `<rect x="${X}" y="80" width="${W}" height="390" fill="${paper}" stroke="${ink}" stroke-width="1.6"/>`;
+        for(let i=0;i<5;i++) {
+          const yy=100+i*74;
+          out += `<path d="M ${X+8} ${yy+45} Q ${X+20} ${yy+20} ${X+32} ${yy+45} Q ${X+44} ${yy+20} ${X+56} ${yy+45}" fill="none" stroke="${accent}" stroke-width="1.2"/>
+          <path d="M ${X+W-8} ${yy+45} Q ${X+W-20} ${yy+20} ${X+W-32} ${yy+45} Q ${X+W-44} ${yy+20} ${X+W-56} ${yy+45}" fill="none" stroke="${accent}" stroke-width="1.2"/>`;
+        }
+        out += `<text x="${spineW/2}" y="108" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="25" fill="${ink}">${monthName}</text>`;
+        out += renderCalendarIllustration(profile.motif, X+22, 122, W-44, 108, ink, paper, accent, rng);
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+24, 245, W-48, 198, {fill:'none',accent:accent,headerFont:romanFont});
+      } else if(family==='scene') {
+        out += `<rect x="${X}" y="80" width="${W}" height="270" fill="${field}" stroke="${ink}" stroke-width="1.7"/>`;
+        out += `<text x="${spineW/2}" y="108" text-anchor="middle" font-family="${monthFont}" ${monthVariation} font-size="23" fill="${paper}">${monthName}</text>`;
+        out += `<text x="${spineW/2}" y="120" text-anchor="middle" font-family="${romanFont}" font-size="6.5" letter-spacing="2" fill="${paper}">${profile.title}</text>`;
+        out += renderCalendarIllustration(profile.motif, X+14, 132, W-28, 184, ink, paper, accent, rng);
+        out += `<rect x="${X}" y="365" width="${W}" height="100" fill="${paper}" stroke="${ink}" stroke-width="1.4"/>`;
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+10, 378, W-20, 76, {fill:'none',accent:accent,headerFont:romanFont});
+      } else {
+        // Ledger: strong typography + table, echoing the structured calendars in the references.
+        out += `<rect x="${X}" y="80" width="${W}" height="390" fill="${paper}" stroke="${ink}" stroke-width="1.5"/>`;
+        out += `<text x="${X+18}" y="116" font-family="${monthFont}" ${monthVariation} font-size="30" font-weight="700" fill="${accent}">${monthName.substring(0,3).toUpperCase()}</text>`;
+        out += `<text x="${X+W-18}" y="116" text-anchor="end" font-family="${monthFont}" ${monthVariation} font-size="21" fill="${ink}">${year}</text>`;
+        out += `<path d="M ${X+16} 130 H ${X+W-16}" stroke="${ink}" stroke-width="2"/>`;
+        out += renderMiniCalendarGrid(monthName, year, ink, numFont, cfg.numeralSystem, X+16, 148, W-32, 225, {fill:'none',accent:accent,headerFont:romanFont});
+        out += `<rect x="${X+16}" y="388" width="${W-32}" height="55" fill="${accent}" opacity=".16" stroke="${accent}" stroke-width="1"/>`;
+        out += `<text x="${spineW/2}" y="411" text-anchor="middle" font-family="${romanFont}" font-size="7" letter-spacing="2" fill="${ink}">${profile.title}</text>`;
+        out += renderCalendarIllustration(profile.motif, X+20, 414, W-40, 24, ink, paper, accent, rng);
+      }
+      // Small contemporary data strip: the old calendar meets a modern instrument readout.
+      const pulse=String(dd.dataPulse || Math.floor(rng()*9999)).padStart(4,'0').slice(-4);
+      out += `<g opacity=".78"><line x1="${X+8}" y1="480" x2="${X+W-8}" y2="480" stroke="${ink}" stroke-width=".8"/>
+        <text x="${X+8}" y="493" font-family="monospace" font-size="5.5" fill="${ink}" letter-spacing="1">${String(monthName).slice(0,3).toUpperCase()} // ${pulse}</text>
+        <text x="${X+W-8}" y="493" text-anchor="end" font-family="monospace" font-size="5.5" fill="${accent}" letter-spacing="1">${profile.family.toUpperCase()}</text></g>`;
+      out += `</g>`;
+      return out;
+    }
+
+    function renderCalendarDates(monthName, yearNum, inkCol, numFont, numSystem) {
+      const monthMap = {
+        'januar': 0, 'februar': 1, 'märz': 2, 'april': 3, 'mai': 4, 'juni': 5,
+        'juli': 6, 'july': 6, 'august': 7, 'september': 8, 'oktober': 9, 'november': 10, 'dezember': 11
+      };
+      const cleanMonth = (monthName || 'juli').toLowerCase().trim();
+      const mIdx = monthMap[cleanMonth] !== undefined ? monthMap[cleanMonth] : 6;
+      const yr = parseInt(yearNum, 10) || 1923;
+
+      const firstDay = new Date(yr, mIdx, 1).getDay();
+      const totalDays = new Date(yr, mIdx + 1, 0).getDate();
+
+      const colX = [28, 68, 108, 150, 190, 231, 272];
+      let rowY = 135;
+      const stepY = 38;
+
+      const fontSize = numSystem === 'roman' ? 11 : 15;
+      let currentDay = 1;
+      let out = `<g font-family="${numFont}" font-size="${fontSize}" fill="${inkCol}" text-anchor="middle">`;
+      for (let r = 0; r < 6; r++) {
+        for (let c = 0; c < 7; c++) {
+          if (r === 0 && c < firstDay) continue;
+          if (currentDay > totalDays) break;
+          const displayVal = numSystem === 'roman' ? romanNumerals[currentDay] : currentDay;
+          out += `<text x="${colX[c]}" y="${rowY + (r * stepY)}">${displayVal}</text>`;
+          currentDay++;
+        }
+        if (currentDay > totalDays) break;
+      }
+      out += `</g>`;
+      return out;
+    }
+
+    function renderPortalPediment(style, spineW, ink) {
+      if (style === 'triangular') {
+        return `
+          <!-- Classical Triangular Renaissance Pediment -->
+          <polygon points="0,0 ${spineW / 2},-26 ${spineW},0" fill="none" stroke="${ink}" stroke-width="2.2" />
+          <line x1="-12" y1="0" x2="${spineW + 12}" y2="0" stroke="${ink}" stroke-width="2.6" />
+        `;
+      } else if (style === 'segmental') {
+        return `
+          <!-- Segmental Curved Architrave -->
+          <path d="M 0 0 Q ${spineW / 2} -30 ${spineW} 0" fill="none" stroke="${ink}" stroke-width="2.2" />
+          <line x1="-12" y1="0" x2="${spineW + 12}" y2="0" stroke="${ink}" stroke-width="2.6" />
+        `;
+      } else {
+        // Standard classical stepped lintel
+        return `
+          <rect x="-10" y="-10" width="${spineW + 20}" height="570" fill="none" stroke="${ink}" stroke-width="1.5" opacity="0.35" />
+        `;
+      }
+    }
+
+    function buildAutonomousRibbon(x1, x2, cy, waveAmp, paper, ink, hatchUrl, idPrefix, isRight, text, idx, font, style = 'wave', lean = 0, ornament = 'none', motion = 0) {
+      const w = x2 - x1;
+      const h = style === 'broad' || style === 'botanical' ? 27 : style === 'ledger' ? 22 : 21;
+      const dir = isRight ? -1 : 1;
+      const curve = dir * waveAmp;
+      const localLean = (isRight ? -lean : lean) + (idx % 2 === 0 ? 0 : lean * 0.35);
+      const pathId = `${idPrefix}curve_${isRight ? 'r' : 'l'}_${idx}`;
+      let pathD;
+
+      if (style === 'scroll') {
+        pathD = `M ${x1 + 14} ${cy + localLean} C ${x1 + w*.20} ${cy-curve*.55}, ${x1+w*.42} ${cy+curve*.75}, ${x1+w*.58} ${cy} C ${x1+w*.72} ${cy-curve*.72}, ${x1+w*.84} ${cy+curve*.38}, ${x2-14} ${cy-localLean}`;
+      } else if (style === 'serpentine') {
+        pathD = `M ${x1 + 10} ${cy} C ${x1 + w*.22} ${cy-curve}, ${x1+w*.36} ${cy+curve}, ${x1+w*.52} ${cy} C ${x1+w*.68} ${cy-curve}, ${x1+w*.80} ${cy+curve}, ${x2-10} ${cy}`;
+      } else if (style === 'segmented' || style === 'ledger') {
+        pathD = `M ${x1+8} ${cy+localLean} C ${x1+w*.30} ${cy-localLean}, ${x1+w*.70} ${cy+localLean}, ${x2-8} ${cy-localLean}`;
+      } else if (style === 'arc') {
+        pathD = `M ${x1+10} ${cy} C ${x1+w*.30} ${cy-curve}, ${x1+w*.70} ${cy-curve}, ${x2-10} ${cy}`;
+      } else if (style === 'straight') {
+        pathD = `M ${x1+10} ${cy+localLean} L ${x2-10} ${cy-localLean}`;
+      } else {
+        pathD = `M ${x1+10} ${cy+localLean} C ${x1+w*.33} ${cy-curve-localLean}, ${x1+w*.66} ${cy+curve+localLean}, ${x2-10} ${cy-localLean}`;
+      }
+
+      let facePath;
+      if (style === 'segmented' || style === 'ledger') {
+        facePath = `M ${x1} ${cy-h/2+localLean} L ${x2} ${cy-h/2-localLean} L ${x2} ${cy+h/2-localLean} L ${x1} ${cy+h/2+localLean} Z`;
+      } else if (style === 'serpentine' || style === 'scroll') {
+        facePath = `M ${x1} ${cy-h/2}
+          C ${x1+w*.22} ${cy-curve-h/2}, ${x1+w*.36} ${cy+curve-h/2}, ${x1+w*.52} ${cy-h/2}
+          C ${x1+w*.68} ${cy-curve-h/2}, ${x1+w*.80} ${cy+curve-h/2}, ${x2} ${cy-h/2}
+          L ${x2} ${cy+h/2}
+          C ${x1+w*.80} ${cy+curve+h/2}, ${x1+w*.68} ${cy-curve+h/2}, ${x1+w*.52} ${cy+h/2}
+          C ${x1+w*.36} ${cy+curve+h/2}, ${x1+w*.22} ${cy-curve+h/2}, ${x1} ${cy+h/2} Z`;
+      } else {
+        facePath = `M ${x1} ${cy-h/2}
+          C ${x1+w*.33} ${cy-curve-h/2}, ${x1+w*.66} ${cy+curve-h/2}, ${x2} ${cy-h/2}
+          L ${x2} ${cy+h/2}
+          C ${x1+w*.66} ${cy+curve+h/2}, ${x1+w*.33} ${cy-curve+h/2}, ${x1} ${cy+h/2} Z`;
+      }
+
+      const frontFace = `<path d="${facePath}" fill="${paper}" stroke="${ink}" stroke-width="1.8" stroke-linejoin="round" />`;
+      let ornamentMarkup = '';
+      const oy = cy;
+      if (ornament === 'scrollwork') {
+        ornamentMarkup = `<path d="M ${x1+18} ${oy} C ${x1+5} ${oy-10}, ${x1+5} ${oy+10}, ${x1+18} ${oy} M ${x2-18} ${oy} C ${x2-5} ${oy-10}, ${x2-5} ${oy+10}, ${x2-18} ${oy}" fill="none" stroke="${ink}" stroke-width="1.2" opacity=".75"/>`;
+      } else if (ornament === 'segments') {
+        const n = Math.max(4, Math.floor(w/85));
+        for(let k=1;k<n;k++) { const xx=x1+(w*k/n); ornamentMarkup += `<line x1="${xx}" y1="${cy-h*.34}" x2="${xx}" y2="${cy+h*.34}" stroke="${ink}" stroke-width=".9" opacity=".65"/>`; }
+      } else if (ornament === 'leaves') {
+        for(let k=0;k<3;k++) { const xx=x1+w*(.25+k*.25); ornamentMarkup += `<path d="M ${xx} ${cy} C ${xx-10} ${cy-10} ${xx-18} ${cy-7} ${xx-21} ${cy-1} C ${xx-13} ${cy+2} ${xx-6} ${cy+2} ${xx} ${cy} Z" fill="none" stroke="${ink}" stroke-width="1" opacity=".65"/>`; }
+      } else if (ornament === 'ticks') {
+        for(let k=0;k<8;k++) { const xx=x1+16+k*(w-32)/7; ornamentMarkup += `<circle cx="${xx}" cy="${cy}" r="1.8" fill="${ink}" opacity=".65"/>`; }
+      } else if (ornament === 'dots') {
+        for(let k=0;k<7;k++) { const xx=x1+18+k*(w-36)/6; ornamentMarkup += `<circle cx="${xx}" cy="${cy}" r="1.4" fill="${ink}" opacity=".7"/>`; }
+      } else if (ornament === 'rosette') {
+        ornamentMarkup = `<circle cx="${(x1+x2)/2}" cy="${cy}" r="4" fill="none" stroke="${ink}" stroke-width="1"/><circle cx="${(x1+x2)/2}" cy="${cy}" r="1.5" fill="${ink}"/>`;
+      }
+
+      let turnaroundAndFishtail = '';
+      const tipX = isRight ? x2 : x1;
+      const sgn = isRight ? 1 : -1;
+      turnaroundAndFishtail = `
+        <path d="M ${tipX} ${cy-h/2} C ${tipX+sgn*10} ${cy-h/2-4}, ${tipX+sgn*16} ${cy-2}, ${tipX+sgn*12} ${cy+6} L ${tipX} ${cy+h/2} Z" fill="${hatchUrl ? `url(#${hatchUrl})` : paper}" stroke="${ink}" stroke-width="1.6"/>
+        <path d="M ${tipX+sgn*12} ${cy+6} C ${tipX+sgn*20} ${cy+10}, ${tipX+sgn*28} ${cy+4}, ${tipX+sgn*34} ${cy-2} L ${tipX+sgn*24} ${cy+4} L ${tipX+sgn*34} ${cy+12} C ${tipX+sgn*24} ${cy+16}, ${tipX+sgn*16} ${cy+14}, ${tipX+sgn*10} ${cy+8} Z" fill="${paper}" stroke="${ink}" stroke-width="1.6"/>`;
+
+      // A restrained animated print-registration shimmer gives the ribbon a living quality.
+      const motionMarkup = motion > .65 ? `<path d="${pathD}" fill="none" stroke="${ink}" stroke-width=".7" stroke-dasharray="2 8" opacity=".38"><animate attributeName="stroke-dashoffset" values="0;-20" dur="${(3.5+idx*.25).toFixed(2)}s" repeatCount="indefinite"/></path>` : '';
+      const textMarkup = `<text font-size="${style === 'broad' || style === 'botanical' ? 19.5 : 18.5}" font-family="${font}" fill="${ink}" class="editable-text" data-key="${isRight ? 'r' : 'l'}_${idx}"><textPath href="#${pathId}" startOffset="50%" text-anchor="middle" dominant-baseline="central">${text}</textPath></text>`;
+      return { pathDef:`<path id="${pathId}" d="${pathD}"/>`, markup:`<g>${turnaroundAndFishtail}${frontFace}${ornamentMarkup}${motionMarkup}${textMarkup}</g>` };
+    }
+
+    function renderHeaderEmblem(style, paper, ink, romanFont) {
+      if (style === 'medallion') {
+        return `
+          <g class="draggable" data-target="shield">
+            <circle cx="400" cy="105" r="48" fill="${paper}" stroke="${ink}" stroke-width="2.8" />
+            <circle cx="400" cy="105" r="39" fill="none" stroke="${ink}" stroke-width="1.2" />
+            <text x="400" y="92" font-family="${romanFont}" font-size="28" font-weight="700" fill="${ink}" text-anchor="middle">4</text>
+            <path d="M 400 105 L 388 118 L 412 118 Z M 400 105 L 400 137" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+            <text x="400" y="132" font-family="${romanFont}" font-size="17" font-weight="700" fill="${ink}" text-anchor="middle">W</text>
+          </g>`;
+      }
+      if (style === 'diamond') {
+        return `
+          <g class="draggable" data-target="shield">
+            <path d="M 400 50 L 452 104 L 400 160 L 348 104 Z" fill="${paper}" stroke="${ink}" stroke-width="2.8" />
+            <path d="M 400 63 L 439 104 L 400 145 L 361 104 Z" fill="none" stroke="${ink}" stroke-width="1.2" />
+            <text x="400" y="91" font-family="${romanFont}" font-size="26" font-weight="700" fill="${ink}" text-anchor="middle">4</text>
+            <path d="M 400 100 L 387 116 L 413 116 Z" fill="none" stroke="${ink}" stroke-width="2.2" stroke-linejoin="round" />
+            <text x="400" y="137" font-family="${romanFont}" font-size="16" font-weight="700" fill="${ink}" text-anchor="middle">W</text>
+          </g>`;
+      }
+      if (style === 'arch') {
+        return `
+          <g class="draggable" data-target="shield">
+            <path d="M 350 151 L 350 82 Q 400 34 450 82 L 450 151 Z" fill="${paper}" stroke="${ink}" stroke-width="2.8" />
+            <path d="M 363 145 L 363 87 Q 400 53 437 87 L 437 145" fill="none" stroke="${ink}" stroke-width="1.2" />
+            <text x="400" y="91" font-family="${romanFont}" font-size="27" font-weight="700" fill="${ink}" text-anchor="middle">4</text>
+            <path d="M 400 101 L 388 116 L 412 116 Z" fill="none" stroke="${ink}" stroke-width="2.2" />
+            <text x="400" y="138" font-family="${romanFont}" font-size="16" font-weight="700" fill="${ink}" text-anchor="middle">W</text>
+          </g>`;
+      }
+      return `
+        <g class="draggable" data-target="shield">
+          <path d="M 344 63 C 355 51 380 57 400 47 C 422 57 445 51 456 63 C 460 117 446 145 400 181 C 354 145 340 117 344 63 Z"
+                fill="${paper}" stroke="${ink}" stroke-width="2.8" />
+          <path d="M 350 68 C 365 56 382 61 400 52 C 418 61 435 56 450 68" fill="none" stroke="${ink}" stroke-width="1.2" />
+          <line x1="400" y1="61" x2="400" y2="149" stroke="${ink}" stroke-width="2.6" stroke-linecap="round" />
+          <text x="400" y="91" font-family="${romanFont}" font-size="28" font-weight="700" fill="${ink}" text-anchor="middle">4</text>
+          <path d="M 400 101 L 386 118 L 414 118" fill="none" stroke="${ink}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          <text x="400" y="143" font-family="${romanFont}" font-size="17" font-weight="700" fill="${ink}" text-anchor="middle">W</text>
+        </g>`;
+    }
+
+    function renderPortalFrame(style, spineW, paper, ink) {
+      if (style === 'arched') {
+        return `
+          <path d="M 0 550 L 0 48 Q ${spineW/2} -12 ${spineW} 48 L ${spineW} 550 Z"
+                fill="${paper}" stroke="${ink}" stroke-width="2.6" />
+          <path d="M 14 540 L 14 52 Q ${spineW/2} 10 ${spineW-14} 52 L ${spineW-14} 540"
+                fill="none" stroke="${ink}" stroke-width="1.1" opacity="0.55" />`;
+      }
+      if (style === 'notched') {
+        return `
+          <path d="M 12 0 L ${spineW-12} 0 L ${spineW} 12 L ${spineW} 538 L ${spineW-12} 550 L 12 550 L 0 538 L 0 12 Z"
+                fill="${paper}" stroke="${ink}" stroke-width="2.6" stroke-linejoin="round" />
+          <path d="M 18 10 L ${spineW-18} 10 L ${spineW-10} 18 L ${spineW-10} 532 L ${spineW-18} 540 L 18 540 L 10 532 L 10 18 Z"
+                fill="none" stroke="${ink}" stroke-width="1.1" opacity="0.55" />`;
+      }
+      if (style === 'double') {
+        return `
+          <rect x="0" y="0" width="${spineW}" height="550" fill="${paper}" stroke="${ink}" stroke-width="2.6" />
+          <rect x="9" y="9" width="${spineW-18}" height="532" fill="none" stroke="${ink}" stroke-width="1.1" opacity="0.55" />`;
+      }
+      return `<rect x="0" y="0" width="${spineW}" height="550" fill="${paper}" stroke="${ink}" stroke-width="2.6" />`;
+    }
+
+    function renderCalendarOrnament(style, spineW, ink) {
+      const cx = spineW / 2;
+      if (style === 'rosette') {
+        return `<g stroke="${ink}" fill="none" stroke-width="1.2" opacity="${weatherOpacity}">
+          <circle cx="${cx}" cy="22" r="5" />
+          <circle cx="${cx-8}" cy="22" r="3.5" /><circle cx="${cx+8}" cy="22" r="3.5" />
+          <path d="M ${cx-34} 22 H ${cx-14} M ${cx+14} 22 H ${cx+34}" />
+        </g>`;
+      }
+      if (style === 'cross') {
+        return `<g stroke="${ink}" stroke-width="1.3" opacity="0.85">
+          <path d="M ${cx-34} 22 H ${cx-8} M ${cx+8} 22 H ${cx+34} M ${cx} 14 V 30" />
+        </g>`;
+      }
+      return `<text x="${cx}" y="23" font-family="Cinzel, serif" font-size="12" fill="${ink}" text-anchor="middle" opacity="0.9">✦  ❧  ✦</text>`;
+    }
+
+    function renderBorderDecor(style, paper, ink) {
+      if (style === 'corner') {
+        return `<g fill="none" stroke="${paper}" stroke-width="2" opacity="0.9">
+          <path d="M 28 76 V 28 H 76 M 724 28 H 772 V 76 M 28 996 V 1044 H 76 M 724 1044 H 772 V 996" />
+          <circle cx="28" cy="28" r="4" /><circle cx="772" cy="28" r="4" />
+          <circle cx="28" cy="1044" r="4" /><circle cx="772" cy="1044" r="4" />
+        </g>`;
+      }
+      if (style === 'triple') {
+        return `<rect x="14" y="14" width="772" height="1044" fill="none" stroke="${paper}" stroke-width="1.2" opacity="0.75" />
+                <rect x="21" y="21" width="758" height="1030" fill="none" stroke="${ink}" stroke-width="0.8" opacity="0.6" />`;
+      }
+      return '';
+    }
+
+    // Hybrid modern/1923 visual language. Inspired by the reference calendar
+    // sheets' botanical framing and ornament, combined with contemporary
+    // industrial-control ideas: compact labels, modular ticks, tiny indicators,
+    // and restrained accent blocks. It is intentionally original rather than a
+    // replica of any existing product or artwork.
+    function renderHybridSystem(cfg, paper, ink, field, rng, offsets = {}) {
+      // A deliberately visible hybrid layer: 1923 print ornament + contemporary
+      // instrument/interface geometry. The geometry stays sparse enough to let
+      // the calendar remain the hero, but is now large enough to read as a
+      // genuine part of the poster rather than a tiny decorative sticker.
+      const d = cfg.dynamicData || {};
+      const off = offsets.hybrid || { x: 0, y: 0 };
+      const intensity = Math.max(.42, Math.min(1, d.hybridIntensity ?? .72));
+      const mode = d.hybridMode || 'manuscript-console';
+      const accentPool = ['#A34735','#B47A3C','#667A68','#596675','#795B48','#8D684A'];
+      const accent = accentPool[Math.floor(rng()*accentPool.length)];
+      const accent2 = ['#D1B15D','#9BA78E','#8A6B5A','#71838C'][Math.floor(rng()*4)];
+      const inkSoft = ink;
+      const opacity = (.62 + intensity*.30).toFixed(2);
+      const micro = 8 + intensity*2;
+      const pulse = String(d.dataPulse || Math.floor(rng()*9999)).padStart(4,'0').slice(-4);
+      const serial = String(10 + Math.floor(rng()*89));
+      const labels = [
+        ['FOLIO','TEMPERATVR','SYNC'],
+        ['ARCHIV','SIGNAL','MOTIF'],
+        ['NO. 23','TEMPVS','FIELD'],
+        ['WERK','PULSE','INDEX']
+      ][Math.floor(rng()*4)];
+
+      const ringR = 48 + Math.floor(rng()*20);
+      const gauge = 35 + Math.floor(rng()*55);
+      const bars = 5 + Math.floor(rng()*5);
+
+      // Modern instrument language: a strong upper-right module, side rails,
+      // measurement marks, dial, signal bars and small data labels.
+      const moduleX = 574, moduleY = 62, moduleW = 174, moduleH = 128;
+      const ticks = Array.from({length:11},(_,i)=>{
+        const h = 7 + ((i+Math.floor(rng()*3))%4)*4;
+        return `<rect x="${moduleX+102+i*5.5}" y="${moduleY+91-h}" width="3.5" height="${h}" fill="${i%3===0?accent:ink}" opacity="${(.48+rng()*.4).toFixed(2)}"/>`;
+      }).join('');
+      const sideMarks = Array.from({length:9},(_,i)=>{
+        const y=252+i*77, w=12+Math.floor(rng()*28);
+        return `<g opacity="${(.42+intensity*.3).toFixed(2)}">
+          <line x1="22" y1="${y}" x2="${22+w}" y2="${y}" stroke="${ink}" stroke-width="1.1"/>
+          <line x1="22" y1="${y-4}" x2="22" y2="${y+4}" stroke="${ink}" stroke-width="1"/>
+          <text x="${29+w}" y="${y+3}" font-family="monospace" font-size="6.5" fill="${ink}">${String(i+1).padStart(2,'0')}</text>
+        </g>`;
+      }).join('');
+
+      let modeMark='';
+      if(mode==='instrument-panel') {
+        modeMark=`<path d="M ${moduleX+18} ${moduleY+61} H ${moduleX+90} M ${moduleX+18} ${moduleY+70} H ${moduleX+72}" stroke="${accent}" stroke-width="2"/>`;
+      } else if(mode==='signal-seal') {
+        modeMark=`<circle cx="${moduleX+139}" cy="${moduleY+62}" r="${ringR}" fill="none" stroke="${accent}" stroke-width="2"/><circle cx="${moduleX+139}" cy="${moduleY+62}" r="${ringR-10}" fill="none" stroke="${ink}" stroke-width="1" stroke-dasharray="3 5"/>`;
+      } else if(mode==='modular-frame') {
+        modeMark=`<path d="M ${moduleX-16} ${moduleY-16} H ${moduleX+190} V ${moduleY+145} H ${moduleX-16}" fill="none" stroke="${ink}" stroke-width="1.2"/>`;
+      } else {
+        modeMark=`<path d="M ${moduleX+18} ${moduleY+62} q 18 -22 36 0 t 36 0" fill="none" stroke="${accent}" stroke-width="2"/>`;
+      }
+
+      const main=`
+        <g>
+          <!-- Modern modular corner instrument -->
+          <rect x="${moduleX}" y="${moduleY}" width="${moduleW}" height="${moduleH}" rx="3" fill="${paper}" stroke="${ink}" stroke-width="1.8"/>
+          <rect x="${moduleX+8}" y="${moduleY+8}" width="${moduleW-16}" height="22" fill="${field}" stroke="${ink}" stroke-width=".8"/>
+          <text x="${moduleX+17}" y="${moduleY+23}" font-family="monospace" font-size="${micro}" fill="${ink}" letter-spacing="1.8">${labels[0]}</text>
+          <text x="${moduleX+12}" y="${moduleY+48}" font-family="monospace" font-size="8" fill="${ink}" letter-spacing="1">${labels[1]} / ${pulse}</text>
+          <text x="${moduleX+12}" y="${moduleY+61}" font-family="monospace" font-size="7" fill="${accent}" letter-spacing="1">1923 // ${serial}</text>
+          ${modeMark}
+          <circle cx="${moduleX+139}" cy="${moduleY+88}" r="15" fill="none" stroke="${ink}" stroke-width="1.2"/>
+          <circle cx="${moduleX+139}" cy="${moduleY+88}" r="5" fill="${accent}"/>
+          <line x1="${moduleX+139}" y1="${moduleY+88}" x2="${moduleX+148}" y2="${moduleY+78}" stroke="${ink}" stroke-width="1.2"/>
+          <text x="${moduleX+12}" y="${moduleY+103}" font-family="monospace" font-size="6.5" fill="${ink}">LEVEL</text>
+          ${Array.from({length:bars},(_,i)=>`<rect x="${moduleX+45+i*7}" y="${moduleY+98-(i%2)*5}" width="4" height="${8+(i%3)*4}" fill="${i===bars-1?accent:ink}" opacity=".78"/>`).join('')}
+          <text x="${moduleX+12}" y="${moduleY+117}" font-family="monospace" font-size="6.5" fill="${ink}">${labels[2]} / ${gauge}%</text>
+          ${ticks}
+        </g>`;
+
+      const medievalGlyphs=`
+        <g fill="none" stroke="${ink}" stroke-width="1.7" opacity="${(.48+intensity*.25).toFixed(2)}">
+          <path d="M 66 104 q 18 -28 36 0 q -18 28 -36 0 M 84 86 V 122"/>
+          <path d="M 734 230 q -18 -26 -36 0 q 18 26 36 0 M 716 212 V 248"/>
+          <path d="M 66 910 l 18 -28 l 18 28 l -18 28 Z M 84 882 V 938"/>
+          <path d="M 734 916 l -18 -28 l -18 28 l 18 28 Z"/>
+        </g>`;
+
+      // A modern measurement frame interrupts the old double border in four
+      // places, creating the intended old/new collision without replacing it.
+      const frame=`
+        <g opacity="${(.58+intensity*.3).toFixed(2)}" fill="none" stroke="${accent}" stroke-width="1.6">
+          <path d="M 38 72 H 116 M 38 72 V 118"/>
+          <path d="M 762 72 H 684 M 762 72 V 118"/>
+          <path d="M 38 1000 H 116 M 38 1000 V 954"/>
+          <path d="M 762 1000 H 684 M 762 1000 V 954"/>
+        </g>
+        <g font-family="monospace" font-size="7" fill="${accent}" opacity="${(.6+intensity*.25).toFixed(2)}" letter-spacing="1">
+          <text x="42" y="67">A-23</text><text x="710" y="67">${labels[0]}</text>
+          <text x="42" y="1012">${pulse}</text><text x="710" y="1012">${serial}</text>
+        </g>`;
+
+      return `<g class="draggable" data-target="hybrid" transform="translate(${off.x},${off.y})" opacity="${opacity}">
+        ${frame}${main}${sideMarks}${medievalGlyphs}
+        <!-- thin signal traces, deliberately aligned to the old poster grid -->
+        <g fill="none" stroke="${accent2}" stroke-width="1" opacity=".72">
+          <path d="M 38 205 H 88 M 712 205 H 762"/>
+          <path d="M 38 209 H 62 M 738 209 H 762"/>
+          <circle cx="88" cy="205" r="3" fill="${accent}" stroke="none"/>
+          <circle cx="712" cy="205" r="3" fill="${accent}" stroke="none"/>
+        </g>
+      </g>`;
+    }
+
+    function buildPosterSVG(cfg, isThumb = false) {
+      const rng = createRNG(cfg.seed);
+      const { field, paper, ink } = cfg.colors;
+
+      const v = cfg.variation || {};
+      const spineW = (cfg.spineWidthPct / 100) * 800;
+      const layout = v.layoutMode || 'classic';
+      const marginPx = (cfg.marginPct / 100) * 800;
+      const wave = cfg.waveAmp;
+      const ribbonCount = Math.max(5, Math.min(7, v.ribbonCount || 7));
+      const ribbonStartY = v.ribbonStartY || 222;
+      const ribbonStepY = v.ribbonStepY || 76;
+
+      // Six composition grammars: each changes where the calendar, ribbons, and empty space live.
+      let spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0);
+      let doorY = 225 + (v.calendarShiftY || 0);
+      let calendarScale = v.calendarScale || 1;
+      let ribbonLayout = 'sides';
+      if (layout === 'split') {
+        const right = ((v.calendarBias || 0) >= 0);
+        spineX = (right ? 520 : 60) + (v.calendarShiftX || 0);
+        doorY = 355 + (v.calendarShiftY || 0);
+        calendarScale = .76 * (v.calendarScale || 1);
+        ribbonLayout = right ? 'split-right' : 'split-left';
+      } else if (layout === 'framed') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0);
+        doorY = 305 + (v.calendarShiftY || 0);
+        calendarScale = .84 * (v.calendarScale || 1);
+        ribbonLayout = 'frame';
+      } else if (layout === 'hero') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0);
+        doorY = 285 + (v.calendarShiftY || 0);
+        calendarScale = 1.10 * (v.calendarScale || 1);
+        ribbonLayout = 'hero';
+      } else if (layout === 'border') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0);
+        doorY = 320 + (v.calendarShiftY || 0);
+        calendarScale = .80 * (v.calendarScale || 1);
+        ribbonLayout = 'border';
+      } else if (layout === 'modular') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0);
+        doorY = 440 + (v.calendarShiftY || 0);
+        calendarScale = .72 * (v.calendarScale || 1);
+        ribbonLayout = 'modular';
+      } else if (layout === 'calendar-left') {
+        spineX = 34 + (v.calendarShiftX || 0); doorY = 505 + (v.calendarShiftY || 0); calendarScale = .82; ribbonLayout = 'center-stack';
+      } else if (layout === 'calendar-right') {
+        spineX = 766 - spineW + (v.calendarShiftX || 0); doorY = 505 + (v.calendarShiftY || 0); calendarScale = .82; ribbonLayout = 'center-stack';
+      } else if (layout === 'bottom-center') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0); doorY = 500 + (v.calendarShiftY || 0); calendarScale = .82; ribbonLayout = 'center-stack';
+      } else if (layout === 'ribbon-column') {
+        spineX = 400 - (spineW / 2) + (v.calendarShiftX || 0); doorY = 250 + (v.calendarShiftY || 0); calendarScale = .82; ribbonLayout = 'bottom-bands';
+      }
+
+      const idPrefix = isThumb ? `th_${Math.floor(rng() * 100000)}_` : 'main_';
+      const hatchId = cfg.lineHatching ? `${idPrefix}hatch` : null;
+
+      const textureDef = cfg.paperTexture ? `
+        <filter id="${idPrefix}grain" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+          <feColorMatrix type="matrix" values="
+            1 0 0 0 0
+            0 1 0 0 0
+            0 0 1 0 0
+            0 0 0 0.08 0" in="noise" result="grainAlpha" />
+          <feComposite in="SourceGraphic" in2="grainAlpha" operator="over" />
+        </filter>
+      ` : '';
+
+      const hatchDef = `
+        <pattern id="${idPrefix}hatch" width="5" height="5" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="5" stroke="${ink}" stroke-width="1.3" />
+        </pattern>
+      `;
+
+      const formatRoman = text => {
+        if (!text) return '';
+        return cfg.archaicLatin ? text.toUpperCase().replace(/U/g, 'V') : text.toUpperCase();
+      };
+
+      const botanicals = renderBotanicals(cfg.vineDensity, rng, paper, cfg.offsets, cfg.botanicalSpecies);
+      const weatherMotifs = renderWeatherMotifs(cfg.weatherTheme || 'summer', paper, ink, field, cfg.offsets, cfg.dynamicData || {});
+      const hybridSystem = renderHybridSystem(cfg, paper, ink, field, rng, cfg.offsets);
+      const calendarDatesRaw = renderCalendarArtwork(cfg.texts.month, cfg.texts.year, cfg, spineW, ink, paper, field, rng);
+      const calendarDates = `<g transform="translate(${spineX + spineW/2}, ${doorY}) scale(${calendarScale}) translate(${-spineX - spineW/2}, ${-doorY})">${calendarDatesRaw}</g>`;
+      const zodiacSymbol = renderCalligraphicZodiac(cfg.zodiac, ink);
+      const pedimentMarkup = renderPortalPediment(cfg.pedimentStyle, spineW, ink);
+
+      let defsPool = '';
+      let leftRibbonMarkup = '';
+      let rightRibbonMarkup = '';
+
+      const startY = ribbonStartY;
+      const stepY = ribbonStepY;
+
+      for (let i = 0; i < ribbonCount; i++) {
+        const cy = startY + (i * stepY);
+        const ribbonStyle = v.ribbonStyle || 'wave';
+        const ribbonLean = v.ribbonLean || 0;
+
+        let l_x1, l_x2, r_x1, r_x2, lCy = cy, rCy = cy;
+        let lWave = wave, rWave = wave;
+        let lStyle = ribbonStyle, rStyle = ribbonStyle;
+
+        if (ribbonLayout === 'split-left' || ribbonLayout === 'split-right') {
+          const rightSide = ribbonLayout === 'split-right';
+          l_x1 = rightSide ? 55 : 70; l_x2 = rightSide ? 430 : 350;
+          r_x1 = rightSide ? 450 : 370; r_x2 = rightSide ? 745 : 730;
+          lCy = 180 + i * 112 + (i % 2 ? 5 : -4);
+          rCy = 205 + i * 112 + (i % 3 ? 0 : 8);
+          lWave = wave * (.55 + i*.05); rWave = wave * (.75 + (i%2)*.18);
+          lStyle = i % 2 ? 'straight' : 'wave'; rStyle = i % 2 ? 'serpentine' : 'arc';
+        } else if (ribbonLayout === 'frame') {
+          const inset = 55 + (i % 2) * 8;
+          l_x1 = inset; l_x2 = 385 - i*2; r_x1 = 415 + i*2; r_x2 = 800-inset;
+          lCy = 190 + i*118; rCy = 190 + i*118;
+          lWave = wave*(.45+(i%3)*.16); rWave = wave*(.55+(i%2)*.2);
+          lStyle = i%3===0 ? 'arc' : 'wave'; rStyle = i%3===1 ? 'serpentine' : 'arc';
+        } else if (ribbonLayout === 'hero') {
+          l_x1 = 38; l_x2 = 305; r_x1 = 495; r_x2 = 762;
+          lCy = 170 + i*128; rCy = 190 + i*128;
+          lWave = wave*(.5+(i%2)*.3); rWave = wave*(.7+(i%3)*.18);
+          lStyle = i%2 ? 'broad' : 'wave'; rStyle = i%2 ? 'arc' : 'serpentine';
+        } else if (ribbonLayout === 'border') {
+          const band = i % 3;
+          if (band === 0) { l_x1=48; l_x2=752; r_x1=48; r_x2=752; lCy=105+i*10; rCy=967+i*10; }
+          else if (band === 1) { l_x1=42; l_x2=285; r_x1=515; r_x2=758; lCy=210+i*130; rCy=210+i*130; }
+          else { l_x1=45; l_x2=350; r_x1=450; r_x2=755; lCy=250+i*125; rCy=245+i*125; }
+          lWave=wave*(.35+(i%2)*.2); rWave=wave*(.4+(i%3)*.18);
+          lStyle=i%2?'straight':'arc'; rStyle=i%2?'arc':'straight';
+        } else if (ribbonLayout === 'modular') {
+          l_x1=42; l_x2=335; r_x1=465; r_x2=758;
+          lCy=150+i*100; rCy=175+i*100;
+          lWave=wave*(.35+(i%3)*.18); rWave=wave*(.55+(i%2)*.2);
+          lStyle=i%2?'straight':'wave'; rStyle=i%3===0?'broad':'arc';
+        } else if (ribbonLayout === 'center-stack') {
+          // Both sides become independent central ribbon families.
+          // Left and right families deliberately use different widths/spacings.
+          const leftWide = v.leftRibbonWidth || 1;
+          const rightWide = v.rightRibbonWidth || 1;
+          l_x1 = 90 - (leftWide - 1) * 18;
+          l_x2 = 485 + (leftWide - 1) * 55;
+          r_x1 = 315 - (rightWide - 1) * 55;
+          r_x2 = 710 + (rightWide - 1) * 18;
+          lCy = cy + (i % 2 ? 7 : -5);
+          rCy = cy + (i % 3 === 0 ? -8 : 6);
+          lWave = wave * (0.65 + (i % 3) * 0.25);
+          rWave = wave * (0.8 + ((i + 1) % 3) * 0.22);
+          lStyle = i % 3 === 0 ? 'serpentine' : (i % 2 ? 'wave' : 'arc');
+          rStyle = i % 2 === 0 ? 'broad' : 'wave';
+        } else if (ribbonLayout === 'bottom-bands') {
+          // A compact horizontal band system underneath the calendar.
+          l_x1 = 55; l_x2 = 385;
+          r_x1 = 415; r_x2 = 745;
+          lCy = 735 + i * 38;
+          rCy = 755 + i * 38;
+          lWave = wave * (0.5 + (i % 2) * 0.4);
+          rWave = wave * (0.7 + (i % 3) * 0.2);
+          lStyle = i % 2 ? 'straight' : 'wave';
+          rStyle = i % 3 === 0 ? 'arc' : 'wave';
+        } else {
+          l_x1 = marginPx + 34;
+          l_x2 = spineX - 16;
+          r_x1 = 800 - spineX + 16;
+          r_x2 = 800 - marginPx - 34;
+        }
+
+        const lObj = buildAutonomousRibbon(l_x1, l_x2, lCy, lWave, paper, ink, hatchId, idPrefix, false, cfg.texts.leftRibbons[i] || '', i, cfg.fonts.fraktur, lStyle, ribbonLean, v.ribbonOrnament || 'none', (cfg.dynamicData || {}).ribbonMotion || 0);
+        defsPool += lObj.pathDef;
+        const offL = cfg.offsets.lRibbons[i] || { x: 0, y: 0 };
+        leftRibbonMarkup += `<g class="draggable" data-target="lRibbon_${i}" transform="translate(${offL.x}, ${offL.y})">${lObj.markup}</g>`;
+
+        const rObj = buildAutonomousRibbon(r_x1, r_x2, rCy, rWave, paper, ink, hatchId, idPrefix, true, cfg.texts.rightRibbons[i] || '', i, cfg.fonts.fraktur, rStyle, ribbonLean, v.ribbonOrnament || 'none', (cfg.dynamicData || {}).ribbonMotion || 0);
+        defsPool += rObj.pathDef;
+        const offR = cfg.offsets.rRibbons[i] || { x: 0, y: 0 };
+        rightRibbonMarkup += `<g class="draggable" data-target="rRibbon_${i}" transform="translate(${offR.x}, ${offR.y})">${rObj.markup}</g>`;
+      }
+
+      const offShield = cfg.offsets.shield || { x: 0, y: 0 };
+      const offCity = cfg.offsets.city || { x: 0, y: 0 };
+      const offDoor = cfg.offsets.doorway || { x: 0, y: 0 };
+      const offCart1923 = cfg.offsets.cartouche1923 || { x: 0, y: 0 };
+      const offFooter = cfg.offsets.footer || { x: 0, y: 0 };
+      const offSponL = cfg.offsets.sponsorL || { x: 0, y: 0 };
+      const offSponR = cfg.offsets.sponsorR || { x: 0, y: 0 };
+      const cartX = layout === 'calendar-left' ? 190 : layout === 'calendar-right' ? 610 : 400;
+      const cartY = layout === 'calendar-left' || layout === 'calendar-right' || layout === 'bottom-center' ? 1020 : 840;
+      const footerYShift = layout === 'calendar-left' || layout === 'calendar-right' || layout === 'bottom-center' ? 38 : 0;
+
+      return `
+        <svg viewBox="0 0 800 1072" xmlns="http://www.w3.org/2000/svg" ${cfg.paperTexture ? `filter="url(#${idPrefix}grain)"` : ''}>
+          <defs>
+            ${textureDef}
+            ${hatchDef}
+            ${defsPool}
+            <path id="${idPrefix}p_spon_l1" d="M 80 110 C 140 85, 230 85, 295 105" />
+            <path id="${idPrefix}p_spon_l2" d="M 70 148 C 140 128, 230 128, 305 148" />
+            <path id="${idPrefix}p_spon_r1" d="M 505 105 C 570 85, 660 85, 720 110" />
+            <path id="${idPrefix}p_spon_r2" d="M 495 148 C 570 128, 660 128, 730 148" />
+            <path id="${idPrefix}p_spon_r3" d="M 565 190 C 625 174, 695 174, 745 190" />
+            <path id="${idPrefix}p_foot" d="M 230 965 Q 400 955 570 965" />
+          </defs>
+
+          <!-- 1. Background Ground Wash -->
+          <rect width="800" height="1072" fill="${field}" />
+
+          <!-- 2. Abundant Botanicals -->
+          ${botanicals}
+          ${weatherMotifs}
+          ${hybridSystem}
+
+          <!-- 3. Outer Double Border Frame Rules -->
+          <rect x="${marginPx}" y="${marginPx}" width="${800 - marginPx * 2}" height="${1072 - marginPx * 2}" 
+                fill="none" stroke="${ink}" stroke-width="3.2" />
+          <rect x="${marginPx + 7}" y="${marginPx + 7}" width="${800 - marginPx * 2 - 14}" height="${1072 - marginPx * 2 - 14}" 
+                fill="none" stroke="${ink}" stroke-width="1.2" />
+          ${renderBorderDecor(v.borderStyle || 'double', paper, ink)}
+
+          <!-- 4. Top Hanging Cord & Metal Eyelet Loop -->
+          ${cfg.hangingCord ? `
+            <g stroke="${ink}" fill="none">
+              <path d="M 400 ${marginPx} C 400 ${marginPx - 16}, 408 ${marginPx - 26}, 400 ${marginPx - 30} C 392 ${marginPx - 26}, 400 ${marginPx - 16}, 400 ${marginPx}" stroke-width="2.5" />
+              <circle cx="400" cy="${marginPx + 16}" r="4.5" fill="${paper}" stroke-width="1.6" />
+            </g>
+          ` : ''}
+
+          <!-- 5. Variable Header Emblem -->
+          ${renderHeaderEmblem(v.headerStyle || 'shield', paper, ink, cfg.fonts.roman)}
+
+          <!-- 6. Top Sponsor Header Ribbons -->
+          <g class="draggable" data-target="sponsorL" transform="translate(${offSponL.x}, ${offSponL.y})">
+            <path d="M 70 88 C 140 65, 230 65, 300 85 L 290 120 C 220 100, 140 100, 80 125 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 80 125 C 64 128 58 140 70 154 L 85 130 Z" fill="${hatchId ? `url(#${hatchId})` : paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 60 130 C 140 110, 230 110, 310 130 L 300 162 C 220 144, 140 144, 50 165 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 50 165 C 40 180 50 205 65 210 L 80 185 C 65 180 60 170 50 165 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            
+            <text font-family="${cfg.fonts.roman}" font-size="24" font-weight="700" letter-spacing="3" fill="${ink}" 
+                  class="editable-text" data-key="sponsorL">
+              <textPath href="#${idPrefix}p_spon_l1" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.sponsorL)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subL">
+              <textPath href="#${idPrefix}p_spon_l2" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subL)}
+              </textPath>
+            </text>
+          </g>
+
+          <g class="draggable" data-target="sponsorR" transform="translate(${offSponR.x}, ${offSponR.y})">
+            <path d="M 500 85 C 570 65, 660 65, 730 88 L 720 125 C 660 100, 580 100, 510 120 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 720 125 C 736 128 742 140 730 154 L 715 130 Z" fill="${hatchId ? `url(#${hatchId})` : paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 490 130 C 570 110, 660 110, 740 130 L 750 165 C 660 144, 580 144, 500 162 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            <path d="M 560 175 Q 655 155 750 175 L 740 205 Q 655 188 550 205 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />
+            
+            <text font-family="${cfg.fonts.roman}" font-size="24" font-weight="700" letter-spacing="3" fill="${ink}" 
+                  class="editable-text" data-key="sponsorR">
+              <textPath href="#${idPrefix}p_spon_r1" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.sponsorR)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subR1">
+              <textPath href="#${idPrefix}p_spon_r2" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subR1)}
+              </textPath>
+            </text>
+            <text font-family="${cfg.fonts.roman}" font-size="15" font-weight="700" letter-spacing="2" fill="${ink}" 
+                  class="editable-text" data-key="subR2">
+              <textPath href="#${idPrefix}p_spon_r3" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${formatRoman(cfg.texts.subR2)}
+              </textPath>
+            </text>
+          </g>
+
+          <!-- 7. City Cartouche (LEIPZIG) -->
+          <g class="draggable" data-target="city" transform="translate(${offCity.x}, ${offCity.y})">
+            ${v.cityStyle === 'ribbon' 
+              ? `<path d="M 285 176 Q 400 160 515 176 L 506 201 Q 400 188 294 201 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`
+              : v.cityStyle === 'arch'
+                ? `<path d="M 292 198 V 184 Q 400 155 508 184 V 198 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`
+                : `<polygon points="290,175 510,175 498,198 302,198" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`}
+            <text x="400" y="187" font-family="${cfg.fonts.roman}" font-size="16" font-weight="700" letter-spacing="4" fill="${ink}" 
+                  text-anchor="middle" dominant-baseline="central" class="editable-text" data-key="city">
+              ${formatRoman(cfg.texts.city)}
+            </text>
+          </g>
+
+          <!-- 8. Central Tabernacle Architectural Calendar Doorway Portal -->
+          <g class="draggable" data-target="doorway" transform="translate(${spineX + offDoor.x}, ${doorY + offDoor.y}) scale(${calendarScale})">
+            ${pedimentMarkup}
+            ${renderPortalFrame(v.portalStyle || 'classic', spineW, paper, ink)}
+
+            <circle cx="10" cy="10" r="2.5" fill="${ink}" />
+            <circle cx="${spineW - 10}" cy="10" r="2.5" fill="${ink}" />
+            <circle cx="10" cy="540" r="2.5" fill="${ink}" />
+            <circle cx="${spineW - 10}" cy="540" r="2.5" fill="${ink}" />
+
+            <!-- Month-specific illustrated calendar artwork -->
+            ${calendarDates}
+            ${zodiacSymbol}
+          </g>
+
+          <!-- 9. 14 Fully Autonomous Swirling Ribbons -->
+          <g id="left-ribbons-layer">${leftRibbonMarkup}</g>
+          <g id="right-ribbons-layer">${rightRibbonMarkup}</g>
+
+          <!-- 10. Distinctive 1923 Notched Bracket Placard -->
+          <g class="draggable" data-target="cartouche1923" transform="translate(${cartX + offCart1923.x}, ${cartY + offCart1923.y})">
+            <path d="M -90 -28 
+                     L 90 -28 
+                     L 82 -6 
+                     L 96 -6 
+                     L 92 0 
+                     L 96 6 
+                     L 82 6 
+                     L 90 28 
+                     L -90 28 
+                     L -82 6 
+                     L -96 6 
+                     L -92 0 
+                     L -96 -6 
+                     L -82 -6 Z" 
+                  fill="${paper}" stroke="${ink}" stroke-width="2.4" stroke-linejoin="round" />
+            <circle cx="-88" cy="0" r="2.2" fill="${ink}" />
+            <circle cx="88" cy="0" r="2.2" fill="${ink}" />
+            <text x="0" y="3" font-family="${cfg.fonts.roman}" font-size="30" font-weight="700" letter-spacing="4" fill="${ink}" 
+                  text-anchor="middle" dominant-baseline="central" class="editable-text" data-key="year">
+              ${cfg.texts.year}
+            </text>
+          </g>
+
+          <!-- 11. Bottom Slogan Cartouche -->
+          <g class="draggable" data-target="footer" transform="translate(${offFooter.x}, ${offFooter.y + footerYShift})">
+            ${v.footerStyle === 'oval'
+              ? `<path d="M 225 965 Q 400 935 575 965 Q 400 995 225 965 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`
+              : v.footerStyle === 'arch'
+                ? `<path d="M 220 985 V 958 Q 400 920 580 958 V 985 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`
+                : `<path d="M 220 945 Q 400 935 580 945 L 575 985 Q 400 975 225 985 Z" fill="${paper}" stroke="${ink}" stroke-width="1.8" />`}
+            <text font-family="${cfg.fonts.fraktur}" font-size="18" fill="${ink}" 
+                  class="editable-text" data-key="footer">
+              <textPath href="#${idPrefix}p_foot" startOffset="50%" text-anchor="middle" dominant-baseline="central">
+                ${cfg.texts.footer}
+              </textPath>
+            </text>
+          </g>
+
+          <!-- 12. Colophon Signature Imprint -->
+          <text x="725" y="1030" font-family="${cfg.fonts.roman}" font-size="9" font-weight="700" letter-spacing="2" fill="${ink}" opacity="0.45" text-anchor="end">
+            TSCHICHOLD
+          </text>
+
+          <!-- 13. Symmetrical Alignment Grid (Toggleable) -->
+          ${cfg.showGrid ? `
+            <g stroke="#e63946" stroke-width="1" stroke-dasharray="4 4" opacity="0.85">
+              <line x1="400" y1="0" x2="400" y2="1072" stroke="#ff0055" stroke-width="1.5" />
+              <line x1="${spineX}" y1="0" x2="${spineX}" y2="1072" />
+              <line x1="${800 - spineX}" y1="0" x2="${800 - spineX}" y2="1072" />
+              <line x1="0" y1="225" x2="800" y2="225" />
+              <line x1="0" y1="775" x2="800" y2="775" />
+              <line x1="0" y1="840" x2="800" y2="840" />
+            </g>
+          ` : ''}
+        </svg>
+      `;
+    }
+
+    // Direct On-Canvas Text Editor
+    // Double-click any text on the poster to edit it. The sidebar text fields
+    // below provide a second, reliable way to edit every text element.
+    let currentEditKey = null;
+
+    function getTextValue(key) {
+      if (key.startsWith('l_')) {
+        return state.texts.leftRibbons[parseInt(key.split('_')[1], 10)] || '';
+      }
+      if (key.startsWith('r_')) {
+        return state.texts.rightRibbons[parseInt(key.split('_')[1], 10)] || '';
+      }
+      return state.texts[key] || '';
+    }
+
+    function openInlineEditor(textNode) {
+      const editor = document.getElementById('inline-text-editor');
+      if (!editor || !textNode) return;
+
+      const key = textNode.getAttribute('data-key');
+      if (!key) return;
+
+      currentEditKey = key;
+      editor.value = getTextValue(key);
+
+      const rect = textNode.getBoundingClientRect();
+      // Fixed positioning means the editor stays correctly aligned even when
+      // the poster is inside a centered/responsive canvas.
+      editor.style.left = `${Math.max(8, Math.min(window.innerWidth - 215, rect.left + rect.width / 2 - 100))}px`;
+      editor.style.top = `${Math.max(8, rect.top - 8)}px`;
+      editor.style.display = 'block';
+      editor.focus();
+      editor.select();
+    }
+
+    function setupInlineEditor() {
+      const editor = document.getElementById('inline-text-editor');
+      const frame = document.getElementById('poster-frame');
+      if (!editor || !frame || frame.dataset.textReady === 'true') return;
+      frame.dataset.textReady = 'true';
+
+      // Double-click is intentionally used so a normal click can select/drag
+      // the surrounding ribbon without accidentally opening the editor.
+      frame.addEventListener('dblclick', (e) => {
+        const textNode = e.target.closest('.editable-text');
+        if (!textNode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openInlineEditor(textNode);
+      });
+
+      editor.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commitInlineEdit();
+        } else if (e.key === 'Escape') {
+          editor.style.display = 'none';
+          currentEditKey = null;
+        }
+      });
+
+      editor.addEventListener('blur', () => {
+        commitInlineEdit();
+      });
+    }
+
+    function commitInlineEdit() {
+      const editor = document.getElementById('inline-text-editor');
+      if (!currentEditKey || !editor || editor.style.display === 'none') return;
+
+      const val = editor.value.trim();
+      if (currentEditKey.startsWith('l_')) {
+        const idx = parseInt(currentEditKey.split('_')[1], 10);
+        state.texts.leftRibbons[idx] = val;
+      } else if (currentEditKey.startsWith('r_')) {
+        const idx = parseInt(currentEditKey.split('_')[1], 10);
+        state.texts.rightRibbons[idx] = val;
+      } else {
+        state.texts[currentEditKey] = val;
+      }
+
+      syncTextInputs();
+      editor.style.display = 'none';
+      currentEditKey = null;
+      renderMain();
+    }
+
+    function syncTextInputs() {
+      document.querySelectorAll('[data-poster-text]').forEach(inp => {
+        const key = inp.dataset.posterText;
+        if (state.texts[key] !== undefined && document.activeElement !== inp) {
+          inp.value = state.texts[key];
+        }
+      });
+      document.querySelectorAll('[data-ribbon-side]').forEach(inp => {
+        const side = inp.dataset.ribbonSide;
+        const idx = Number(inp.dataset.ribbonIndex);
+        const arr = side === 'left' ? state.texts.leftRibbons : state.texts.rightRibbons;
+        if (arr && document.activeElement !== inp) inp.value = arr[idx] || '';
+      });
+    }
+
+    function setupSidebarTextEditor() {
+      document.querySelectorAll('[data-poster-text]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          state.texts[inp.dataset.posterText] = inp.value;
+          renderMain();
+        });
+      });
+
+      document.querySelectorAll('[data-ribbon-side]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          const side = inp.dataset.ribbonSide;
+          const idx = Number(inp.dataset.ribbonIndex);
+          const arr = side === 'left' ? state.texts.leftRibbons : state.texts.rightRibbons;
+          arr[idx] = inp.value;
+          renderMain();
+        });
+      });
+
+      syncTextInputs();
+    }
+
+    // Robust Drag-and-Drop Engine
+    // Uses Pointer Events so mouse, trackpad, and touch all work.
+    // The generated poster is re-rendered during dragging, so we keep the
+    // active target in state instead of relying on the original SVG node.
+    let activeDrag = null;
+
+    function ensureDragOffsets(target) {
+      if (target.startsWith('lRibbon_')) {
+        const idx = parseInt(target.split('_')[1], 10);
+        if (!state.offsets.lRibbons[idx]) state.offsets.lRibbons[idx] = { x: 0, y: 0 };
+        return state.offsets.lRibbons[idx];
+      }
+      if (target.startsWith('rRibbon_')) {
+        const idx = parseInt(target.split('_')[1], 10);
+        if (!state.offsets.rRibbons[idx]) state.offsets.rRibbons[idx] = { x: 0, y: 0 };
+        return state.offsets.rRibbons[idx];
+      }
+      if (!state.offsets[target]) state.offsets[target] = { x: 0, y: 0 };
+      return state.offsets[target];
+    }
+
+    function setupDragEngine() {
+      const frame = document.getElementById('poster-frame');
+      if (!frame || frame.dataset.dragReady === 'true') return;
+      frame.dataset.dragReady = 'true';
+
+      frame.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('#inline-text-editor')) return;
+
+        // Text is edited with a double-click or from the sidebar. Do not
+        // cancel the browser's click sequence on editable text.
+        if (e.target.closest('.editable-text')) return;
+
+        const targetGroup = e.target.closest('.draggable');
+        if (!targetGroup || !frame.contains(targetGroup)) return;
+
+        const target = targetGroup.getAttribute('data-target');
+        if (!target) return;
+
+        // Text remains editable with a normal click, but dragging a text
+        // element moves its parent poster object.
+        activeDrag = {
+          target,
+          startX: e.clientX,
+          startY: e.clientY,
+          pointerId: e.pointerId,
+          moved: false
+        };
+
+        ensureDragOffsets(target);
+        try { frame.setPointerCapture(e.pointerId); } catch (_) {}
+        e.preventDefault();
+      });
+
+      frame.addEventListener('pointermove', (e) => {
+        if (!activeDrag || e.pointerId !== activeDrag.pointerId) return;
+
+        const dx = e.clientX - activeDrag.startX;
+        const dy = e.clientY - activeDrag.startY;
+        if (Math.abs(dx) + Math.abs(dy) < 1) return;
+        activeDrag.moved = true;
+
+        const svgEl = frame.querySelector('svg');
+        if (!svgEl) return;
+        const rect = svgEl.getBoundingClientRect();
+        if (!rect.width) return;
+
+        // SVG viewBox is 800 units wide.
+        const scaleX = 800 / rect.width;
+        const scaleY = 1072 / rect.height;
+        const offset = ensureDragOffsets(activeDrag.target);
+        offset.x += dx * scaleX;
+        offset.y += dy * scaleY;
+
+        activeDrag.startX = e.clientX;
+        activeDrag.startY = e.clientY;
+
+        renderMain();
+      });
+
+      const endDrag = (e) => {
+        if (!activeDrag) return;
+        if (e && activeDrag.pointerId !== undefined && e.pointerId !== undefined && e.pointerId !== activeDrag.pointerId) return;
+        try { frame.releasePointerCapture(activeDrag.pointerId); } catch (_) {}
+        activeDrag = null;
+      };
+
+      frame.addEventListener('pointerup', endDrag);
+      frame.addEventListener('pointercancel', endDrag);
+      window.addEventListener('blur', () => { activeDrag = null; });
+    }
+
+    // Extended Seasonal Configurations (Covering Pediments, Numeral Systems, Species)
+    // Month-driven color + weather language. Each month gets a distinct historical-print palette.
+    const monthThemes = {
+      Januar:   { season:'Winter', field:'#566B78', paper:'#F3EEE2', ink:'#182026', weather:'snow', label:'January Frost' },
+      Februar:  { season:'Winter', field:'#6E7182', paper:'#F4EFE6', ink:'#211F28', weather:'snow', label:'February Frost' },
+      März:     { season:'Spring', field:'#A5B77D', paper:'#F7F1DF', ink:'#26301D', weather:'rain', label:'March Rain' },
+      April:    { season:'Spring', field:'#8FAF9B', paper:'#F7F0DE', ink:'#243027', weather:'rain', label:'April Showers' },
+      Mai:      { season:'Spring', field:'#C4A85D', paper:'#F8F0DA', ink:'#342B18', weather:'bloom', label:'May Bloom' },
+      Juni:     { season:'Summer', field:'#C98B55', paper:'#F8EBD2', ink:'#332318', weather:'sun', label:'June Sun' },
+      Juli:     { season:'Summer', field:'#D0A24F', paper:'#F7E8C8', ink:'#342713', weather:'sun', label:'July Heat' },
+      August:   { season:'Summer', field:'#C77A55', paper:'#F7E8D5', ink:'#342019', weather:'sun', label:'August Sun' },
+      September:{ season:'Autumn', field:'#A56C49', paper:'#F6EBD8', ink:'#2E1E17', weather:'wind', label:'September Wind' },
+      Oktober:  { season:'Autumn', field:'#A85D3C', paper:'#F5E4CF', ink:'#2D1913', weather:'leaves', label:'October Leaves' },
+      November: { season:'Autumn', field:'#6F584B', paper:'#EEE4D6', ink:'#241D1A', weather:'rain', label:'November Rain' },
+      Dezember: { season:'Winter', field:'#394E5D', paper:'#EEE9DE', ink:'#151B20', weather:'snow', label:'December Snow' }
+    };
+
+    function renderWeatherMotifs(theme, paper, ink, field, offsets = {}, dynamic = {}) {
+      const off = offsets.weather || {x:0,y:0};
+      const base = `class="draggable" data-target="weather" transform="translate(${off.x}, ${off.y})"`;
+      const intensity = Math.max(.35, Math.min(1, .42 + (dynamic.climateIntensity ?? .5) * .42));
+      const dur = Math.max(2.2, 6 - (dynamic.wind ?? .4) * 3.2);
+      const stroke = ink;
+      const accent = paper;
+      if (theme === 'snow') return `<g ${base} opacity="${intensity}" fill="none" stroke="${stroke}" stroke-width="1.5" stroke-linecap="round">
+        ${[0,1,2,3,4].map((i)=>`<g transform="translate(${78+i*150},${165+(i%2)*28})"><path d="M0 -8V8 M-7 0H7 M-5 -5L5 5 M5 -5L-5 5"><animateTransform attributeName="transform" type="translate" values="0 0; ${i%2?10: -8} 38; ${i%2?0:8} 76" dur="${(dur+i*.55).toFixed(2)}s" repeatCount="indefinite"/></path></g>`).join('')}
+        <circle cx="90" cy="245" r="3" fill="${accent}" stroke="none"><animate attributeName="cy" values="245;315;245" dur="4.5s" repeatCount="indefinite"/></circle>
+      </g>`;
+      if (theme === 'rain') return `<g ${base} opacity="${intensity}" fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round">
+        <path d="M70 188 Q95 165 120 188 Q145 165 170 188"/>
+        ${[0,1,2,3,4,5,6,7].map(i=>`<path d="M${82+i*18} 205 l-7 19"><animateTransform attributeName="transform" type="translate" values="0 0; ${i%2?4:-4} 38; 0 76" dur="${(dur+i*.18).toFixed(2)}s" repeatCount="indefinite"/></path>`).join('')}
+        <path d="M630 188 Q655 165 680 188 Q705 165 730 188"/>
+        ${[0,1,2,3,4,5,6,7].map(i=>`<path d="M${642+i*11} 205 l-7 19"><animateTransform attributeName="transform" type="translate" values="0 0; ${i%2?-4:4} 38; 0 76" dur="${(dur+i*.22).toFixed(2)}s" repeatCount="indefinite"/></path>`).join('')}
+      </g>`;
+      if (theme === 'bloom') return `<g ${base} opacity="${intensity}" stroke="${stroke}" stroke-width="1.3" fill="${accent}">
+        ${[0,1,2,3].map(i=>`<g transform="translate(${90+i*175},220)"><circle cx="0" cy="0" r="6"/><circle cx="9" cy="0" r="6"/><circle cx="4" cy="8" r="6"/><circle cx="-5" cy="7" r="6"/><circle cx="-9" cy="0" r="6"/><circle cx="0" cy="0" r="2" fill="${stroke}"/><animateTransform attributeName="transform" type="translate" values="${90+i*175} 220; ${92+i*175} 210; ${90+i*175} 220" dur="${(3.2+i*.4).toFixed(2)}s" repeatCount="indefinite"/></g>`).join('')}
+      </g>`;
+      if (theme === 'sun') return `<g ${base} opacity="${intensity}" fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round">
+        <g transform="translate(105 190)"><circle r="17"/><path d="M0 -31V-23 M0 23V31 M-31 0H-23 M23 0H31 M-22 -22L-16 -16 M22 22L16 16 M22 -22L16 -16 M-22 22L-16 16"/><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="18s" repeatCount="indefinite"/></g>
+        <g transform="translate(695 190)"><circle r="17"/><path d="M0 -31V-23 M0 23V31 M-31 0H-23 M23 0H31 M-22 -22L-16 -16 M22 22L16 16 M22 -22L16 -16 M-22 22L-16 16"/><animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="21s" repeatCount="indefinite"/></g>
+      </g>`;
+      if (theme === 'wind') return `<g ${base} opacity="${intensity}" fill="none" stroke="${stroke}" stroke-width="1.7" stroke-linecap="round">
+        <path d="M62 205 C105 175 145 235 185 205 C205 190 220 195 238 205"><animate attributeName="stroke-dashoffset" values="0;-80" dur="${dur}s" repeatCount="indefinite"/></path>
+        <path d="M560 205 C603 175 643 235 683 205 C703 190 718 195 736 205"><animate attributeName="stroke-dashoffset" values="0;-80" dur="${(dur+1).toFixed(2)}s" repeatCount="indefinite"/></path>
+      </g>`;
+      if (theme === 'leaves') return `<g ${base} opacity="${intensity}" fill="${accent}" stroke="${stroke}" stroke-width="1.2">
+        ${[0,1,2,3,4].map(i=>`<path d="M0 -7 C-12 -18 -16 -5 -8 5 C-2 10 5 4 0 -7 Z"><animateTransform attributeName="transform" type="translate" values="${85+i*125} ${175+(i%2)*18}; ${115+i*125} ${255+(i%3)*28}; ${150+i*125} 330" dur="${(4.5+i*.35).toFixed(2)}s" repeatCount="indefinite"/></path>`).join('')}
+      </g>`;
+      return '';
+    }
+
+    const ribbonFamilies = [
+      { name:'Engraved Scroll', style:'scroll', count:[5,6,7], wave:1.00, lean:4, width:1.12, ornament:'scrollwork' },
+      { name:'Calendar Band', style:'segmented', count:[5,6,7], wave:.72, lean:0, width:1.08, ornament:'segments' },
+      { name:'Botanical Sash', style:'botanical', count:[4,5,6], wave:1.12, lean:6, width:1.18, ornament:'leaves' },
+      { name:'Archive Strip', style:'ledger', count:[5,6], wave:.55, lean:-2, width:1.25, ornament:'ticks' },
+      { name:'Art Nouveau Serpent', style:'serpentine', count:[5,6,7], wave:1.35, lean:8, width:1.05, ornament:'dots' },
+      { name:'Broad Lithograph Wave', style:'broad', count:[5,6], wave:1.18, lean:3, width:1.35, ornament:'hatch' },
+      { name:'Quiet Arc', style:'arc', count:[5,6,7], wave:.82, lean:-4, width:.92, ornament:'rosette' }
+    ];
+
+    const seasonalConfigurations = [
+      {
+        season: 'Winter',
+        months: ['Januar', 'Februar', 'Dezember'],
+        zodiacs: ['capricorn', 'aquarius'],
+        palettes: [
+          { field: '#283640', paper: '#EAE6DD', ink: '#12161A', label: 'Nordic Winter Slate' },
+          { field: '#3A444C', paper: '#F0ECE4', ink: '#101316', label: 'Frosted Silver Bister' }
+        ],
+        fonts: {
+          roman: "'Cinzel', serif",
+          fraktur: "'Grenze Gotisch', cursive",
+          num: "'Bodoni Moda', serif"
+        },
+        pediment: 'triangular',
+        numeralSystem: 'roman',
+        species: 'winter',
+        waveAmp: 6,
+        spineWidth: 36,
+        density: 28
+      },
+      {
+        season: 'Spring',
+        months: ['März', 'April', 'Mai'],
+        zodiacs: ['taurus', 'cancer'],
+        palettes: [
+          { field: '#7E9F8E', paper: '#FAF6ED', ink: '#1D2520', label: 'Vernal Celadon Wash' },
+          { field: '#719483', paper: '#F8F4EA', ink: '#18201A', label: 'Budding Willow Green' }
+        ],
+        fonts: {
+          roman: "'Cormorant Infant', serif",
+          fraktur: "'Grenze Gotisch', cursive",
+          num: "'Bodoni Moda', serif"
+        },
+        pediment: 'segmental',
+        numeralSystem: 'tabular',
+        species: 'spring',
+        waveAmp: 10,
+        spineWidth: 38,
+        density: 44
+      },
+      {
+        season: 'Summer',
+        months: ['Juni', 'Juli', 'August'],
+        zodiacs: ['leo', 'cancer', 'virgo'],
+        palettes: [
+          { field: '#8FA89B', paper: '#F6EEDB', ink: '#1A1C19', label: '1923 Historical Sage' },
+          { field: '#95ADA1', paper: '#F5EEDA', ink: '#201F1C', label: 'Bleached Lime Ground' }
+        ],
+        fonts: {
+          roman: "'Cinzel', serif",
+          fraktur: "'UnifrakturMaguntia', cursive",
+          num: "'Bodoni Moda', serif"
+        },
+        pediment: 'lintel',
+        numeralSystem: 'tabular',
+        species: 'specimen',
+        waveAmp: 8,
+        spineWidth: 38,
+        density: 36
+      },
+      {
+        season: 'Autumn',
+        months: ['September', 'Oktober', 'November'],
+        zodiacs: ['libra', 'virgo'],
+        palettes: [
+          { field: '#B57C48', paper: '#F8F1E1', ink: '#24160C', label: 'Harvest Ochre Rag' },
+          { field: '#9E6A3E', paper: '#F6EEE0', ink: '#21160D', label: 'Sepia Leaf Wash' }
+        ],
+        fonts: {
+          roman: "'Cormorant Infant', serif",
+          fraktur: "'Grenze Gotisch', cursive",
+          num: "'Bodoni Moda', serif"
+        },
+        pediment: 'triangular',
+        numeralSystem: 'tabular',
+        species: 'autumn',
+        waveAmp: 11,
+        spineWidth: 40,
+        density: 40
+      }
+    ];
+
+    const designProfiles = [
+      { name:'Ribbon Sonata', layoutMode:'classic', ribbonStyle:'wave', ribbonCount:7, ribbonStartY:218, ribbonStepY:75, ribbonLean:4, headerStyle:'shield', portalStyle:'double', borderStyle:'corner', cityStyle:'classic', footerStyle:'notched', ornamentStyle:'stars', monthSize:44, leftRibbonWidth:1, rightRibbonWidth:1 },
+      { name:'Asymmetric Garden', layoutMode:'classic', ribbonStyle:'wave', ribbonCount:7, ribbonStartY:220, ribbonStepY:72, ribbonLean:6, headerStyle:'medallion', portalStyle:'arched', borderStyle:'double', cityStyle:'arch', footerStyle:'arch', ornamentStyle:'rosette', monthSize:42, leftRibbonWidth:0.72, rightRibbonWidth:1.35 },
+      { name:'Calendar Left / Ribbon Field', layoutMode:'calendar-left', ribbonStyle:'wave', ribbonCount:7, ribbonStartY:225, ribbonStepY:55, ribbonLean:3, headerStyle:'diamond', portalStyle:'notched', borderStyle:'triple', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'cross', monthSize:40, leftRibbonWidth:1.35, rightRibbonWidth:0.82 },
+      { name:'Calendar Right / Ribbon Field', layoutMode:'calendar-right', ribbonStyle:'serpentine', ribbonCount:6, ribbonStartY:238, ribbonStepY:60, ribbonLean:5, headerStyle:'arch', portalStyle:'double', borderStyle:'corner', cityStyle:'classic', footerStyle:'oval', ornamentStyle:'stars', monthSize:40, leftRibbonWidth:0.82, rightRibbonWidth:1.4 },
+      { name:'Bottom Center Folio', layoutMode:'bottom-center', ribbonStyle:'arc', ribbonCount:7, ribbonStartY:226, ribbonStepY:52, ribbonLean:0, headerStyle:'medallion', portalStyle:'arched', borderStyle:'double', cityStyle:'arch', footerStyle:'arch', ornamentStyle:'rosette', monthSize:39, leftRibbonWidth:1.15, rightRibbonWidth:0.95 },
+      { name:'Central Ribbon Column', layoutMode:'ribbon-column', ribbonStyle:'wave', ribbonCount:5, ribbonStartY:220, ribbonStepY:55, ribbonLean:4, headerStyle:'shield', portalStyle:'notched', borderStyle:'triple', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'cross', monthSize:38, leftRibbonWidth:1, rightRibbonWidth:1 },
+      { name:'Wide / Narrow Dialogue', layoutMode:'classic', ribbonStyle:'broad', ribbonCount:6, ribbonStartY:225, ribbonStepY:82, ribbonLean:1, headerStyle:'diamond', portalStyle:'classic', borderStyle:'triple', cityStyle:'arch', footerStyle:'notched', ornamentStyle:'rosette', monthSize:43, leftRibbonWidth:1.4, rightRibbonWidth:0.7 },
+      { name:'Loose Swirls', layoutMode:'classic', ribbonStyle:'serpentine', ribbonCount:7, ribbonStartY:212, ribbonStepY:78, ribbonLean:8, headerStyle:'arch', portalStyle:'arched', borderStyle:'corner', cityStyle:'classic', footerStyle:'oval', ornamentStyle:'stars', monthSize:45, leftRibbonWidth:1.05, rightRibbonWidth:1.25 },
+      { name:'Offset Archive', layoutMode:'calendar-left', ribbonStyle:'broad', ribbonCount:5, ribbonStartY:230, ribbonStepY:66, ribbonLean:-5, headerStyle:'shield', portalStyle:'double', borderStyle:'corner', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'cross', monthSize:39, leftRibbonWidth:1.55, rightRibbonWidth:0.65 },
+      { name:'Right-Hand Ledger', layoutMode:'calendar-right', ribbonStyle:'wave', ribbonCount:6, ribbonStartY:210, ribbonStepY:64, ribbonLean:7, headerStyle:'diamond', portalStyle:'notched', borderStyle:'double', cityStyle:'arch', footerStyle:'oval', ornamentStyle:'stars', monthSize:41, leftRibbonWidth:0.62, rightRibbonWidth:1.55 },
+      { name:'Garden Through the Center', layoutMode:'ribbon-column', ribbonStyle:'serpentine', ribbonCount:5, ribbonStartY:230, ribbonStepY:48, ribbonLean:9, headerStyle:'arch', portalStyle:'arched', borderStyle:'triple', cityStyle:'classic', footerStyle:'arch', ornamentStyle:'rosette', monthSize:37, leftRibbonWidth:1.15, rightRibbonWidth:1.15 },
+      { name:'Quiet Left / Loud Right', layoutMode:'classic', ribbonStyle:'broad', ribbonCount:6, ribbonStartY:220, ribbonStepY:74, ribbonLean:2, headerStyle:'medallion', portalStyle:'double', borderStyle:'corner', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'cross', monthSize:43, leftRibbonWidth:0.58, rightRibbonWidth:1.6 },
+      { name:'Quiet Right / Loud Left', layoutMode:'classic', ribbonStyle:'arc', ribbonCount:6, ribbonStartY:225, ribbonStepY:69, ribbonLean:-4, headerStyle:'shield', portalStyle:'notched', borderStyle:'triple', cityStyle:'arch', footerStyle:'oval', ornamentStyle:'rosette', monthSize:43, leftRibbonWidth:1.6, rightRibbonWidth:0.58 },
+      { name:'Bottom Ribbon Choir', layoutMode:'bottom-center', ribbonStyle:'straight', ribbonCount:6, ribbonStartY:220, ribbonStepY:48, ribbonLean:0, headerStyle:'diamond', portalStyle:'arched', borderStyle:'double', cityStyle:'classic', footerStyle:'arch', ornamentStyle:'stars', monthSize:38, leftRibbonWidth:1.3, rightRibbonWidth:0.8 },
+      { name:'Broken Symmetry', layoutMode:'classic', ribbonStyle:'serpentine', ribbonCount:5, ribbonStartY:205, ribbonStepY:88, ribbonLean:11, headerStyle:'medallion', portalStyle:'notched', borderStyle:'corner', cityStyle:'ribbon', footerStyle:'notched', ornamentStyle:'cross', monthSize:44, leftRibbonWidth:1.5, rightRibbonWidth:0.75 },
+      { name:'Printed Garden Frame', layoutMode:'calendar-left', ribbonStyle:'arc', ribbonCount:6, ribbonStartY:245, ribbonStepY:57, ribbonLean:3, headerStyle:'arch', portalStyle:'double', borderStyle:'triple', cityStyle:'classic', footerStyle:'oval', ornamentStyle:'rosette', monthSize:40, leftRibbonWidth:0.95, rightRibbonWidth:1.45 },
+      { name:'Narrow Calendar / Open Field', layoutMode:'calendar-right', ribbonStyle:'straight', ribbonCount:5, ribbonStartY:220, ribbonStepY:78, ribbonLean:-2, headerStyle:'shield', portalStyle:'arched', borderStyle:'corner', cityStyle:'arch', footerStyle:'notched', ornamentStyle:'stars', monthSize:39, leftRibbonWidth:1.4, rightRibbonWidth:0.72 }
+    ];
+
+    // Dynamic data pools: every generation samples a new combination rather than
+    // choosing from one fixed seasonal preset. The values stay inside the original
+    // poster's historical visual language, but the relationships keep shifting.
+    const dynamicDatasets = {
+      climate: [
+        { name:'Frost', intensity:.85, moisture:.28, wind:.35, daylight:.25 },
+        { name:'Thaw', intensity:.52, moisture:.72, wind:.42, daylight:.42 },
+        { name:'Showers', intensity:.48, moisture:.92, wind:.58, daylight:.52 },
+        { name:'Bloom', intensity:.35, moisture:.68, wind:.28, daylight:.68 },
+        { name:'Heat', intensity:.82, moisture:.30, wind:.22, daylight:.92 },
+        { name:'Dry Wind', intensity:.62, moisture:.18, wind:.88, daylight:.70 },
+        { name:'Harvest', intensity:.55, moisture:.42, wind:.62, daylight:.58 },
+        { name:'Storm', intensity:.90, moisture:.95, wind:.92, daylight:.38 }
+      ],
+      print: [
+        { name:'Clean lithograph', pressure:.45, registration:.08, grain:.22 },
+        { name:'Soft worn ink', pressure:.58, registration:.16, grain:.38 },
+        { name:'Heavy impression', pressure:.82, registration:.10, grain:.30 },
+        { name:'Offset print', pressure:.50, registration:.30, grain:.34 },
+        { name:'Faded archive', pressure:.38, registration:.24, grain:.52 }
+      ],
+      composition: [
+        { name:'Balanced', symmetry:.88, bias:0 },
+        { name:'Left-weighted', symmetry:.58, bias:-1 },
+        { name:'Right-weighted', symmetry:.58, bias:1 },
+        { name:'Organic', symmetry:.42, bias:0 },
+        { name:'Formal', symmetry:.96, bias:0 }
+      ],
+      ornament: [
+        { name:'Stars', density:.42, style:'stars' },
+        { name:'Rosette', density:.62, style:'rosette' },
+        { name:'Cross', density:.48, style:'cross' },
+        { name:'Botanical', density:.78, style:'rosette' },
+        { name:'Quiet', density:.24, style:'stars' }
+      ],
+      ribbon: [
+        { name:'Silk', tension:.38, wave:.82, lean:-2 },
+        { name:'Engraved', tension:.64, wave:1.00, lean:1 },
+        { name:'Broad curl', tension:.78, wave:1.28, lean:4 },
+        { name:'Loose serpentine', tension:.48, wave:1.52, lean:7 },
+        { name:'Measured bands', tension:.90, wave:.62, lean:0 }
+      ],
+      hybrid: [
+        { name:'Manuscript Console', intensity:.44 },
+        { name:'Instrument Panel', intensity:.72 },
+        { name:'Signal Seal', intensity:.58 },
+        { name:'Modular Frame', intensity:.66 },
+        { name:'Quiet Interface', intensity:.30 }
+      ]
+    };
+
+    function pickData(pool, rng) {
+      return pool[Math.floor(rng() * pool.length)];
+    }
+
+    function shiftHex(hex, amount) {
+      const n = parseInt(hex.replace('#',''),16);
+      const r = Math.max(0, Math.min(255, (n >> 16) + amount));
+      const g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amount));
+      const b = Math.max(0, Math.min(255, (n & 255) + amount));
+      return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    }
+
+    function sampleDynamicData(rng) {
+      const climate = pickData(dynamicDatasets.climate, rng);
+      const print = pickData(dynamicDatasets.print, rng);
+      const composition = pickData(dynamicDatasets.composition, rng);
+      const ornament = pickData(dynamicDatasets.ornament, rng);
+      const ribbon = pickData(dynamicDatasets.ribbon, rng);
+      const hybrid = pickData(dynamicDatasets.hybrid, rng);
+      return {
+        climate, print, composition, ornament, ribbon, hybrid,
+        pulse: Math.floor(rng() * 1000000)
+      };
+    }
+
+    function applySeasonalGeneration() {
+      const rng = Math.random;
+      const data = sampleDynamicData(rng);
+      const s = seasonalConfigurations[Math.floor(rng() * seasonalConfigurations.length)];
+      const m = s.months[Math.floor(rng() * s.months.length)];
+      const monthProfile = chooseMonthVisualProfile(m);
+      const profile = chooseDesignForMonth(monthProfile, rng);
+      const ribbonFamily = chooseRibbonForMonth(monthProfile, rng);
+      const ribbonCount = ribbonFamily.count[Math.floor(rng() * ribbonFamily.count.length)];
+      const z = s.zodiacs[Math.floor(rng() * s.zodiacs.length)];
+      const theme = monthThemes[m] || monthThemes.Juli;
+      const paletteShift = Math.round((data.climate.intensity - 0.5) * 10);
+      const p = { field: shiftHex(theme.field, paletteShift), paper: shiftHex(theme.paper, Math.round(paletteShift * 0.35)), ink: shiftHex(theme.ink, -Math.round(paletteShift * 0.25)), label: theme.label };
+
+      state.seed = Math.floor(rng() * 1000000);
+      state.texts.month = m;
+      state.weatherTheme = theme.weather;
+      state.monthVisualProfile = monthProfile;
+      state.zodiac = z;
+      state.colors.field = p.field;
+      state.colors.paper = p.paper;
+      state.colors.ink = p.ink;
+      state.fonts.roman = s.fonts.roman;
+      state.fonts.fraktur = s.fonts.fraktur;
+      state.fonts.num = s.fonts.num;
+      state.pedimentStyle = s.pediment;
+      state.numeralSystem = s.numeralSystem;
+      state.botanicalSpecies = s.species;
+      state.dynamicData = {
+        climate: data.climate.name,
+        climateIntensity: data.climate.intensity,
+        moisture: data.climate.moisture,
+        wind: data.climate.wind,
+        daylight: data.climate.daylight,
+        printPressure: data.print.pressure,
+        registration: data.print.registration,
+        botanicalGrowth: Math.max(.25, Math.min(1, monthProfile.botanical * .62 + data.climate.moisture * .23 + rng() * .15)),
+        symmetry: Math.max(.18, Math.min(.92, monthProfile.symmetry * .68 + data.composition.symmetry * .32)),
+        monthDensity: monthProfile.density,
+        modernLevel: Math.max(.12, Math.min(.82, monthProfile.modern + (data.hybrid.intensity - .5) * .22)),
+        monthMotion: Math.max(.15, Math.min(.95, monthProfile.motion + data.climate.wind * .18)),
+        calendarScale: monthProfile.calendarScale,
+        layoutFamily: monthProfile.layouts[0],
+        ornamentDensity: data.ornament.density,
+        ribbonTension: data.ribbon.tension,
+        hybridIntensity: Math.max(.55, Math.min(1, data.hybrid.intensity + .28 + (data.ornament.density - .5) * .22)),
+        hybridMode: data.hybrid.name.toLowerCase().replace(/\s+/g, '-'),
+        calendarFamily: (monthCalendarProfiles[m] || monthCalendarProfiles.Juli).family,
+        calendarShift: Math.floor(rng() * 3),
+        dataPulse: data.pulse,
+        ribbonFamily: ribbonFamily.name,
+        ribbonMotion: Math.max(0.25, Math.min(1, data.ribbon.tension * .7 + data.print.registration * .5)),
+        ribbonOrnament: ribbonFamily.ornament
+      };
+
+      // Data-driven motion: climate + print conditions alter the poster without
+      // breaking its original proportions or historical vocabulary.
+      state.waveAmp = Math.max(4, Math.min(40, Math.round(s.waveAmp * data.ribbon.wave * ribbonFamily.wave * (.78 + monthProfile.motion * .42) + data.climate.wind * 8)));
+      state.spineWidthPct = Math.max(34, Math.min(44, Math.round(s.spineWidth + data.composition.bias * 2 + (1 - state.dynamicData.symmetry) * 2 + (monthProfile.calendarScale - 1) * 12)));
+      state.vineDensity = Math.max(20, Math.min(56, Math.round(s.density * (.62 + state.dynamicData.botanicalGrowth * .72 + monthProfile.density * .22))));
+      state.marginPct = [4, 4.5, 5, 5.5][Math.floor(rng() * 4)];
+
+      state.variation = {
+        ...profile,
+        ribbonStyle: ribbonFamily.style,
+        ribbonCount: ribbonCount,
+        ribbonOrnament: ribbonFamily.ornament,
+        ribbonLean: profile.ribbonLean + ribbonFamily.lean * (.65 + data.ribbon.tension * .45) + data.ribbon.lean + data.composition.bias * 2,
+        leftRibbonWidth: ribbonFamily.width * (0.86 + rng()*.24),
+        rightRibbonWidth: ribbonFamily.width * (0.86 + rng()*.24),
+        ornamentStyle: data.ornament.style,
+        calendarShiftX: Math.round([-10, -6, 0, 5, 9][Math.floor(rng() * 5)] + data.composition.bias * 5 * (1 - monthProfile.symmetry)),
+        calendarShiftY: [-6, 0, 5, 8][Math.floor(rng() * 4)] * (.7 + monthProfile.motion * .3),
+        monthProfile: monthProfile,
+        calendarScale: monthProfile.calendarScale,
+        calendarBias: data.composition.bias,
+        botanicalScale: .86 + state.dynamicData.botanicalGrowth * .34,
+        sponsorScale: .92 + data.print.pressure * .16
+      };
+
+      // Small editorial shuffles keep the same historical vocabulary while changing the rhythm.
+      const left = [...state.texts.leftRibbons];
+      const right = [...state.texts.rightRibbons];
+      if (rng() > 0.5) {
+        const i = Math.floor(rng() * 5), j = Math.floor(rng() * 5);
+        [left[i], left[j]] = [left[j], left[i]];
+      }
+      if (rng() > 0.5) {
+        const i = Math.floor(rng() * 5), j = Math.floor(rng() * 5);
+        [right[i], right[j]] = [right[j], right[i]];
+      }
+      state.texts.leftRibbons = left;
+      state.texts.rightRibbons = right;
+
+      Object.keys(state.offsets).forEach(k => {
+        if (Array.isArray(state.offsets[k])) state.offsets[k].forEach(item => { item.x = 0; item.y = 0; });
+        else state.offsets[k] = { x: 0, y: 0 };
+      });
+
+      document.getElementById('inp-cal-month').value = m;
+      document.getElementById('inp-cal-year').value = state.texts.year;
+      document.getElementById('select-zodiac').value = z;
+      document.getElementById('col-field').value = p.field;
+      document.getElementById('col-paper').value = p.paper;
+      document.getElementById('col-ink').value = p.ink;
+      document.getElementById('sel-font-roman').value = s.fonts.roman;
+      document.getElementById('sel-font-fraktur').value = s.fonts.fraktur;
+      document.getElementById('sel-font-num').value = s.fonts.num;
+      document.getElementById('sel-pediment-style').value = s.pediment;
+      document.getElementById('sel-numeral-system').value = s.numeralSystem;
+      document.getElementById('sel-botanical-species').value = s.species;
+      document.getElementById('range-spine-width').value = state.spineWidthPct;
+      document.getElementById('val-spine-width').textContent = `${state.spineWidthPct}%`;
+      document.getElementById('range-margin-width').value = state.marginPct;
+      document.getElementById('val-margin-width').textContent = `${state.marginPct}%`;
+      document.getElementById('range-wave-amp').value = state.waveAmp;
+      document.getElementById('val-wave-amp').textContent = `${state.waveAmp}px`;
+      document.getElementById('range-vine-density').value = state.vineDensity;
+      document.getElementById('val-vine-density').textContent = `${state.vineDensity} Sprigs`;
+      if (state.liveWeather) applyLiveWeatherToState();
+      document.getElementById('season-status-label').textContent = `Active: ${m} 1923 • ${s.season} / ${profile.name} • ${state.liveWeather ? `LIVE ${state.liveWeather.description}` : data.climate.name} • ${data.print.name} • ${ribbonFamily.name} • ${(monthCalendarProfiles[m] || monthCalendarProfiles.Juli).family}`;
+
+      renderMain();
+    }
+
+    // Fetch real current conditions from Open-Meteo and translate them into design variables.
+    // The weather values drive Fraunces axes and the poster's animated weather motif.
+    function weatherCodeToTheme(code, temperature, windSpeed) {
+      if ([71,73,75,77,85,86].includes(code)) return 'snow';
+      if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(code)) return 'rain';
+      if (windSpeed >= 28) return 'wind';
+      if ([0,1].includes(code) && temperature >= 22) return 'sun';
+      if ([0,1,2].includes(code)) return 'leaves';
+      if ([3,45,48].includes(code)) return 'wind';
+      return 'rain';
+    }
+
+    function applyLiveWeatherToState() {
+      const w = state.liveWeather;
+      if (!w) return;
+      state.weatherTheme = w.theme;
+      state.dynamicData = {
+        ...(state.dynamicData || {}),
+        climate: w.description.toLowerCase(),
+        climateIntensity: Math.max(0, Math.min(1, w.cloudCover / 100)),
+        moisture: Math.max(0, Math.min(1, w.humidity / 100)),
+        wind: Math.max(0, Math.min(1, w.windSpeed / 60)),
+        daylight: w.isDay ? Math.max(0.25, Math.min(1, 1 - w.cloudCover / 125)) : 0.12,
+        liveTemperatureC: w.temperature,
+        liveHumidity: w.humidity,
+        liveWindKmh: w.windSpeed,
+        liveWeatherCode: w.code
+      };
+    }
+
+    async function fetchLiveWeather() {
+      const input = document.getElementById('weather-location-input');
+      const status = document.getElementById('live-weather-status');
+      const button = document.getElementById('btn-fetch-live-weather');
+      const place = input.value.trim();
+      if (!place) {
+        status.textContent = 'Enter a city or place first.';
+        input.focus();
+        return;
+      }
+      button.disabled = true;
+      button.textContent = 'Fetching weather…';
+      status.textContent = `Step 1 of 2 · Finding ${place}…`;
+      const requestJSON = async (url, label) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        try {
+          const response = await fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', signal: controller.signal, headers: { 'Accept': 'application/json' } });
+          if (!response.ok) throw new Error(`${label} returned HTTP ${response.status}.`);
+          return await response.json();
+        } catch (err) {
+          if (err.name === 'AbortError') throw new Error(`${label} timed out. Check your internet connection and try again.`);
+          if (err instanceof TypeError) {
+            if (window.location.protocol === 'file:') {
+              throw new Error('Your browser blocked the weather request from a local file. Upload this HTML to GitHub Pages and open the https:// website, then try again.');
+            }
+            throw new Error(`${label} could not be reached. The browser may be blocking this service, or the network request failed. Try the fallback location service or disable the VPN/ad blocker temporarily.`);
+          }
+          throw err;
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      };
+      try {
+        // Resolve the place with Open-Meteo first. Some privacy extensions block its
+        // separate geocoding host even when the forecast API itself is reachable, so
+        // fall back to OpenStreetMap Nominatim and then a small common-city lookup.
+        let location = null;
+        let geocodingIssue = '';
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(place)}&count=5&language=en&format=json`;
+        try {
+          const geo = await requestJSON(geoUrl, 'Open-Meteo location search');
+          const results = geo.results || [];
+          if (results.length) location = results[0];
+        } catch (geoError) {
+          geocodingIssue = geoError.message || 'Open-Meteo location search failed';
+        }
+        if (!location) {
+          try {
+            const osmUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(place)}`;
+            const osm = await requestJSON(osmUrl, 'Backup location search');
+            if (osm.length) {
+              const item = osm[0];
+              location = {
+                name: item.name || place,
+                admin1: item.address && (item.address.state || item.address.region || item.address.county) || '',
+                country: item.address && item.address.country || '',
+                latitude: Number(item.lat), longitude: Number(item.lon)
+              };
+            }
+          } catch (backupError) {
+            geocodingIssue += (geocodingIssue ? ' / ' : '') + (backupError.message || 'backup location search failed');
+          }
+        }
+        if (!location) {
+          const commonPlaces = {
+            'new york': {name:'New York', admin1:'New York', country:'United States', latitude:40.7128, longitude:-74.0060},
+            'new york, ny': {name:'New York', admin1:'New York', country:'United States', latitude:40.7128, longitude:-74.0060},
+            'nyc': {name:'New York', admin1:'New York', country:'United States', latitude:40.7128, longitude:-74.0060},
+            'brooklyn': {name:'Brooklyn', admin1:'New York', country:'United States', latitude:40.6782, longitude:-73.9442},
+            'manhattan': {name:'Manhattan', admin1:'New York', country:'United States', latitude:40.7831, longitude:-73.9712},
+            'queens': {name:'Queens', admin1:'New York', country:'United States', latitude:40.7282, longitude:-73.7949},
+            'bronx': {name:'Bronx', admin1:'New York', country:'United States', latitude:40.8448, longitude:-73.8648},
+            'staten island': {name:'Staten Island', admin1:'New York', country:'United States', latitude:40.5795, longitude:-74.1502},
+            'los angeles': {name:'Los Angeles', admin1:'California', country:'United States', latitude:34.0522, longitude:-118.2437},
+            'chicago': {name:'Chicago', admin1:'Illinois', country:'United States', latitude:41.8781, longitude:-87.6298},
+            'san francisco': {name:'San Francisco', admin1:'California', country:'United States', latitude:37.7749, longitude:-122.4194},
+            'boston': {name:'Boston', admin1:'Massachusetts', country:'United States', latitude:42.3601, longitude:-71.0589},
+            'london': {name:'London', admin1:'England', country:'United Kingdom', latitude:51.5072, longitude:-0.1276},
+            'paris': {name:'Paris', admin1:'Île-de-France', country:'France', latitude:48.8566, longitude:2.3522},
+            'tokyo': {name:'Tokyo', admin1:'Tokyo', country:'Japan', latitude:35.6762, longitude:139.6503}
+          };
+          location = commonPlaces[place.toLowerCase()];
+        }
+        if (!location) {
+          throw new Error(`Couldn't resolve “${place}”. ${geocodingIssue ? 'Both location-search services failed. ' : ''}Try New York, Brooklyn, Manhattan, Queens, or another city name.`);
+        }
+        status.textContent = `Step 2 of 2 · Getting current weather for ${location.name}…`;
+        const params = new URLSearchParams({
+          latitude: String(location.latitude), longitude: String(location.longitude),
+          current: 'temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,cloud_cover,wind_speed_10m,weather_code',
+          timezone: 'auto', temperature_unit: 'celsius', wind_speed_unit: 'kmh'
+        });
+        const payload = await requestJSON(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, 'Current-weather service');
+        const current = payload.current;
+        if (!current || current.weather_code === undefined) throw new Error('The weather service returned incomplete current conditions. Please try again.');
+        const code = Number(current.weather_code);
+        const temperature = Number(current.temperature_2m);
+        const windSpeed = Number(current.wind_speed_10m);
+        const humidity = Number(current.relative_humidity_2m);
+        const cloudCover = Number(current.cloud_cover);
+        const descriptions = {
+          0:'Clear sky', 1:'Mainly clear', 2:'Partly cloudy', 3:'Overcast', 45:'Fog', 48:'Rime fog',
+          51:'Light drizzle', 53:'Drizzle', 55:'Dense drizzle', 56:'Freezing drizzle', 57:'Dense freezing drizzle',
+          61:'Light rain', 63:'Rain', 65:'Heavy rain', 66:'Freezing rain', 67:'Heavy freezing rain',
+          71:'Light snow', 73:'Snow', 75:'Heavy snow', 77:'Snow grains', 80:'Rain showers', 81:'Showers',
+          82:'Heavy showers', 85:'Snow showers', 86:'Heavy snow showers', 95:'Thunderstorm',
+          96:'Thunderstorm with hail', 99:'Thunderstorm with heavy hail'
+        };
+        const description = descriptions[code] || 'Current conditions';
+        state.liveWeather = {
+          place: [location.name, location.admin1, location.country].filter(Boolean).join(', '),
+          latitude: Number(location.latitude), longitude: Number(location.longitude),
+          temperature, humidity, windSpeed, cloudCover, isDay: Number(current.is_day) === 1,
+          code, description, theme: weatherCodeToTheme(code, temperature, windSpeed),
+          observedAt: current.time || new Date().toISOString()
+        };
+        applyLiveWeatherToState();
+        // Ensure the variable font is loaded before repainting the poster.
+        if (document.fonts && document.fonts.load) {
+          try { await Promise.all([document.fonts.load('900 28px Fraunces'), document.fonts.load('700 28px UnifrakturMaguntia'), document.fonts.load('700 28px Cinzel'), document.fonts.load('700 28px Cormorant Infant'), document.fonts.load('700 28px Bodoni Moda'), document.fonts.load('700 28px Grenze Gotisch')]); } catch (_) {}
+        }
+        renderMain();
+        const time = state.liveWeather.observedAt.replace('T', ' ');
+        status.textContent = `LIVE WEATHER CONNECTED · ${state.liveWeather.place} · ${description} · ${Math.round(temperature)}°C · humidity ${humidity}% · cloud ${cloudCover}% · wind ${Math.round(windSpeed)} km/h · observed ${time}. Live weather + location signature applied to month lettering (weight, softness, optical size, spacing, outline and scale).`;
+        status.style.color = '#286447';
+      } catch (error) {
+        status.style.color = '#9A3D2B';
+        status.textContent = `WEATHER NOT CONNECTED · ${error.message || 'Unknown network error.'}`;
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Fetch Live Weather';
+      }
+    }
+
+    function getWeatherMotionClass(w) {
+      if (!w) return '';
+      const code = Number(w.code);
+      if ([95,96,99].includes(code)) return 'weather-motion-storm';
+      if ([71,73,75,77,85,86].includes(code)) return 'weather-motion-snow';
+      if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) return 'weather-motion-rain';
+      if ([45,48].includes(code)) return 'weather-motion-fog';
+      if (Number(w.temperature) >= 29) return 'weather-motion-heat';
+      if (Number(w.windSpeed) >= 24) return 'weather-motion-wind';
+      if ([2,3].includes(code)) return 'weather-motion-cloud';
+      return 'weather-motion-clear';
+    }
+
+    // Refresh the current place's conditions every ten minutes. The SVG animation
+    // itself runs continuously between refreshes, using the most recent live snapshot.
+    async function refreshLiveWeatherSilently() {
+      const w = state.liveWeather;
+      if (!w || !Number.isFinite(w.latitude) || !Number.isFinite(w.longitude)) return;
+      try {
+        const params = new URLSearchParams({
+          latitude: String(w.latitude), longitude: String(w.longitude),
+          current: 'temperature_2m,relative_humidity_2m,is_day,cloud_cover,wind_speed_10m,weather_code',
+          timezone: 'auto', temperature_unit: 'celsius', wind_speed_unit: 'kmh'
+        });
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`, { cache: 'no-store' });
+        if (!response.ok) return;
+        const payload = await response.json();
+        const c = payload.current;
+        if (!c || c.weather_code === undefined) return;
+        const descriptions = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Dense drizzle',56:'Freezing drizzle',57:'Dense freezing drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',66:'Freezing rain',67:'Heavy freezing rain',71:'Light snow',73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Rain showers',81:'Showers',82:'Heavy showers',85:'Snow showers',86:'Heavy snow showers',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Thunderstorm with heavy hail'};
+        state.liveWeather = { ...w,
+          temperature: Number(c.temperature_2m), humidity: Number(c.relative_humidity_2m),
+          windSpeed: Number(c.wind_speed_10m), cloudCover: Number(c.cloud_cover),
+          isDay: Number(c.is_day) === 1, code: Number(c.weather_code),
+          description: descriptions[Number(c.weather_code)] || 'Current conditions',
+          theme: weatherCodeToTheme(Number(c.weather_code), Number(c.temperature_2m), Number(c.wind_speed_10m)),
+          observedAt: c.time || new Date().toISOString()
+        };
+        applyLiveWeatherToState();
+        renderMain();
+        const status = document.getElementById('live-weather-status');
+        if (status) status.textContent = `LIVE WEATHER AUTO-UPDATED · ${state.liveWeather.place} · ${state.liveWeather.description} · ${Math.round(state.liveWeather.temperature)}°C · wind ${Math.round(state.liveWeather.windSpeed)} km/h. Type motion is continuously responding to the latest weather snapshot.`;
+      } catch (_) { /* Keep the last successful weather snapshot and animation. */ }
+    }
+    setInterval(refreshLiveWeatherSilently, 10 * 60 * 1000);
+
+    function updateWeatherTypographyReadout() {
+      const readout = document.getElementById('weather-type-readout');
+      if (!readout) return;
+      const d = state.dynamicData || {};
+      const soft = Math.round(15 + (d.moisture ?? 0.5) * 85);
+      const wonk = Math.max(0, Math.min(1, Number((((d.wind ?? 0.4) * 0.7 + (d.moisture ?? 0.5) * 0.3)).toFixed(2))));
+      const opsz = Math.round(18 + (d.daylight ?? 0.6) * 54);
+      if (!state.weatherTypography) {
+        readout.textContent = 'Off — calendar month uses the selected ribbon calligraphy font.';
+      } else if (state.liveWeather) {
+        const w = state.liveWeather;
+        const code = Number(w.code);
+        let preset = 'default';
+        if ([0,1].includes(code)) preset = 'clear / open';
+        else if ([2,3].includes(code)) preset = 'cloud / soft';
+        else if ([45,48].includes(code)) preset = 'fog / rounded';
+        else if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) preset = 'rain / heavy + irregular';
+        else if ([71,73,75,77,85,86].includes(code)) preset = 'snow / rounded';
+        else if ([95,96,99].includes(code)) preset = 'storm / dense + sharp';
+        const treatment = [0,1].includes(code) ? 'thin, crisp, widely spaced' : [2,3].includes(code) ? 'heavy, soft, compact' : [45,48].includes(code) ? 'rounded, misty, spacious' : [71,73,75,77,85,86].includes(code) ? 'light, rounded, airy' : [95,96,99].includes(code) ? 'ultra-dense, sharp' : 'dense, irregular, tightly spaced';
+        readout.textContent = `LIVE: ${w.place} · ${w.description}, ${Math.round(w.temperature)}°C, humidity ${w.humidity}%, cloud ${w.cloudCover}%, wind ${Math.round(w.windSpeed)} km/h. Type preset: ${preset} (${treatment}). Continuous motion: ${getWeatherMotionClass(w).replace('weather-motion-','')}; all poster lettering moves with the fetched conditions while Fraunces axes change through the cycle. Weather refreshes automatically every 10 minutes; hover adds the separate goofy interaction. Updated ${w.observedAt.replace('T',' ')}.`;
+      } else {
+        readout.textContent = `Waiting for live weather. Preview axes only: SOFT ${soft}, WONK ${wonk}, optical size ${opsz}.`;
+      }
+    }
+
+    function renderMain() {
+      const container = document.getElementById('poster-frame');
+      container.innerHTML = buildPosterSVG(state, false);
+      // Attach the playful hover treatment to every text element in the live poster.
+      // The weather-responsive month heading keeps its weather-driven base styling too.
+      const motionClass = getWeatherMotionClass(state.liveWeather);
+      const w = state.liveWeather;
+      const motionScale = w ? Math.max(0.65, Math.min(1.55, 1.45 - (Number(w.windSpeed) || 0) / 90)) : 1;
+      container.querySelectorAll('svg text').forEach((node) => {
+        node.classList.add('poster-goofy-type');
+        node.classList.remove('weather-motion-clear','weather-motion-cloud','weather-motion-fog','weather-motion-rain','weather-motion-snow','weather-motion-storm','weather-motion-wind','weather-motion-heat');
+        if (motionClass) {
+          node.classList.add(motionClass);
+          node.style.animationDuration = `${motionScale}s`;
+        } else {
+          node.style.removeProperty('animation-duration');
+        }
+      });
+      updateWeatherTypographyReadout();
+    }
+
+    function renderMatrix() {
+      const grid = document.getElementById('matrix-container');
+      grid.innerHTML = '';
+
+      for (let i = 0; i < 12; i++) {
+        const allMonths = Object.keys(monthThemes);
+        const m = allMonths[i % allMonths.length];
+        const s = seasonalConfigurations.find(cfg => cfg.months.includes(m)) || seasonalConfigurations[0];
+        const z = s.zodiacs[i % s.zodiacs.length];
+        const p = monthThemes[m] || s.palettes[i % s.palettes.length];
+
+        const varCfg = JSON.parse(JSON.stringify(state));
+        varCfg.seed = state.seed + (i * 47) + 13;
+        const matrixRng = createRNG(varCfg.seed);
+        const matrixData = sampleDynamicData(matrixRng);
+        const matrixRibbonFamily = ribbonFamilies[i % ribbonFamilies.length];
+        const matrixRibbonCount = matrixRibbonFamily.count[i % matrixRibbonFamily.count.length];
+        varCfg.dynamicData = {
+          climate: matrixData.climate.name,
+          climateIntensity: matrixData.climate.intensity,
+          moisture: matrixData.climate.moisture,
+          wind: matrixData.climate.wind,
+          daylight: matrixData.climate.daylight,
+          printPressure: matrixData.print.pressure,
+          registration: matrixData.print.registration,
+          botanicalGrowth: Math.max(.25, Math.min(1, matrixData.climate.moisture * .55 + matrixData.climate.daylight * .25 + matrixRng() * .20)),
+          symmetry: matrixData.composition.symmetry,
+          ornamentDensity: matrixData.ornament.density,
+          ribbonTension: matrixData.ribbon.tension,
+          hybridIntensity: Math.max(.55, Math.min(1, matrixData.hybrid.intensity + .28 + (matrixData.ornament.density - .5) * .22)),
+          hybridMode: matrixData.hybrid.name.toLowerCase().replace(/\s+/g, '-'),
+          calendarFamily: (monthCalendarProfiles[m] || monthCalendarProfiles.Juli).family,
+          calendarShift: Math.floor(matrixRng() * 3),
+          dataPulse: matrixData.pulse,
+          ribbonFamily: matrixRibbonFamily.name,
+          ribbonMotion: Math.max(.25, Math.min(1, matrixData.ribbon.tension*.7 + matrixData.print.registration*.5)),
+          ribbonOrnament: matrixRibbonFamily.ornament
+        };
+        varCfg.texts.month = m;
+        varCfg.weatherTheme = (monthThemes[m] || {}).weather || 'summer';
+        varCfg.zodiac = z;
+        varCfg.colors.field = p.field;
+        varCfg.colors.paper = p.paper;
+        varCfg.colors.ink = p.ink;
+        varCfg.fonts.roman = s.fonts.roman;
+        varCfg.fonts.fraktur = s.fonts.fraktur;
+        varCfg.fonts.num = s.fonts.num;
+        varCfg.pedimentStyle = s.pediment;
+        varCfg.numeralSystem = s.numeralSystem;
+        varCfg.botanicalSpecies = s.species;
+        varCfg.waveAmp = Math.max(4, Math.min(40, Math.round(s.waveAmp * matrixData.ribbon.wave * matrixRibbonFamily.wave + matrixData.climate.wind * 10)));
+        varCfg.spineWidthPct = Math.max(34, Math.min(44, Math.round(s.spineWidth + matrixData.composition.bias * 2)));
+        varCfg.vineDensity = Math.max(20, Math.min(56, Math.round(s.density * (.72 + varCfg.dynamicData.botanicalGrowth))));
+        const matrixProfile = chooseMonthVisualProfile(m);
+        const matrixComposition = chooseDesignForMonth(matrixProfile, matrixRng);
+        varCfg.variation = { ...varCfg.variation, ...matrixComposition, ribbonStyle: matrixRibbonFamily.style, ribbonCount: matrixRibbonCount, ribbonOrnament: matrixRibbonFamily.ornament, leftRibbonWidth: matrixRibbonFamily.width, rightRibbonWidth: matrixRibbonFamily.width, calendarScale: matrixProfile.calendarScale, calendarBias: matrixData.composition.bias };
+
+        const card = document.createElement('div');
+        card.className = 'matrix-item';
+        card.innerHTML = `
+          <div class="matrix-thumb">${buildPosterSVG(varCfg, true)}</div>
+          <div class="matrix-label">
+            <span>${m} 1923 (${s.season})</span>
+            <span style="color:var(--boj-accent)">Load in Editor &rarr;</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          state.seed = varCfg.seed;
+          state.texts.month = varCfg.texts.month;
+          state.weatherTheme = varCfg.weatherTheme || 'summer';
+          state.dynamicData = { ...varCfg.dynamicData };
+          state.zodiac = varCfg.zodiac;
+          state.colors = { ...varCfg.colors };
+          state.fonts = { ...varCfg.fonts };
+          state.pedimentStyle = varCfg.pedimentStyle;
+          state.numeralSystem = varCfg.numeralSystem;
+          state.botanicalSpecies = varCfg.botanicalSpecies;
+          state.waveAmp = varCfg.waveAmp;
+          state.spineWidthPct = varCfg.spineWidthPct;
+          state.vineDensity = varCfg.vineDensity;
+          state.variation = { ...state.variation, ...varCfg.variation };
+
+          document.getElementById('inp-cal-month').value = m;
+          document.getElementById('select-zodiac').value = z;
+          document.getElementById('col-field').value = varCfg.colors.field;
+          document.getElementById('col-paper').value = varCfg.colors.paper;
+          document.getElementById('col-ink').value = varCfg.colors.ink;
+          document.getElementById('sel-font-roman').value = varCfg.fonts.roman;
+          document.getElementById('sel-font-fraktur').value = varCfg.fonts.fraktur;
+          document.getElementById('sel-font-num').value = varCfg.fonts.num;
+          document.getElementById('sel-pediment-style').value = varCfg.pedimentStyle;
+          document.getElementById('sel-numeral-system').value = varCfg.numeralSystem;
+          document.getElementById('sel-botanical-species').value = varCfg.botanicalSpecies;
+          document.getElementById('range-spine-width').value = varCfg.spineWidthPct;
+          document.getElementById('val-spine-width').textContent = `${varCfg.spineWidthPct}%`;
+          document.getElementById('range-wave-amp').value = varCfg.waveAmp;
+          document.getElementById('val-wave-amp').textContent = `${varCfg.waveAmp}px`;
+          document.getElementById('range-vine-density').value = varCfg.vineDensity;
+          document.getElementById('val-vine-density').textContent = `${varCfg.vineDensity} Sprigs`;
+
+          document.getElementById('season-status-label').textContent = 
+            `Active: ${m} 1923 • ${s.season} (${p.label}) • ${(monthCalendarProfiles[m] || monthCalendarProfiles.Juli).family}`;
+
+          document.getElementById('tab-editor').click();
+          renderMain();
+        });
+
+        grid.appendChild(card);
+      }
+    }
+
+    function setupApp() {
+      document.getElementById('tab-editor').addEventListener('click', () => {
+        document.getElementById('tab-editor').classList.add('active');
+        document.getElementById('tab-matrix').classList.remove('active');
+        document.getElementById('single-stage').style.display = 'flex';
+        document.getElementById('matrix-stage').style.display = 'none';
+      });
+
+      document.getElementById('tab-matrix').addEventListener('click', () => {
+        document.getElementById('tab-matrix').classList.add('active');
+        document.getElementById('tab-editor').classList.remove('active');
+        document.getElementById('single-stage').style.display = 'none';
+        document.getElementById('matrix-stage').style.display = 'block';
+        renderMatrix();
+      });
+
+      document.getElementById('btn-generate-seasonal').addEventListener('click', applySeasonalGeneration);
+      document.getElementById('btn-fetch-live-weather').addEventListener('click', fetchLiveWeather);
+      document.getElementById('weather-location-input').addEventListener('keydown', e => { if (e.key === 'Enter') fetchLiveWeather(); });
+
+      document.getElementById('btn-generate-9').addEventListener('click', () => {
+        state.seed = Math.floor(Math.random() * 10000);
+        document.getElementById('tab-matrix').click();
+      });
+
+      document.getElementById('btn-randomize-current').addEventListener('click', () => {
+        state.seed = Math.floor(Math.random() * 10000);
+        renderMain();
+      });
+
+      document.getElementById('btn-reset-positions').addEventListener('click', () => {
+        state.offsets.shield = { x: 0, y: 0 };
+        state.offsets.city = { x: 0, y: 0 };
+        state.offsets.doorway = { x: 0, y: 0 };
+        state.offsets.cartouche1923 = { x: 0, y: 0 };
+        state.offsets.footer = { x: 0, y: 0 };
+        state.offsets.sponsorL = { x: 0, y: 0 };
+        state.offsets.sponsorR = { x: 0, y: 0 };
+        state.offsets.botanicalsLeft = { x: 0, y: 0 };
+        state.offsets.botanicalsRight = { x: 0, y: 0 };
+        for (let i = 0; i < 7; i++) {
+          state.offsets.lRibbons[i] = { x: 0, y: 0 };
+          state.offsets.rRibbons[i] = { x: 0, y: 0 };
+        }
+        renderMain();
+      });
+
+      document.getElementById('sel-font-roman').addEventListener('change', e => {
+        state.fonts.roman = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-font-fraktur').addEventListener('change', e => {
+        state.fonts.fraktur = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-font-num').addEventListener('change', e => {
+        state.fonts.num = e.target.value;
+        renderMain();
+      });
+      document.getElementById('check-weather-type').addEventListener('change', e => {
+        state.weatherTypography = e.target.checked;
+        renderMain();
+      });
+      document.getElementById('sel-weather-font').addEventListener('change', e => {
+        state.weatherFont = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-pediment-style').addEventListener('change', e => {
+        state.pedimentStyle = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-numeral-system').addEventListener('change', e => {
+        state.numeralSystem = e.target.value;
+        renderMain();
+      });
+      document.getElementById('sel-botanical-species').addEventListener('change', e => {
+        state.botanicalSpecies = e.target.value;
+        renderMain();
+      });
+
+      document.getElementById('font-file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const fontName = `UserUploaded_${Date.now()}`;
+          const font = new FontFace(fontName, event.target.result);
+          font.load().then(loadedFont => {
+            document.fonts.add(loadedFont);
+            
+            ['sel-font-roman', 'sel-font-fraktur', 'sel-font-num'].forEach(id => {
+              const sel = document.getElementById(id);
+              const opt = document.createElement('option');
+              opt.value = `'${fontName}', sans-serif`;
+              opt.textContent = `Custom (${file.name.replace(/\.[^/.]+$/, '')})`;
+              sel.appendChild(opt);
+            });
+
+            state.fonts.fraktur = `'${fontName}', sans-serif`;
+            document.getElementById('sel-font-fraktur').value = `'${fontName}', sans-serif`;
+            renderMain();
+          }).catch(err => alert('Font parsing error: ' + err.message));
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      document.getElementById('inp-cal-month').addEventListener('input', e => { state.texts.month = e.target.value; renderMain(); });
+      document.getElementById('inp-cal-year').addEventListener('input', e => { state.texts.year = e.target.value; renderMain(); });
+      document.getElementById('select-zodiac').addEventListener('change', e => { state.zodiac = e.target.value; renderMain(); });
+
+      document.getElementById('range-spine-width').addEventListener('input', e => {
+        state.spineWidthPct = parseInt(e.target.value, 10);
+        document.getElementById('val-spine-width').textContent = `${state.spineWidthPct}%`;
+        renderMain();
+      });
+
+      document.getElementById('range-margin-width').addEventListener('input', e => {
+        state.marginPct = parseFloat(e.target.value);
+        document.getElementById('val-margin-width').textContent = `${state.marginPct}%`;
+        renderMain();
+      });
+
+      document.getElementById('range-wave-amp').addEventListener('input', e => {
+        state.waveAmp = parseInt(e.target.value, 10);
+        document.getElementById('val-wave-amp').textContent = `${state.waveAmp}px`;
+        renderMain();
+      });
+
+      document.getElementById('range-vine-density').addEventListener('input', e => {
+        state.vineDensity = parseInt(e.target.value, 10);
+        document.getElementById('val-vine-density').textContent = `${state.vineDensity} Sprigs`;
+        renderMain();
+      });
+
+      document.getElementById('check-show-grid').addEventListener('change', e => { state.showGrid = e.target.checked; renderMain(); });
+      document.getElementById('check-texture').addEventListener('change', e => { state.paperTexture = e.target.checked; renderMain(); });
+      document.getElementById('check-hatching').addEventListener('change', e => { state.lineHatching = e.target.checked; renderMain(); });
+      document.getElementById('check-cord').addEventListener('change', e => { state.hangingCord = e.target.checked; renderMain(); });
+      document.getElementById('check-archaic-latin').addEventListener('change', e => { state.archaicLatin = e.target.checked; renderMain(); });
+
+      ['field', 'paper', 'ink'].forEach(key => {
+        document.getElementById(`col-${key}`).addEventListener('input', e => {
+          state.colors[key] = e.target.value;
+          renderMain();
+        });
+      });
+
+      document.getElementById('btn-export-svg').addEventListener('click', () => {
+        const svgData = document.querySelector('#poster-frame svg').outerHTML;
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tschichold-1923-poster-${Date.now()}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('btn-export-png').addEventListener('click', () => {
+        const svgEl = document.querySelector('#poster-frame svg');
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const canvas = document.createElement('canvas');
+        canvas.width = 1600;
+        canvas.height = 2144;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, 1600, 2144);
+          URL.revokeObjectURL(url);
+          const pngUrl = canvas.toDataURL('image/png');
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = `tschichold-1923-poster-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        };
+        img.src = url;
+      });
+
+      setupDragEngine();
+      setupInlineEditor();
+      setupSidebarTextEditor();
+      renderMain();
+    }
+
+    window.addEventListener('DOMContentLoaded', setupApp);
+  </script>
+</body>
+</html>
