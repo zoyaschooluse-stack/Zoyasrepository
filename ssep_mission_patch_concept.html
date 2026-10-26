@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSEP Mission Patch Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Sans:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F5F0;
+      --card-bg: #FFFFFF;
+      --border: #E6E1D8;
+      --text: #2C2A29;
+      --subtext: #706B63;
+      --muted: #A39E93;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      padding: 60px 20px;
+    }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 2.2rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    header p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--subtext);
+      letter-spacing: 0.03em;
+    }
+
+    .section-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border);
+      margin: 48px auto;
+    }
+
+    .patch-card {
+      margin-bottom: 56px;
+      text-align: center;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card-caption {
+      font-size: 0.85rem;
+      color: var(--subtext);
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+
+    .image-frame {
+      background: var(--card-bg);
+      padding: 16px;
+      border: 1px solid var(--border);
+      display: inline-block;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+      border-radius: 2px;
+    }
+
+    .image-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .maps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+
+    @media (max-width: 650px) {
+      .maps-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding: 40px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>SSEP Mission Patch</h1>
+      <p>Design & Concept Evolution</p>
+    </header>
+
+    <!-- 1 & 2. Two Visual Maps -->
+    <div class="maps-grid">
+      <div class="patch-card" style="margin-bottom: 0;">
+        <h2 class="card-title">Space Research</h2>
+        <p class="card-caption">Visual Mind Map</p>
+        <div class="image-frame">
+          <img src="concept/space_research.JPG" alt="Space Research Visual Map">
+        </div>
+      </div>
+
+      <div class="patch-card" style="margin-bottom: 0;">
+        <h2 class="card-title">Baruch Community</h2>
+        <p class="card-caption">Visual Mind Map</p>
+        <div class="image-frame">
+          <img src="concept/baruch.JPG" alt="Baruch Community Visual Map">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 3. Six Thumbnail Mission Patches -->
+    <div class="patch-card">
+      <h2 class="card-title">Initial Explorations</h2>
+      <p class="card-caption">Geometric · Narrative · Abstract · Symbolic · Minimal · Unexpected</p>
+      <div class="image-frame">
+        <img src="concept/six_sketches.JPG" alt="Six Thumbnail Mission Patches">
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 4. Final Concept Selected Drawing -->
+    <div class="patch-card">
+      <h2 class="card-title">Selected Concept</h2>
+      <p class="card-caption">Abstraction</p>
+      <div class="image-frame">
+        <img src="concept/Concept.JPG" alt="Selected Abstract Concept Drawing">
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- 5. Logo Drawing -->
+    <div class="patch-card">
+      <h2 class="card-title">Logo Drawing</h2>
+      <p class="card-caption">Insignia Detail</p>
+      <div class="image-frame">
+        <img src="concept/logo.JPG" alt="Logo Drawing">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
