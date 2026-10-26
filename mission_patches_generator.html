@@ -1,0 +1,1586 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UPDATED — Baruch SSEP Mission Patch Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg-void: #030611;
+    --panel-border: rgba(68, 105, 175, 0.28);
+    --gold-glow: #f8c967;
+    --cyan-spark: #7ce5ff;
+  }
+  body {
+    background-color: var(--bg-void);
+    background-image: 
+      radial-gradient(circle at 75% 30%, rgba(220, 160, 60, 0.12) 0%, transparent 45%),
+      radial-gradient(circle at 25% 75%, rgba(68, 85, 185, 0.18) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, #030713 0%, #010309 100%);
+    font-family: 'Inter', sans-serif;
+    color: #edf2ff;
+  }
+  .cinzel { font-family: 'Cinzel', serif; }
+  .space-font { font-family: 'Space Grotesk', sans-serif; }
+  
+  /* Custom scrollbars */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(5, 10, 25, 0.5); }
+  ::-webkit-scrollbar-thumb { background: rgba(50, 80, 140, 0.4); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(80, 120, 200, 0.6); }
+
+  /* Range input styling */
+  input[type=range] {
+    -webkit-appearance: none;
+    background: #0f1933;
+    height: 6px;
+    border-radius: 999px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #f7d486;
+    box-shadow: 0 0 10px rgba(247, 212, 134, 0.7);
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    background: #fff;
+  }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="border-b border-[#1b2b48] px-4 md:px-8 py-4 bg-[#050917]/80 backdrop-blur-md sticky top-0 z-30 flex flex-wrap justify-between items-center gap-4">
+  <div>
+    <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#f5cd79] space-font">
+      <span class="w-2 h-2 rounded-full bg-[#f5cd79] shadow-[0_0_8px_#f5cd79]"></span>
+      Baruch College · SSEP Mission Patch · UPDATED STAR-LATTICE VERSION
+    </div>
+    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white mt-0.5 cinzel">
+      Dreamy Cosmic Galaxy & Stardust Emblem
+    </h1>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="hidden sm:inline-flex px-3 py-1 rounded-full text-xs font-medium space-font bg-[#101b33] border border-[#2d4677] text-[#c0d7ff]">
+      3.5 × 3.5 in Proportions
+    </div>
+    <button id="btnExport" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider space-font bg-gradient-to-r from-[#ffd470] via-[#f7b743] to-[#d68529] text-[#120800] shadow-[0_4px_20px_rgba(247,183,67,0.35)] hover:shadow-[0_6px_25px_rgba(247,183,67,0.5)] transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+      Export 1600px PNG
+    </button>
+  </div>
+</header>
+
+<!-- Main Container -->
+<main class="flex-1 grid grid-cols-1 lg:grid-cols-[380px_minmax(0,1fr)] gap-6 p-4 md:p-8 max-w-[1720px] w-full mx-auto">
+  
+  <!-- Left Controls Sidebar -->
+  <aside class="bg-[#081022]/90 border border-[#1d2f52] rounded-2xl backdrop-blur-xl p-5 shadow-2xl flex flex-col gap-5 h-fit max-h-[calc(100vh-120px)] overflow-y-auto">
+    
+    <div class="flex justify-between items-center pb-3 border-b border-[#1a2b4b]">
+      <h2 class="text-xs uppercase tracking-[0.18em] font-bold text-[#b5ceff] space-font">Patch Controls</h2>
+      <span id="variationLabel" class="text-[11px] font-mono text-[#f7d486]">Var 01</span>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <button id="btnGenerate" class="col-span-2 py-2.5 px-3 rounded-xl text-xs font-bold space-font bg-gradient-to-r from-[#2c52a4] to-[#45328c] text-white border border-[#486ec4]/50 shadow-[0_4px_15px_rgba(69,50,140,0.3)] hover:brightness-110 transition flex items-center justify-center gap-1.5">
+        <span>✦</span> Generate Variation
+      </button>
+      <button id="btnRandomize" class="py-2 px-3 rounded-xl text-xs font-medium space-font bg-[#0e1a33] text-[#d6e5ff] border border-[#23385f] hover:bg-[#16274a] transition">
+        🎲 Randomize All
+      </button>
+      <button id="btnReset" class="py-2 px-3 rounded-xl text-xs font-medium space-font bg-[#0e1a33] text-[#d6e5ff] border border-[#23385f] hover:bg-[#16274a] transition">
+        ↺ Reset to Image
+      </button>
+    </div>
+
+    <!-- Group: Golden Spiral Vortex -->
+    <div class="pt-3 border-t border-[#172644] flex flex-col gap-3">
+      <div class="text-[11px] uppercase tracking-wider font-semibold text-[#f7d486] flex items-center gap-1.5 space-font">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 0-7.07 17.07"/><path d="M12 22a10 10 0 0 0 7.07-17.07"/></svg>
+        Spiral Galaxy Vortex (Right)
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Vortex Center X & Y</span>
+          <span id="vortexPosOut" class="text-[#f7d486] font-mono">68%, 37%</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="vortexX" type="range" min="45" max="85" value="68">
+          <input id="vortexY" type="range" min="20" max="65" value="37">
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Core Glow & Radiance</span>
+          <span id="vortexGlowOut" class="text-[#f7d486] font-mono">Vibrant</span>
+        </div>
+        <input id="vortexGlow" type="range" min="1" max="3" step="1" value="2">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Spiral Arms Tilt Angle</span>
+          <span id="vortexAngleOut" class="text-[#f7d486] font-mono">-22°</span>
+        </div>
+        <input id="vortexAngle" type="range" min="-60" max="30" value="-22">
+      </div>
+    </div>
+
+    <!-- Group: Baruch B & Paw Print Integration -->
+    <div class="pt-3 border-t border-[#172644] flex flex-col gap-3">
+      <div class="text-[11px] uppercase tracking-wider font-semibold text-[#9ad6ff] flex items-center gap-1.5 space-font">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+        Baruch 'B' & Paw In Nebular Stream
+      </div>
+      <div>
+        <label for="logoStyle" class="block text-xs text-[#b8caeb] mb-1">B Logo Design</label>
+        <select id="logoStyle" class="w-full rounded-lg border border-[#23385f] bg-[#0b1428] px-3 py-2 text-xs text-[#e6edff]">
+          <option value="talonForm">Sketch-Inspired Talon B</option>
+          <option value="nebula">Nebula Letter</option>
+          <option value="constellation">Constellation B</option>
+          <option value="eclipse">Eclipse Outline</option>
+          <option value="flame">Cosmic Flame</option>
+          <option value="orbit">Orbit-Woven Letter</option>
+        </select>
+      </div>
+      <div>
+        <label for="bearInlay" class="block text-xs text-[#b8caeb] mb-1">Bear / Talon Inlay Inside B</label>
+        <select id="bearInlay" class="w-full rounded-lg border border-[#23385f] bg-[#0b1428] px-3 py-2 text-xs text-[#e6edff]">
+          <option value="starLatticePaw">Interlocking 4-Point Star Lattice + Bearcat Paw — UPDATED</option>
+          <option value="talonB">Sketch: Talon-Form B</option>
+          <option value="talons">Bear Talons / Claw Marks</option>
+          <option value="bearHead">Cosmic Bear Head</option>
+          <option value="bearSilhouette">Bear Silhouette</option>
+          <option value="clawConstellation">Claw Constellation</option>
+          <option value="mixed">Random Cosmic Bear Motif</option>
+        </select>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Bear / Talon Design Size</span>
+          <span id="inlayScaleOut" class="text-[#9ad6ff] font-mono">100%</span>
+        </div>
+        <input id="inlayScale" type="range" min="55" max="160" value="100">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Etched Lines: Density / Zoom</span>
+          <span id="inlayDensityOut" class="text-[#9ad6ff] font-mono">3 / Balanced</span>
+        </div>
+        <input id="inlayDensity" type="range" min="1" max="5" step="1" value="3">
+        <p class="text-[10px] text-[#7188ad] mt-1">Slide left for a dense field of tiny interlocking 4-point stars. Slide right for fewer, larger stars and a bolder Bearcat paw emerging from the lattice.</p>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Letter 'B' Scale</span>
+          <span id="logoScaleOut" class="text-[#9ad6ff] font-mono">100%</span>
+        </div>
+        <input id="logoScale" type="range" min="70" max="145" value="100">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Emblem Position (X / Y)</span>
+          <span id="logoPosOut" class="text-[#9ad6ff] font-mono">25%, 68%</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="logoX" type="range" min="15" max="45" value="25">
+          <input id="logoY" type="range" min="50" max="82" value="68">
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Paw Print Size & Trail</span>
+          <span id="pawSizeOut" class="text-[#9ad6ff] font-mono">Double Paw Trail</span>
+        </div>
+        <input id="pawTrail" type="range" min="1" max="3" step="1" value="2">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Stardust Inlay & Glow</span>
+          <span id="emblemGlowOut" class="text-[#9ad6ff] font-mono">Golden Edge</span>
+        </div>
+        <input id="emblemGlow" type="range" min="1" max="3" step="1" value="2">
+      </div>
+    </div>
+
+    <!-- Group: Flowing Nebula Ribbons -->
+    <div class="pt-3 border-t border-[#172644] flex flex-col gap-3">
+      <div class="text-[11px] uppercase tracking-wider font-semibold text-[#c8a4ff] flex items-center gap-1.5 space-font">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c4-6 12-6 16 0s4 6 4 6"/><path d="M2 7c4-6 12-6 16 0s4 6 4 6"/></svg>
+        Flowing Nebula Clouds & Color
+      </div>
+      <div>
+        <label for="paletteSelect" class="block text-xs text-[#b8caeb] mb-1">Palette Harmony</label>
+        <select id="paletteSelect" class="w-full bg-[#0c162c] border border-[#243961] text-xs text-[#eaf2ff] rounded-lg p-2 outline-none focus:border-[#7ce5ff]">
+          <option value="reference">Reference: Midnight, Ultramarine, Violet & Gold</option>
+          <option value="deepIndigo">Deep Indigo, Electric Cobalt & Amber Glow</option>
+          <option value="violetDream">Purple Nebula, Magenta Veil & Warm Starlight</option>
+          <option value="cyanGold">Polar Cyan, Deep Obsidian & Solar Core</option>
+        </select>
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Ribbon Swirl Curvature</span>
+          <span id="curvOut" class="text-[#c8a4ff] font-mono">Graceful S-Flow</span>
+        </div>
+        <input id="ribbonCurv" type="range" min="1" max="3" step="1" value="2">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Stardust Grains & Texture</span>
+          <span id="dustOut" class="text-[#c8a4ff] font-mono">Fine Painterly</span>
+        </div>
+        <input id="stardustDensity" type="range" min="1" max="3" step="1" value="2">
+      </div>
+    </div>
+
+    <!-- Group: Planets & Golden Cross Stars -->
+    <div class="pt-3 border-t border-[#172644] flex flex-col gap-3">
+      <div class="text-[11px] uppercase tracking-wider font-semibold text-[#ffd280] flex items-center gap-1.5 space-font">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 1 0 7 7"/></svg>
+        Planets & Diamond Cross Stars
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Banded Gas Giant Planets</span>
+          <span id="planetOut" class="text-[#ffd280] font-mono">3 Spheres</span>
+        </div>
+        <input id="planetCount" type="range" min="1" max="4" value="3">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-[#b8caeb] mb-1">
+          <span>Golden 4-Point Flare Stars</span>
+          <span id="crossStarOut" class="text-[#ffd280] font-mono">6 Stars</span>
+        </div>
+        <input id="crossStars" type="range" min="3" max="10" value="6">
+      </div>
+      <div>
+        <label for="frameSelect" class="block text-xs text-[#b8caeb] mb-1">Patch Border Styling</label>
+        <select id="frameSelect" class="w-full bg-[#0c162c] border border-[#243961] text-xs text-[#eaf2ff] rounded-lg p-2 outline-none focus:border-[#7ce5ff]">
+          <option value="subtleSquare">Circular Patch · Clean Rim</option>
+          <option value="circularEmblem">Circular Patch · Double Flight Ring</option>
+          <option value="none">Circular Patch · Minimal Rim</option>
+        </select>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Right Visual Stage Area -->
+  <section class="flex flex-col gap-4 items-center justify-start min-w-0">
+    
+    <!-- Stage Toolbar Info -->
+    <div class="w-full flex justify-between items-center px-1">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="canvasStatus" class="text-xs space-font text-[#a8bfdc]">Ready · Seed 8129034</span>
+      </div>
+      <div class="text-[11px] space-font text-[#7590bd]">
+        Circular Embroidered Patch · Abstract Cosmic Depth
+      </div>
+    </div>
+
+    <!-- Artboard Stage Container -->
+    <div class="w-full flex items-center justify-center bg-radial from-[#091226] via-[#040713] to-[#010207] border border-[#1d2f52] rounded-3xl p-4 md:p-8 shadow-[inset_0_0_80px_rgba(0,0,0,0.85)] min-h-[520px]">
+      <div class="w-full max-w-[680px] aspect-square relative flex items-center justify-center filter drop-shadow-[0_20px_45px_rgba(0,0,0,0.85)]">
+        <canvas id="patchCanvas" width="1200" height="1200" class="w-full h-full object-contain rounded-2xl block bg-[#030612]"></canvas>
+      </div>
+    </div>
+
+    <!-- Bottom Aesthetic Reference Note -->
+    <div class="w-full max-w-[680px] grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-[#8da5cb]">
+      <div class="bg-[#081122]/70 border border-[#1c2c4d] p-3 rounded-xl">
+        <span class="text-[#f7d486] font-semibold block mb-0.5 space-font">Accurate Image Representation</span>
+        Tilted elliptical spiral vortex with glowing stardust core, deep blue-to-violet volumetric ribbons, and twilight banded gas giants.
+      </div>
+      <div class="bg-[#081122]/70 border border-[#1c2c4d] p-3 rounded-xl">
+        <span class="text-[#9ad6ff] font-semibold block mb-0.5 space-font">Stardust Baruch Mark</span>
+        The Baruch “B” is rendered as a nebula-lit constellation, with stardust texture, atmospheric glow, and paw prints drifting into the cosmic stream.
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- Toast notification for export -->
+<div id="toast" class="fixed bottom-6 right-6 px-4 py-3 bg-[#0d1c3a] border border-[#f7d486] rounded-xl text-xs space-font text-white shadow-2xl flex items-center gap-2 transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+  <span class="text-[#f7d486] text-base">✦</span>
+  <span id="toastMsg">Patch exported successfully!</span>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('patchCanvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  // Settings modeled after the reference image
+  const defaults = {
+    vortexX: 68,
+    vortexY: 37,
+    vortexGlow: 2,
+    vortexAngle: -22,
+    logoScale: 100,
+    logoStyle: 'talonForm',
+    bearInlay: 'starLatticePaw',
+    inlayScale: 100,
+    inlayDensity: 3,
+    logoX: 25,
+    logoY: 68,
+    pawTrail: 2,
+    emblemGlow: 2,
+    palette: 'reference',
+    ribbonCurv: 2,
+    stardustDensity: 2,
+    planetCount: 3,
+    crossStars: 6,
+    frame: 'circularEmblem',
+    layoutMode: false,
+    ribbonSpread: 0,
+    planetLayout: 0,
+    starLayout: 0
+  };
+
+  let state = { ...defaults };
+  let seed = 8129034;
+  let varCount = 1;
+
+  // PRNG
+  function prng() {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 4294967296;
+  }
+  function prngRange(min, max) { return min + prng() * (max - min); }
+
+  function hexToRgba(hex, alpha) {
+    const c = hex.replace('#', '');
+    const num = parseInt(c, 16);
+    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+  }
+
+  // Palettes exactly echoing the reference painting
+  const palettes = {
+    reference: {
+      voidBg: ['#02040c', '#04091a', '#0a1432'],
+      ribbonDeep: '#0c2252',
+      ribbonCobalt: '#1a4aa6',
+      ribbonBlue: '#2e69d6',
+      ribbonViolet: '#6848b8',
+      ribbonMagenta: '#9b56bc',
+      goldCore: '#fff3c7',
+      goldMid: '#f8ba49',
+      goldAmber: '#d87724',
+      starLight: '#ffffff',
+      planet1: ['#1d467c', '#3c79c2', '#86bcf6'],
+      planet2: ['#3b266b', '#6242a6', '#9c77d9'],
+      planet3: ['#112948', '#254e85', '#4880c9']
+    },
+    deepIndigo: {
+      voidBg: ['#02030a', '#060b20', '#0e1840'],
+      ribbonDeep: '#091c48',
+      ribbonCobalt: '#12419c',
+      ribbonBlue: '#2664d4',
+      ribbonViolet: '#493bb3',
+      ribbonMagenta: '#7c4cd1',
+      goldCore: '#fffae8',
+      goldMid: '#f6ca68',
+      goldAmber: '#e0882e',
+      starLight: '#ffffff',
+      planet1: ['#143b6e', '#2965b0', '#63a3f5'],
+      planet2: ['#2e1b5c', '#54369e', '#8862d6'],
+      planet3: ['#0a213e', '#194275', '#356ea8']
+    },
+    violetDream: {
+      voidBg: ['#05030e', '#0c0722', '#180e3c'],
+      ribbonDeep: '#181048',
+      ribbonCobalt: '#2f208a',
+      ribbonBlue: '#5437b8',
+      ribbonViolet: '#8843c7',
+      ribbonMagenta: '#b854cf',
+      goldCore: '#fff6e0',
+      goldMid: '#f7bb54',
+      goldAmber: '#d96c34',
+      starLight: '#ffffff',
+      planet1: ['#281e62', '#4b3aa6', '#806cd9'],
+      planet2: ['#4e1754', '#862990', '#c856d1'],
+      planet3: ['#171342', '#2e2678', '#5446ba']
+    },
+    cyanGold: {
+      voidBg: ['#01060d', '#03101e', '#061c33'],
+      ribbonDeep: '#08253d',
+      ribbonCobalt: '#0f4f78',
+      ribbonBlue: '#1a84b8',
+      ribbonViolet: '#357bba',
+      ribbonMagenta: '#6998d6',
+      goldCore: '#fffae5',
+      goldMid: '#f5c85b',
+      goldAmber: '#d97d26',
+      starLight: '#ffffff',
+      planet1: ['#0e3e5c', '#1b6f9e', '#41b3ea'],
+      planet2: ['#193766', '#2b5ea3', '#5a99ea'],
+      planet3: ['#072439', '#114a6e', '#2785bd']
+    }
+  };
+
+  // 1. Draw Deep Space Celestial Atmosphere
+  function drawCosmicAtmosphere(pal) {
+    const bg = ctx.createRadialGradient(600, 500, 40, 600, 600, 950);
+    bg.addColorStop(0, pal.voidBg[2]);
+    bg.addColorStop(0.55, pal.voidBg[1]);
+    bg.addColorStop(1, pal.voidBg[0]);
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, 1200, 1200);
+
+    // Subtle volumetric haze
+    for (let i = 0; i < 4; i++) {
+      const hx = prngRange(200, 1000);
+      const hy = prngRange(200, 1000);
+      const hr = prngRange(300, 600);
+      const g = ctx.createRadialGradient(hx, hy, 10, hx, hy, hr);
+      g.addColorStop(0, hexToRgba(pal.ribbonCobalt, 0.12));
+      g.addColorStop(0.6, hexToRgba(pal.ribbonViolet, 0.05));
+      g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(hx, hy, hr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // 2. Draw Fine Background Stars & Stardust
+  function drawBackgroundStars(pal) {
+    const count = 380 * state.stardustDensity;
+    for (let i = 0; i < count; i++) {
+      const sx = prngRange(20, 1180);
+      const sy = prngRange(20, 1180);
+      const rad = prngRange(0.6, 2.2);
+      const alpha = prngRange(0.2, 0.85);
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, rad, 0, Math.PI * 2);
+      ctx.fillStyle = i % 5 === 0 ? hexToRgba(pal.goldMid, alpha) : hexToRgba(pal.starLight, alpha);
+      ctx.fill();
+    }
+  }
+
+  // 3. Draw The Luminous Golden Spiral Galaxy Vortex
+  function drawSpiralGalaxyVortex(pal) {
+    const vx = (state.vortexX / 100) * 1200;
+    const vy = (state.vortexY / 100) * 1200;
+    const glowMul = state.vortexGlow === 1 ? 0.75 : state.vortexGlow === 2 ? 1.0 : 1.35;
+    const rot = (state.vortexAngle * Math.PI) / 180;
+
+    ctx.save();
+    ctx.translate(vx, vy);
+    ctx.rotate(rot);
+
+    // Broad ambient golden warmth surrounding the core
+    const ambientGlow = ctx.createRadialGradient(0, 0, 15, 0, 0, 360);
+    ambientGlow.addColorStop(0, hexToRgba(pal.goldMid, 0.55 * glowMul));
+    ambientGlow.addColorStop(0.35, hexToRgba(pal.goldAmber, 0.28 * glowMul));
+    ambientGlow.addColorStop(0.65, hexToRgba(pal.ribbonViolet, 0.18));
+    ambientGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = ambientGlow;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 420, 220, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Concentric swirling luminous stardust rings (Accretion Disk)
+    const ringCount = 28;
+    for (let r = 0; r < ringCount; r++) {
+      const t = r / ringCount;
+      const rx = 40 + t * 310;
+      const ry = (rx * 0.46) + Math.sin(t * 8) * 8;
+      const ringAlpha = (1 - t * 0.75) * 0.38 * glowMul;
+
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+      ctx.lineWidth = 14 + (1 - t) * 16;
+      ctx.strokeStyle = t < 0.35 
+        ? hexToRgba(pal.goldMid, ringAlpha) 
+        : t < 0.65 
+        ? hexToRgba(pal.goldAmber, ringAlpha * 0.9) 
+        : hexToRgba(pal.ribbonViolet, ringAlpha * 0.85);
+      ctx.stroke();
+
+      // Fine golden stardust filament lines along the rings
+      if (r % 3 === 0) {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx + 4, ry * 0.98, 0, 0, Math.PI * 2);
+        ctx.lineWidth = 0.85;
+        ctx.strokeStyle = hexToRgba(pal.goldCore, 0.38 * (1 - t));
+        ctx.stroke();
+      }
+    }
+
+    // Trailing curved spiral arm bands wrapping out into the galaxy
+    const spiralArms = 3;
+    for (let arm = 0; arm < spiralArms; arm++) {
+      const startAngle = (arm * Math.PI * 2) / spiralArms;
+      ctx.beginPath();
+      const points = 70;
+      for (let p = 0; p <= points; p++) {
+        const prog = p / points;
+        const theta = startAngle + prog * Math.PI * 2.2;
+        const radiusX = 35 + prog * 360;
+        const radiusY = radiusX * 0.44;
+        const px = Math.cos(theta) * radiusX;
+        const py = Math.sin(theta) * radiusY;
+        if (p === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.lineWidth = 4.2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = hexToRgba(arm % 2 === 0 ? pal.goldMid : pal.ribbonViolet, 0.18 * glowMul);
+      ctx.stroke();
+    }
+
+    // Intense Brilliant Golden Core
+    const coreGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 85);
+    coreGrad.addColorStop(0, '#ffffff');
+    coreGrad.addColorStop(0.2, pal.goldCore);
+    coreGrad.addColorStop(0.55, pal.goldMid);
+    coreGrad.addColorStop(0.85, pal.goldAmber);
+    coreGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 95, 48, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Central pinpoint starlight flare
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 26, 12, 0, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // 4. Volumetric Sweeping Nebula Dust Ribbons (Blue, Violet, Ultramarine)
+  function drawNebulaRibbons(pal) {
+    const curv = state.ribbonCurv; // 1: gentle, 2: graceful S, 3: dramatic swirl
+    const streams = [
+      // 1. Lower deep violet current supporting the Baruch emblem
+      {
+        start: [-80, 820],
+        cp1: [280, 680],
+        cp2: [540, 960],
+        end: [920, 860],
+        color: pal.ribbonViolet,
+        width: 66,
+        alpha: 0.24
+      },
+      // 2. Main royal blue / cobalt current enveloping the 'B'
+      {
+        start: [-40, 640],
+        cp1: [320, 480],
+        cp2: [480, 780],
+        end: [820, 640],
+        color: pal.ribbonCobalt,
+        width: 54,
+        alpha: 0.28
+      },
+      // 3. Ascending ultramarine ribbon curving up to the vortex
+      {
+        start: [180, 940],
+        cp1: [360, 520],
+        cp2: [620, 440],
+        end: [1160, 360],
+        color: pal.ribbonBlue,
+        width: 42,
+        alpha: 0.24
+      },
+      // 4. Top-left arching crest framing the upper celestial planet
+      {
+        start: [-50, 420],
+        cp1: [140, 160],
+        cp2: [420, 120],
+        end: [760, 260],
+        color: pal.ribbonCobalt,
+        width: 46,
+        alpha: 0.22
+      },
+      // 5. Outer sweeping vortex loop (right & lower right)
+      {
+        start: [640, 180],
+        cp1: [1140, 220],
+        cp2: [1220, 580],
+        end: [880, 820],
+        color: pal.ribbonMagenta,
+        width: 44,
+        alpha: 0.21
+      },
+      // 6. Deep blue vortex outer wrap
+      {
+        start: [520, 340],
+        cp1: [940, 460],
+        cp2: [1080, 740],
+        end: [740, 1020],
+        color: pal.ribbonDeep,
+        width: 60,
+        alpha: 0.27
+      }
+    ];
+
+    // Randomized layouts reshape each stream independently; the reference layout stays intact on reset.
+    if (state.layoutMode) {
+      streams.forEach((s, idx) => {
+        const spread = state.ribbonSpread;
+        s.start = [s.start[0] + prngRange(-spread, spread), s.start[1] + prngRange(-spread, spread)];
+        s.cp1 = [s.cp1[0] + prngRange(-spread * 1.15, spread * 1.15), s.cp1[1] + prngRange(-spread * 1.15, spread * 1.15)];
+        s.cp2 = [s.cp2[0] + prngRange(-spread * 1.15, spread * 1.15), s.cp2[1] + prngRange(-spread * 1.15, spread * 1.15)];
+        s.end = [s.end[0] + prngRange(-spread, spread), s.end[1] + prngRange(-spread, spread)];
+        s.width *= prngRange(0.55, 1.15);
+        s.alpha *= prngRange(0.72, 1.12);
+      });
+    }
+    ctx.save();
+    streams.forEach((s, idx) => {
+      ctx.beginPath();
+      ctx.moveTo(s.start[0], s.start[1]);
+      const modY = (curv - 2) * 45;
+      ctx.bezierCurveTo(
+        s.cp1[0], s.cp1[1] + modY,
+        s.cp2[0], s.cp2[1] - modY,
+        s.end[0], s.end[1]
+      );
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = hexToRgba(s.color, s.alpha);
+      ctx.lineWidth = s.width;
+      ctx.stroke();
+
+      // Delicate inner luminous starlight spine inside the cloud
+      ctx.beginPath();
+      ctx.moveTo(s.start[0], s.start[1]);
+      ctx.bezierCurveTo(
+        s.cp1[0], s.cp1[1] + modY,
+        s.cp2[0], s.cp2[1] - modY,
+        s.end[0], s.end[1]
+      );
+      ctx.strokeStyle = hexToRgba(pal.goldCore, 0.14);
+      ctx.lineWidth = 1.15;
+      ctx.stroke();
+
+      // Fine stardust grain trailing along the ribbon ridges
+      ctx.strokeStyle = hexToRgba(pal.starLight, 0.24);
+      ctx.lineWidth = 0.75;
+      ctx.setLineDash([1.5, 11]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+    ctx.restore();
+  }
+
+  // 5. Abstract celestial forms: painterly, irregular, and more like cosmic ink blooms than literal spheres.
+  function drawStripedPlanet(x, y, radius, colors, tilt = -0.35) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(tilt);
+
+    // An uneven, slightly drifting silhouette avoids the familiar perfect-planet icon.
+    const organicPath = () => {
+      ctx.beginPath();
+      ctx.moveTo(-0.88 * radius, -0.24 * radius);
+      ctx.bezierCurveTo(-1.02 * radius, -0.76 * radius, -0.42 * radius, -1.08 * radius, 0.02 * radius, -0.88 * radius);
+      ctx.bezierCurveTo(0.40 * radius, -1.03 * radius, 0.93 * radius, -0.66 * radius, 0.84 * radius, -0.18 * radius);
+      ctx.bezierCurveTo(1.06 * radius, 0.22 * radius, 0.60 * radius, 0.82 * radius, 0.13 * radius, 0.86 * radius);
+      ctx.bezierCurveTo(-0.28 * radius, 1.04 * radius, -0.88 * radius, 0.65 * radius, -0.79 * radius, 0.20 * radius);
+      ctx.bezierCurveTo(-1.00 * radius, 0.02 * radius, -1.01 * radius, -0.12 * radius, -0.88 * radius, -0.24 * radius);
+      ctx.closePath();
+    };
+
+    ctx.save();
+    organicPath();
+    ctx.clip();
+
+    // Cloudy color field, with a luminous bloom offset from center.
+    const field = ctx.createRadialGradient(-0.34 * radius, -0.42 * radius, radius * 0.04, 0.08 * radius, 0.08 * radius, radius * 1.45);
+    field.addColorStop(0, colors[2]);
+    field.addColorStop(0.34, colors[1]);
+    field.addColorStop(0.72, colors[0]);
+    field.addColorStop(1, '#080b20');
+    ctx.fillStyle = field;
+    ctx.fillRect(-radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
+
+    // Broad, flowing pigment ribbons instead of evenly spaced horizontal bands.
+    for (let i = 0; i < 6; i++) {
+      const yy = (-0.72 + i * 0.27) * radius;
+      ctx.beginPath();
+      ctx.moveTo(-1.25 * radius, yy + 0.15 * radius);
+      ctx.bezierCurveTo(-0.56 * radius, yy - 0.48 * radius, -0.18 * radius, yy + 0.50 * radius, 0.38 * radius, yy - 0.02 * radius);
+      ctx.bezierCurveTo(0.72 * radius, yy - 0.30 * radius, 1.03 * radius, yy + 0.18 * radius, 1.25 * radius, yy - 0.15 * radius);
+      ctx.strokeStyle = hexToRgba(i % 2 ? colors[2] : colors[1], 0.22 + (i % 3) * 0.06);
+      ctx.lineWidth = radius * (i % 2 ? 0.14 : 0.075);
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+
+    // Off-center whorls, like a small nebula caught in a current.
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.ellipse((-0.18 + i * 0.16) * radius, (0.06 - i * 0.12) * radius,
+        radius * (0.48 - i * 0.08), radius * (0.19 - i * 0.025), -0.42 + i * 0.22, 0.18, Math.PI * 1.72);
+      ctx.strokeStyle = hexToRgba(colors[2], 0.48 - i * 0.1);
+      ctx.lineWidth = Math.max(1, radius * (0.026 - i * 0.004));
+      ctx.stroke();
+    }
+
+    // Tiny scattered light fragments, deliberately uneven rather than a uniform texture.
+    for (let i = 0; i < 15; i++) {
+      const a = i * 2.399;
+      const rr = radius * (0.18 + ((i * 37) % 67) / 100);
+      const sx = Math.cos(a) * rr;
+      const sy = Math.sin(a * 1.23) * rr * 0.78;
+      ctx.fillStyle = hexToRgba(i % 4 === 0 ? '#fff4cf' : colors[2], 0.25 + (i % 4) * 0.12);
+      ctx.beginPath();
+      ctx.ellipse(sx, sy, Math.max(1, radius * (i % 3 === 0 ? 0.035 : 0.016)), Math.max(1, radius * 0.012), a, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Broken, loose orbital gestures: not a closed ring and not a hard sphere outline.
+    ctx.beginPath();
+    ctx.ellipse(0, 0, radius * 1.12, radius * 0.42, -0.24, 3.45, 5.92);
+    ctx.strokeStyle = 'rgba(226, 226, 255, 0.34)';
+    ctx.lineWidth = Math.max(1, radius * 0.018);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, radius * 1.22, radius * 0.58, 0.32, 0.35, 2.12);
+    ctx.strokeStyle = hexToRgba(colors[2], 0.36);
+    ctx.lineWidth = Math.max(1, radius * 0.025);
+    ctx.stroke();
+
+    // A few tapered flecks escape the edge to make the form feel atmospheric and in motion.
+    for (let i = 0; i < 4; i++) {
+      const a = -0.85 + i * 0.42;
+      const sx = Math.cos(a) * radius * 0.82;
+      const sy = Math.sin(a) * radius * 0.75;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.quadraticCurveTo(sx + radius * 0.18, sy - radius * 0.12, sx + radius * (0.25 + i * 0.035), sy - radius * (0.06 + i * 0.025));
+      ctx.strokeStyle = hexToRgba(colors[2], 0.42);
+      ctx.lineWidth = Math.max(1, radius * 0.018);
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawPlanetarySystem(pal) {
+    const count = state.planetCount;
+    const positions = state.layoutMode ? state.planetLayout : 0;
+    const p1 = positions === 0 ? [395, 205, 78] : positions === 1 ? [260, 310, 92] : positions === 2 ? [440, 155, 62] : positions === 3 ? [300, 190, 105] : [470, 300, 72];
+    const p2 = positions === 0 ? [990, 840, 72] : positions === 1 ? [930, 900, 88] : positions === 2 ? [1030, 720, 95] : positions === 3 ? [850, 900, 66] : [1000, 980, 82];
+    // 1. Top left blue-banded planet (present in reference)
+    if (count >= 1) {
+      drawStripedPlanet(p1[0], p1[1], p1[2], pal.planet1, -0.42 + positions * 0.11);
+      // Soft orbit arc tracing past it
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(p1[0], p1[1], p1[2] * 1.8, p1[2] * 0.83, 0.5 + positions * 0.12, 0, Math.PI * 2);
+      ctx.strokeStyle = hexToRgba(pal.starLight, 0.2);
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 2. Lower right violet-striped gas giant (prominent in reference)
+    if (count >= 2) {
+      drawStripedPlanet(p2[0], p2[1], p2[2], pal.planet2, 0.35 - positions * 0.13);
+    }
+
+    // 3. Small celestial moon near top center
+    if (count >= 3) {
+      drawStripedPlanet(state.layoutMode ? [650, 570, 90, 100, 480][positions] : 635, state.layoutMode ? [145, 180, 220, 450, 120][positions] : 145, state.layoutMode ? [34, 24, 40, 32, 22][positions] : 28, pal.planet3, 0.1);
+    }
+
+    // 4. Subtle orbital node near right edge
+    if (count >= 4) {
+      drawStripedPlanet(1005, 570, 16, [pal.goldMid, pal.goldAmber, '#fff'], 0);
+    }
+  }
+
+  // 6. Brilliant Golden 4-Point Diamond Cross Flare Stars
+  function drawDiamondCrossStar(x, y, size, flareColor = '#ffe08a') {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // Warm radial core aura
+    const aura = ctx.createRadialGradient(0, 0, 1, 0, 0, size * 1.8);
+    aura.addColorStop(0, flareColor);
+    aura.addColorStop(0.35, hexToRgba(flareColor, 0.45));
+    aura.addColorStop(1, 'transparent');
+    ctx.fillStyle = aura;
+    ctx.beginPath();
+    ctx.arc(0, 0, size * 1.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4-point diamond cross flare
+    ctx.fillStyle = flareColor;
+    const len = size * 3.6;
+    const thickness = size * 0.42;
+
+    // Vertical needle
+    ctx.beginPath();
+    ctx.moveTo(0, -len);
+    ctx.quadraticCurveTo(thickness, 0, 0, len);
+    ctx.quadraticCurveTo(-thickness, 0, 0, -len);
+    ctx.closePath();
+    ctx.fill();
+
+    // Horizontal needle
+    ctx.beginPath();
+    ctx.moveTo(-len, 0);
+    ctx.quadraticCurveTo(0, thickness, len, 0);
+    ctx.quadraticCurveTo(0, -thickness, -len, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    // Crisp white center pinpoint
+    ctx.beginPath();
+    ctx.arc(0, 0, size * 0.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawProminentStars(pal) {
+    const starList = [
+      { x: 175, y: 165, size: 16, color: pal.goldCore }, // Top left beacon
+      { x: 860, y: 660, size: 14, color: pal.goldCore }, // Mid right beacon
+      { x: 800, y: 980, size: 15, color: pal.goldMid },  // Lower beacon
+      { x: 1085, y: 510, size: 12, color: pal.goldCore }, // Far right beacon
+      { x: 285, y: 380, size: 9, color: pal.goldMid },   // Mid left beacon
+      { x: 1025, y: 88, size: 11, color: pal.goldCore },  // Upper right beacon
+      { x: 90, y: 255, size: 8, color: pal.goldMid },
+      { x: 610, y: 445, size: 8, color: pal.goldCore }
+    ];
+
+    const count = Math.min(starList.length, state.crossStars);
+    for (let i = 0; i < count; i++) {
+      const s = starList[i];
+      const x = state.layoutMode ? Math.max(45, Math.min(1155, s.x + (state.starLayout - 2) * (i % 2 ? 38 : -34) + prngRange(-48, 48))) : s.x;
+      const y = state.layoutMode ? Math.max(45, Math.min(1155, s.y + (state.starLayout - 2) * (i % 2 ? -32 : 28) + prngRange(-42, 42))) : s.y;
+      drawDiamondCrossStar(x, y, s.size * (state.layoutMode ? prngRange(0.72, 1.35) : 1), s.color);
+    }
+  }
+
+  // 7. Stardust-Formed Baruch 'B' and Paw Print (Matching reference image)
+  function drawBaruchStardustEmblem(pal) {
+    const bx = (state.logoX / 100) * 1200;
+    const by = (state.logoY / 100) * 1200;
+    const scale = (state.logoScale / 100) * 1.55;
+    const glowMode = state.emblemGlow; // 1: soft, 2: golden edge, 3: brilliant
+
+    // A bespoke, claw-swept B silhouette based on the user's pencil sketch.
+    // It is deliberately not a standard typeface: the upper bowl is rounded,
+    // the middle notches are claw-like, and the lower stroke tapers into a long point.
+    function traceTalonFormB(target) {
+      target.beginPath();
+      // Outer contour
+      target.moveTo(17, -83);
+      target.bezierCurveTo(43, -99, 91, -94, 111, -69);
+      target.bezierCurveTo(130, -46, 111, -24, 83, -12);
+      target.bezierCurveTo(111, -11, 128, 5, 119, 29);
+      target.bezierCurveTo(109, 53, 78, 72, 43, 91);
+      target.lineTo(76, 51);
+      target.bezierCurveTo(89, 36, 81, 25, 65, 31);
+      target.bezierCurveTo(51, 36, 42, 48, 30, 57);
+      target.bezierCurveTo(33, 37, 42, 24, 58, 16);
+      target.bezierCurveTo(39, 17, 27, 8, 21, 21);
+      target.bezierCurveTo(17, 2, 29, -12, 46, -18);
+      target.bezierCurveTo(27, -22, 14, -13, 6, 0);
+      target.bezierCurveTo(8, -25, 20, -42, 40, -49);
+      target.bezierCurveTo(24, -53, 12, -44, 0, -29);
+      target.bezierCurveTo(4, -54, 3, -69, 17, -83);
+      target.closePath();
+      // Two open negative-space cuts make the form read as a stylized B.
+      target.moveTo(38, -67);
+      target.bezierCurveTo(54, -77, 79, -72, 84, -57);
+      target.bezierCurveTo(88, -45, 71, -35, 54, -35);
+      target.bezierCurveTo(39, -34, 30, -47, 38, -67);
+      target.closePath();
+      target.moveTo(56, -7);
+      target.bezierCurveTo(74, -14, 96, -5, 96, 10);
+      target.bezierCurveTo(95, 23, 76, 29, 61, 26);
+      target.bezierCurveTo(48, 23, 44, 5, 56, -7);
+      target.closePath();
+    }
+    function fillLogoGlyph(target, style) {
+      if (style === 'talonForm') {
+        traceTalonFormB(target);
+        target.fill('evenodd');
+      } else {
+        target.fillText('B', 0, 0);
+      }
+    }
+    function strokeLogoGlyph(target, style) {
+      if (style === 'talonForm') traceTalonFormB(target);
+      else target.strokeText('B', 0, 0);
+      target.stroke();
+    }
+
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.scale(scale, scale);
+
+    // Ambient stardust back-glow
+    const backGlow = ctx.createRadialGradient(50, 0, 10, 50, 0, 160);
+    backGlow.addColorStop(0, hexToRgba(pal.goldMid, 0.45));
+    backGlow.addColorStop(0.5, hexToRgba(pal.ribbonBlue, 0.3));
+    backGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = backGlow;
+    ctx.beginPath();
+    ctx.arc(50, 0, 160, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Render the Baruch B in one of several genuinely different cosmic treatments.
+    // All styles share the same letter identity, but vary in silhouette, fill, and celestial integration.
+    const logoStyle = state.logoStyle || 'nebula';
+    const logoFonts = {
+      talonForm: '700 180px "Cinzel", "Georgia", serif',
+      nebula: '700 180px "Cinzel", "Georgia", serif',
+      constellation: '700 174px "Georgia", serif',
+      eclipse: '700 186px "Cinzel", "Georgia", serif',
+      flame: '700 180px "Georgia", serif',
+      orbit: '700 174px "Cinzel", "Georgia", serif'
+    };
+    ctx.save();
+    ctx.font = logoFonts[logoStyle] || logoFonts.nebula;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+
+    const bGrad = ctx.createLinearGradient(-8, -72, 138, 58);
+    if (logoStyle === 'constellation') {
+      bGrad.addColorStop(0, hexToRgba('#d9f3ff', 0.10));
+      bGrad.addColorStop(0.55, hexToRgba(pal.ribbonBlue, 0.18));
+      bGrad.addColorStop(1, hexToRgba(pal.goldCore, 0.12));
+    } else if (logoStyle === 'eclipse') {
+      bGrad.addColorStop(0, hexToRgba('#a7d8ff', 0.72));
+      bGrad.addColorStop(0.55, hexToRgba(pal.ribbonBlue, 0.45));
+      bGrad.addColorStop(1, hexToRgba('#17163d', 0.92));
+    } else if (logoStyle === 'flame') {
+      bGrad.addColorStop(0, hexToRgba('#6c9dff', 0.94));
+      bGrad.addColorStop(0.38, hexToRgba(pal.ribbonBlue, 0.95));
+      bGrad.addColorStop(0.72, hexToRgba(pal.goldMid, 0.98));
+      bGrad.addColorStop(1, hexToRgba('#fff1bc', 1));
+    } else if (logoStyle === 'orbit') {
+      bGrad.addColorStop(0, hexToRgba('#d5efff', 0.88));
+      bGrad.addColorStop(0.5, hexToRgba(pal.ribbonBlue, 0.82));
+      bGrad.addColorStop(1, hexToRgba(pal.goldCore, 0.92));
+    } else {
+      bGrad.addColorStop(0, hexToRgba('#a4caff', 0.95));
+      bGrad.addColorStop(0.35, hexToRgba(pal.ribbonBlue, 0.9));
+      bGrad.addColorStop(0.68, hexToRgba(pal.goldMid, 0.95));
+      bGrad.addColorStop(1, hexToRgba(pal.goldCore, 1.0));
+    }
+    ctx.fillStyle = bGrad;
+    ctx.shadowColor = logoStyle === 'eclipse' ? hexToRgba(pal.ribbonBlue, 0.75) : hexToRgba(pal.goldCore, 0.55);
+    ctx.shadowBlur = logoStyle === 'flame' ? 24 : 12;
+    fillLogoGlyph(ctx, logoStyle);
+    ctx.shadowBlur = 0;
+
+    if (logoStyle === 'talonForm') {
+      // Fine double-edge engraving around the hand-shaped claw-B silhouette.
+      traceTalonFormB(ctx);
+      ctx.strokeStyle = hexToRgba('#d8edff', 0.88); ctx.lineWidth = 1.5; ctx.stroke();
+      traceTalonFormB(ctx);
+      ctx.save(); ctx.translate(2, 1); ctx.strokeStyle = hexToRgba(pal.goldCore, 0.78); ctx.lineWidth = 0.7; ctx.stroke(); ctx.restore();
+    } else if (logoStyle === 'constellation') {
+      // Fine constellation tracing and star nodes replace the solid letter fill.
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = hexToRgba('#d8edff', 0.78);
+      ctx.lineWidth = 1.1;
+      ctx.strokeText('B', 0, 0);
+      const nodes = [[8,-57],[39,-45],[76,-49],[112,-24],[42,-4],[91,10],[25,43],[68,55],[111,43],[126,2]];
+      ctx.strokeStyle = hexToRgba(pal.ribbonBlue, 0.8);
+      ctx.lineWidth = 0.8;
+      [[0,1],[1,2],[2,3],[1,4],[4,5],[4,6],[6,7],[7,8],[5,9],[8,9]].forEach(([a,b])=>{
+        ctx.beginPath(); ctx.moveTo(nodes[a][0],nodes[a][1]); ctx.lineTo(nodes[b][0],nodes[b][1]); ctx.stroke();
+      });
+      nodes.forEach(([x,y],i)=>{ ctx.beginPath(); ctx.fillStyle=i%3===0?pal.goldCore:'#eaf7ff'; ctx.arc(x,y,i%3===0?3.1:1.8,0,Math.PI*2); ctx.fill(); });
+    } else if (logoStyle === 'eclipse') {
+      // Darkened core and fine double rim make the letter feel carved from a moon.
+      ctx.strokeStyle = hexToRgba('#d5e9ff', 0.92); ctx.lineWidth = 2.2; ctx.strokeText('B',0,0);
+      ctx.strokeStyle = hexToRgba(pal.goldCore, 0.8); ctx.lineWidth = 0.8; ctx.strokeText('B',3,1);
+    } else if (logoStyle === 'orbit') {
+      // Delicate orbit arcs weave through and around the letter rather than sitting on top as a sticker.
+      ctx.save(); ctx.translate(66,0); ctx.rotate(-0.42);
+      ctx.beginPath(); ctx.ellipse(0,0,88,36,0,Math.PI*1.08,Math.PI*2.05);
+      ctx.strokeStyle = hexToRgba('#c4eaff',0.8); ctx.lineWidth=1.4; ctx.stroke();
+      ctx.beginPath(); ctx.ellipse(0,0,92,42,0,Math.PI*0.04,Math.PI*0.92);
+      ctx.strokeStyle = hexToRgba(pal.goldCore,0.85); ctx.lineWidth=1.1; ctx.stroke();
+      ctx.restore();
+    } else if (logoStyle === 'flame') {
+      // Wispy energy filaments stretch from the letter's outer bowl.
+      for (let i=0;i<9;i++) {
+        const y = -58 + i*14;
+        ctx.beginPath(); ctx.moveTo(95,y);
+        ctx.bezierCurveTo(120,y-10, 132,y+prngRange(-12,12), 151,y+prngRange(-18,18));
+        ctx.strokeStyle = i%2 ? hexToRgba(pal.ribbonBlue,0.42) : hexToRgba(pal.goldCore,0.55);
+        ctx.lineWidth = prngRange(0.6,1.5); ctx.stroke();
+      }
+    }
+
+    // Fine dust embedded in the glyph, varied by treatment rather than a uniform speckle fill.
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-atop';
+    const grainCount = logoStyle === 'constellation' ? 48 : logoStyle === 'eclipse' ? 82 : 140;
+    for (let g = 0; g < grainCount; g++) {
+      const gx = prngRange(0, 150), gy = prngRange(-90, 90);
+      const gr = logoStyle === 'constellation' ? prngRange(0.45,1.3) : prngRange(0.6,2.3);
+      ctx.fillStyle = g % 4 === 0 ? hexToRgba(pal.goldCore, 0.8) : hexToRgba('#ffffff', logoStyle === 'eclipse' ? 0.28 : 0.58);
+      ctx.beginPath(); ctx.arc(gx, gy, gr, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+
+    if (glowMode >= 2 && logoStyle !== 'constellation') {
+      ctx.strokeStyle = hexToRgba(logoStyle === 'eclipse' ? '#d8edff' : pal.goldCore, logoStyle === 'eclipse' ? 0.75 : 0.8);
+      ctx.lineWidth = logoStyle === 'eclipse' ? 1.3 : 1.8;
+      // For the custom talon-form logo, outline its custom silhouette instead of
+      // drawing a second, standard-font B over it.
+      if (logoStyle === 'talonForm') {
+        traceTalonFormB(ctx);
+        ctx.stroke();
+      } else {
+        ctx.strokeText('B', 0, 0);
+      }
+    }
+    ctx.restore();
+
+    // Bear / talon inlay: draw a separate motif layer, then mask it to the actual B glyph.
+    // This keeps the mascot detail inside the letter instead of floating beside it.
+    function drawBearInlay() {
+      const style = state.bearInlay === 'mixed'
+        ? ['talonB','talons','bearHead','bearSilhouette','clawConstellation'][Math.floor(prng()*5)]
+        : (state.bearInlay || 'talons');
+      const zoom = state.inlayDensity || 3;
+      const detail = state.inlayScale / 100;
+      const inlay = document.createElement('canvas');
+      const mask = document.createElement('canvas');
+      inlay.width = mask.width = canvas.width;
+      inlay.height = mask.height = canvas.height;
+      const ic = inlay.getContext('2d');
+      const mc = mask.getContext('2d');
+      [ic, mc].forEach(c => { c.translate(bx, by); c.scale(scale, scale); });
+      const font = logoFonts[logoStyle] || logoFonts.nebula;
+      mc.font = font; mc.textAlign = 'left'; mc.textBaseline = 'middle';
+      mc.fillStyle = '#fff';
+      if (logoStyle === 'talonForm') { traceTalonFormB(mc); mc.fill('evenodd'); }
+      else mc.fillText('B', 0, 0);
+
+      // Motifs are centered in the two bowls of the B and remain clipped to its silhouette.
+      ic.save();
+      ic.translate(64, 0);
+      ic.scale(detail * (0.72 + zoom * 0.11), detail * (0.72 + zoom * 0.11));
+      const ink = hexToRgba(zoom >= 4 ? '#fff4c8' : '#d9efff', 0.82);
+      const gold = hexToRgba(pal.goldCore, 0.94);
+      const blue = hexToRgba(pal.ribbonBlue, 0.95);
+      ic.lineCap = 'round'; ic.lineJoin = 'round';
+
+      function claw(cx, cy, angle, size) {
+        ic.save(); ic.translate(cx, cy); ic.rotate(angle); ic.scale(size, size);
+        for (let j = 0; j < 3; j++) {
+          const x = (j - 1) * 10;
+          ic.beginPath(); ic.moveTo(x - 4, 17);
+          ic.bezierCurveTo(x - 5, 5, x - 2, -8, x + 1, -22);
+          ic.quadraticCurveTo(x + 7, -9, x + 4, 2);
+          ic.strokeStyle = j === 1 ? gold : ink;
+          ic.lineWidth = Math.max(0.7, 2.2 - zoom * 0.22); ic.stroke();
+          ic.beginPath(); ic.arc(x, 16, 1.8, 0, Math.PI*2); ic.fillStyle = gold; ic.fill();
+        }
+        ic.restore();
+      }
+      if (style === 'starLatticePaw') {
+        // Reference-inspired interior: repeating interlocking 4-point stars,
+        // with a larger Bearcat paw motif crystallizing from the lattice.
+        // Density acts like zoom: left = tiny, tightly packed stars; right = fewer, larger stars.
+        const spacingByZoom = {1: 7.2, 2: 10, 3: 13.5, 4: 18, 5: 24};
+        const spacing = spacingByZoom[zoom] || 13.5;
+        const offsetX = prngRange(-spacing * 0.45, spacing * 0.45);
+        const offsetY = prngRange(-spacing * 0.45, spacing * 0.45);
+        const angle = prngRange(-0.18, 0.18);
+        function fourPointStar(x, y, r, color, alpha, rotation=0) {
+          ic.save(); ic.translate(x,y); ic.rotate(rotation);
+          ic.beginPath();
+          ic.moveTo(0,-r); ic.quadraticCurveTo(r*0.18,-r*0.18,r,0);
+          ic.quadraticCurveTo(r*0.18,r*0.18,0,r);
+          ic.quadraticCurveTo(-r*0.18,r*0.18,-r,0);
+          ic.quadraticCurveTo(-r*0.18,-r*0.18,0,-r);
+          ic.closePath();
+          ic.fillStyle = hexToRgba(color, alpha); ic.fill();
+          ic.strokeStyle = hexToRgba(color, Math.min(0.95, alpha + 0.18));
+          ic.lineWidth = Math.max(0.35, r * 0.09); ic.stroke();
+          ic.restore();
+        }
+        ic.save(); ic.rotate(angle);
+        let row = 0;
+        for (let y=-84 + offsetY; y<=86; y+=spacing*0.86) {
+          const stagger = row % 2 ? spacing*0.5 : 0;
+          for (let x=-53 + offsetX + stagger; x<=54; x+=spacing) {
+            const r = spacing * prngRange(0.23, 0.34);
+            const col = (row + Math.round((x+53)/spacing)) % 5 === 0 ? pal.goldCore : (prng() > 0.5 ? '#d8efff' : pal.ribbonBlue);
+            fourPointStar(x, y, r, col, zoom <= 2 ? 0.68 : 0.78, prngRange(-0.12,0.12));
+          }
+          row++;
+        }
+        // Five larger stars read as four toe beans and a central palm pad.
+        // Their soft glow makes the paw emerge from the smaller interlocking lattice.
+        const pawScale = 0.7 + detail * 0.55;
+        const pawStars = [
+          [-22,-34,0.70], [-7,-43,0.77], [9,-41,0.77], [23,-30,0.70], [1,-13,1.18]
+        ];
+        pawStars.forEach(([x,y,k],i) => {
+          const r = spacing * (zoom >= 4 ? 0.76 : 0.58) * k * pawScale;
+          fourPointStar(x + prngRange(-spacing*0.12,spacing*0.12), y + prngRange(-spacing*0.12,spacing*0.12), r,
+            i===4 ? pal.goldCore : (i%2 ? pal.goldMid : '#eaf7ff'), 0.95, prngRange(-0.1,0.1));
+          // Four-way radiating toe contours, echoing the linked reference design.
+          ic.save(); ic.translate(x,y); ic.strokeStyle=hexToRgba(i===4?pal.goldCore:'#cde9ff',0.72);
+          ic.lineWidth = Math.max(0.45, 0.9 - zoom*0.08);
+          for (let ray=0; ray<4; ray++) {
+            const a = ray*Math.PI/2 + Math.PI/4;
+            ic.beginPath(); ic.moveTo(Math.cos(a)*r*0.48,Math.sin(a)*r*0.48);
+            ic.lineTo(Math.cos(a)*r*1.38,Math.sin(a)*r*1.38); ic.stroke();
+          }
+          ic.restore();
+        });
+        // Fine interlocking connector threads keep the pattern feeling woven, not polka-dotted.
+        ic.strokeStyle = hexToRgba('#d8ecff', zoom <= 2 ? 0.28 : 0.38);
+        ic.lineWidth = zoom >= 4 ? 0.8 : 0.45;
+        for (let y=-72; y<=68; y+=spacing*1.72) {
+          ic.beginPath(); ic.moveTo(-42,y); ic.bezierCurveTo(-18,y+spacing*0.45, 14,y-spacing*0.45, 43,y+spacing*0.12); ic.stroke();
+        }
+        ic.restore();
+      } else if (style === 'talonB') {
+        // Long, tapered claw channels follow the sweeping structure of the sketched B.
+        // The slider behaves like zoom: left = many fine etched lines; right = fewer, larger grooves.
+        const bold = 0.55 + zoom * 0.22;
+        const grooves = [
+          { sx:-43, sy:-58, c1:-20, c2:-9, ex:19, ey:-31, tx:7, ty:-46 },
+          { sx:-38, sy:-27, c1:-13, c2:0, ex:28, ey:-5, tx:15, ty:-20 },
+          { sx:-30, sy:3, c1:-5, c2:9, ex:31, ey:24, tx:18, ty:8 },
+          { sx:-20, sy:28, c1:1, c2:15, ex:39, ey:49, tx:24, ty:34 }
+        ];
+        grooves.forEach((g,i) => {
+          ic.save(); ic.globalAlpha = 0.66;
+          ic.beginPath(); ic.moveTo(g.sx,g.sy);
+          ic.bezierCurveTo(g.c1,g.sy+8,g.c2,g.ey-8,g.ex,g.ey);
+          ic.quadraticCurveTo(g.tx,g.ty,g.sx+7,g.sy+9);
+          ic.closePath();
+          ic.fillStyle = i % 2 ? hexToRgba(pal.ribbonBlue,0.2) : hexToRgba(pal.goldCore,0.22); ic.fill();
+          ic.beginPath(); ic.moveTo(g.sx,g.sy);
+          ic.bezierCurveTo(g.c1,g.sy+8,g.c2,g.ey-8,g.ex,g.ey);
+          ic.strokeStyle = i % 2 ? blue : gold; ic.lineWidth = 1.15 * bold; ic.stroke();
+          ic.beginPath(); ic.moveTo(g.ex,g.ey); ic.quadraticCurveTo(g.tx,g.ty,g.sx+7,g.sy+9);
+          ic.strokeStyle = ink; ic.lineWidth = 0.7 * bold; ic.stroke();
+          ic.restore();
+        });
+        // Curved cross-hatching across the interior, inspired by the pencil sketch.
+        // Higher zoom makes each line larger and bolder while reducing line count.
+        const lineCount = Math.max(8, 34 - zoom * 5);
+        const lineWidth = 0.32 + zoom * 0.23;
+        const lineAlpha = zoom <= 2 ? 0.46 : 0.62;
+        for (let i=0; i<lineCount; i++) {
+          const y = -74 + i * (146 / Math.max(1,lineCount-1));
+          const xStart = -38 + ((i % 4) * 3);
+          const xEnd = 39 + ((i % 3) * 2);
+          ic.beginPath(); ic.moveTo(xStart, y);
+          ic.bezierCurveTo(xStart+17, y-7, xEnd-14, y+8, xEnd, y-2);
+          ic.strokeStyle = i % 5 === 0 ? hexToRgba(pal.goldCore,lineAlpha) : hexToRgba('#cce8ff',lineAlpha);
+          ic.lineWidth = lineWidth; ic.stroke();
+        }
+        // Short diagonal etching adds a cross-hatched, carved surface.
+        const hatchCount = zoom <= 2 ? 18 : zoom === 3 ? 12 : 7;
+        for (let i=0;i<hatchCount;i++) {
+          const x = -29 + (i % 6) * 12;
+          const y = -60 + Math.floor(i / 6) * 38 + (i % 2) * 5;
+          ic.beginPath(); ic.moveTo(x,y); ic.lineTo(x+8+(zoom*1.6),y+5+(zoom*0.8));
+          ic.strokeStyle = hexToRgba(i%3===0?pal.goldCore:'#e1f2ff', zoom<=2?0.38:0.56);
+          ic.lineWidth = Math.max(0.35, lineWidth*0.72); ic.stroke();
+        }
+        const cuts = zoom <= 2 ? 16 : zoom === 3 ? 10 : 6;
+        for(let i=0;i<cuts;i++) {
+          const x=prngRange(-31,31), y=prngRange(-60,63);
+          ic.beginPath(); ic.moveTo(x-2,y+3); ic.quadraticCurveTo(x,y-1,x+2,y-5);
+          ic.strokeStyle=i%3===0?gold:hexToRgba('#d8ecff',0.56);
+          ic.lineWidth=zoom>=4?1.35:0.55; ic.stroke();
+        }
+      } else if (style === 'talons') {
+        claw(-9, -26, -0.18, 0.88); claw(7, 27, 0.12, 0.78);
+        if (zoom >= 3) { claw(13, -1, 0.3, 0.48); }
+      } else if (style === 'clawConstellation') {
+        claw(-10, -23, -0.2, 0.72); claw(9, 22, 0.18, 0.72);
+        const n = zoom * 8;
+        for (let i=0;i<n;i++) {
+          const x = prngRange(-34,34), y = prngRange(-48,48);
+          ic.beginPath(); ic.arc(x,y,prngRange(0.6,1.8),0,Math.PI*2);
+          ic.fillStyle = i%3===0 ? gold : ink; ic.fill();
+        }
+      } else {
+        // Small bear head or full-body silhouette, assembled from soft celestial shapes.
+        const headY = style === 'bearSilhouette' ? -7 : -23;
+        ic.fillStyle = blue; ic.strokeStyle = gold; ic.lineWidth = 1.4;
+        // ears
+        [-15,15].forEach(ex => { ic.beginPath(); ic.arc(ex, headY-12, 7, 0, Math.PI*2); ic.fill(); ic.stroke(); });
+        // head
+        ic.beginPath(); ic.ellipse(0, headY, 21, 23, 0, 0, Math.PI*2); ic.fill(); ic.stroke();
+        // muzzle and nose
+        ic.beginPath(); ic.ellipse(0, headY+9, 11, 8, 0, 0, Math.PI*2); ic.fillStyle = hexToRgba('#f5d78d',0.95); ic.fill();
+        ic.beginPath(); ic.ellipse(0, headY+5, 4, 2.8, 0, 0, Math.PI*2); ic.fillStyle = '#fff8df'; ic.fill();
+        // eyes
+        [-8,8].forEach(ex => { ic.beginPath(); ic.arc(ex,headY-3,2,0,Math.PI*2); ic.fillStyle='#061025'; ic.fill(); });
+        if (style === 'bearSilhouette') {
+          ic.beginPath(); ic.ellipse(0, 30, 17, 22, 0, 0, Math.PI*2); ic.fillStyle=blue; ic.fill(); ic.stroke();
+          [-10,10].forEach(ex => { ic.beginPath(); ic.ellipse(ex,47,5,11,0,0,Math.PI*2); ic.fill(); });
+        }
+        // Orbit-like fine details around the mascot; density increases with the slider.
+        for (let i=0;i<zoom*5;i++) {
+          const a = (Math.PI*2*i)/(zoom*5), rx=29+(i%3)*4, ry=35+(i%2)*5;
+          ic.beginPath(); ic.arc(Math.cos(a)*rx, headY+Math.sin(a)*ry, 1.1+(i%2)*0.45,0,Math.PI*2);
+          ic.fillStyle=i%3===0?gold:ink; ic.fill();
+        }
+      }
+      // Zoomed-out settings create more fine dust; zoomed-in settings create fewer, larger sparks.
+      const specks = zoom <= 2 ? 38 : zoom === 3 ? 24 : zoom === 4 ? 15 : 9;
+      for (let i=0;i<specks;i++) {
+        const x=prngRange(-42,42), y=prngRange(-53,53);
+        ic.beginPath(); ic.arc(x,y, zoom <= 2 ? prngRange(0.45,1.0) : prngRange(0.8,2.0),0,Math.PI*2);
+        ic.fillStyle=i%4===0?gold:ink; ic.fill();
+      }
+      ic.restore();
+      ic.setTransform(1,0,0,1,0,0);
+      ic.globalCompositeOperation = 'destination-in'; ic.drawImage(mask,0,0);
+      ctx.drawImage(inlay,0,0);
+    }
+    drawBearInlay();
+
+    // Small orbiting sparks around the emblem vary with each render and visually bind it to the nebula.
+    if (logoStyle === 'nebula' || logoStyle === 'flame' || logoStyle === 'orbit') {
+      for (let i=0;i<11;i++) {
+        const sx = prngRange(-12,145), sy = prngRange(-83,83);
+        ctx.beginPath(); ctx.arc(sx,sy,prngRange(0.7,2.0),0,Math.PI*2);
+        ctx.fillStyle = i%3===0 ? hexToRgba(pal.goldCore,0.9) : hexToRgba('#d8eaff',0.72); ctx.fill();
+      }
+    }
+    ctx.restore();
+
+    // CELESTIAL PAW PRINTS (Nestled directly in the lower-right waist of the B)
+    function drawGlowingPaw(px, py, pawScale, rot) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(rot);
+      ctx.scale(pawScale, pawScale);
+
+      // Four toe pads
+      const toes = [
+        [-17, -19, 7.5, 10.5, -0.32],
+        [-3, -27, 7.8, 11, -0.05],
+        [12, -22, 7.5, 10.5, 0.24],
+        [22, -8, 6.8, 9.2, 0.45]
+      ];
+
+      toes.forEach(([tx, ty, rx, ry, r]) => {
+        ctx.save();
+        ctx.translate(tx, ty);
+        ctx.rotate(r);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+        const toeGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, ry);
+        toeGrad.addColorStop(0, '#ffffff');
+        toeGrad.addColorStop(0.5, pal.goldCore);
+        toeGrad.addColorStop(1, pal.goldMid);
+        ctx.fillStyle = toeGrad;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Main paw palm pad (heart-curved celestial shape)
+      ctx.beginPath();
+      ctx.moveTo(-18, 0);
+      ctx.bezierCurveTo(-22, -10, -10, -15, -3, -6);
+      ctx.bezierCurveTo(4, -15, 16, -10, 14, 0);
+      ctx.bezierCurveTo(12, 14, -4, 18, -18, 0);
+      ctx.closePath();
+
+      const padGrad = ctx.createRadialGradient(0, 0, 2, 0, 0, 16);
+      padGrad.addColorStop(0, '#ffffff');
+      padGrad.addColorStop(0.45, pal.goldCore);
+      padGrad.addColorStop(1, pal.goldMid);
+      ctx.fillStyle = padGrad;
+      ctx.fill();
+
+      // Outer golden glow rim
+      ctx.strokeStyle = hexToRgba('#ffffff', 0.9);
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // First prominent glowing paw print nestled right against the 'B'
+    drawGlowingPaw(145, 18, 0.78, 0.15);
+
+    // Second smaller trailing paw print drifting into the cosmic dust stream
+    if (state.pawTrail >= 2) {
+      drawGlowingPaw(195, 78, 0.52, 0.35);
+    }
+    // Third subtle micro-paw in the stream
+    if (state.pawTrail >= 3) {
+      drawGlowingPaw(232, 128, 0.38, 0.48);
+    }
+
+    ctx.restore();
+  }
+
+  // 8. Patch Border Frame (Safe Margins)
+  function drawPatchBorder(pal) {
+    ctx.save();
+    // Embroidered outer edge and fine inner stitch line.
+    ctx.beginPath(); ctx.arc(600, 600, 558, 0, Math.PI * 2);
+    ctx.strokeStyle = hexToRgba(pal.ribbonCobalt, 0.95); ctx.lineWidth = 14; ctx.stroke();
+    ctx.beginPath(); ctx.arc(600, 600, 548, 0, Math.PI * 2);
+    ctx.strokeStyle = hexToRgba(pal.goldMid, 0.88); ctx.lineWidth = 3; ctx.stroke();
+    ctx.beginPath(); ctx.arc(600, 600, 530, 0, Math.PI * 2);
+    ctx.strokeStyle = hexToRgba(pal.goldCore, 0.32); ctx.lineWidth = 2;
+    ctx.setLineDash([5, 11]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  // Abstract cosmic explosions: layered radial plumes, curved shockwaves and luminous particles.
+  function drawCosmicExplosions(pal) {
+    const count = state.layoutMode ? 3 + Math.floor(prng() * 3) : 2;
+    for (let i = 0; i < count; i++) {
+      const x = state.layoutMode ? prngRange(190, 1010) : [820, 330][i % 2];
+      const y = state.layoutMode ? prngRange(180, 1010) : [370, 790][i % 2];
+      const r = state.layoutMode ? prngRange(70, 190) : 105;
+      const rot = state.layoutMode ? prngRange(0, Math.PI * 2) : i * 1.8;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+      const glow = ctx.createRadialGradient(0,0,2,0,0,r);
+      glow.addColorStop(0, hexToRgba(pal.goldCore, .30));
+      glow.addColorStop(.22, hexToRgba(pal.ribbonBlue, .24));
+      glow.addColorStop(.65, hexToRgba(pal.ribbonMagenta, .12));
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+      // Irregular radial filaments make the burst feel painterly, not like a flat icon.
+      const rays = state.layoutMode ? 22 + Math.floor(prng()*25) : 30;
+      for (let j=0; j<rays; j++) {
+        const a = (j/rays)*Math.PI*2 + prngRange(-.09,.09);
+        const inner = r*prngRange(.12,.42), outer = r*prngRange(.58,1.18);
+        ctx.beginPath(); ctx.moveTo(Math.cos(a)*inner,Math.sin(a)*inner);
+        ctx.quadraticCurveTo(Math.cos(a+.08)*outer*.7,Math.sin(a+.08)*outer*.7,Math.cos(a)*outer,Math.sin(a)*outer);
+        ctx.strokeStyle = j%4===0 ? hexToRgba(pal.goldCore,.32) : hexToRgba(j%2 ? pal.ribbonCobalt : pal.ribbonMagenta,.16);
+        ctx.lineWidth = prngRange(.45,1.25); ctx.stroke();
+        if (j%3===0) { ctx.beginPath(); ctx.arc(Math.cos(a)*outer,Math.sin(a)*outer,prngRange(1,3.4),0,Math.PI*2); ctx.fillStyle=pal.starLight; ctx.fill(); }
+      }
+      // Shockwave rings with varying ellipticity create a sense of dimensional expansion.
+      for(let k=0;k<3;k++) {
+        ctx.beginPath(); ctx.ellipse(0,0,r*(.48+k*.22),r*(.28+k*.19),k*.25,0,Math.PI*2);
+        ctx.strokeStyle=hexToRgba(k===1?pal.goldCore:pal.ribbonBlue,.15-k*.025); ctx.lineWidth=.7+k*.22; ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
+  // Master Render Function
+  function render() {
+    const pal = palettes[state.palette] || palettes.reference;
+    seed = (seed >>> 0) || 10427;
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, 1200, 1200);
+
+    // The artwork is clipped to a true circular patch silhouette, not merely framed inside a square.
+    ctx.save();
+    ctx.beginPath(); ctx.arc(600, 600, 558, 0, Math.PI * 2); ctx.clip();
+
+    // Layered atmosphere, abstract nebula, and cosmic depth.
+    drawCosmicAtmosphere(pal);
+    drawBackgroundStars(pal);
+    drawNebulaRibbons(pal);
+    drawCosmicExplosions(pal);
+    drawSpiralGalaxyVortex(pal);
+    drawPlanetarySystem(pal);
+    drawProminentStars(pal);
+    drawBaruchStardustEmblem(pal);
+    ctx.restore();
+
+    // Circular stitched rim sits on top of the artwork.
+    drawPatchBorder(pal);
+
+    $('canvasStatus').textContent = `Rendered · Seed ${seed}`;
+    $('variationLabel').textContent = `Var ${String(varCount).padStart(2, '0')}`;
+  }
+
+  // UI Synchronization
+  function syncUI() {
+    state.vortexX = Number($('vortexX').value);
+    state.vortexY = Number($('vortexY').value);
+    state.vortexGlow = Number($('vortexGlow').value);
+    state.vortexAngle = Number($('vortexAngle').value);
+    state.logoScale = Number($('logoScale').value);
+    state.logoStyle = $('logoStyle').value;
+    state.bearInlay = $('bearInlay').value;
+    state.inlayScale = Number($('inlayScale').value);
+    state.inlayDensity = Number($('inlayDensity').value);
+    state.logoX = Number($('logoX').value);
+    state.logoY = Number($('logoY').value);
+    state.pawTrail = Number($('pawTrail').value);
+    state.emblemGlow = Number($('emblemGlow').value);
+    state.palette = $('paletteSelect').value;
+    state.ribbonCurv = Number($('ribbonCurv').value);
+    state.stardustDensity = Number($('stardustDensity').value);
+    state.planetCount = Number($('planetCount').value);
+    state.crossStars = Number($('crossStars').value);
+    state.frame = $('frameSelect').value;
+
+    $('vortexPosOut').textContent = `${state.vortexX}%, ${state.vortexY}%`;
+    $('vortexGlowOut').textContent = state.vortexGlow === 1 ? 'Subtle' : state.vortexGlow === 2 ? 'Vibrant' : 'Radiant Flare';
+    $('vortexAngleOut').textContent = `${state.vortexAngle}°`;
+    $('logoScaleOut').textContent = `${state.logoScale}%`;
+    $('inlayScaleOut').textContent = `${state.inlayScale}%`;
+    $('inlayDensityOut').textContent = `${state.inlayDensity} / ${['Fine & dense','Detailed','Balanced','Bold zoom','Large marks'][state.inlayDensity-1]}`;
+    $('logoPosOut').textContent = `${state.logoX}%, ${state.logoY}%`;
+    $('pawSizeOut').textContent = state.pawTrail === 1 ? 'Single Paw' : state.pawTrail === 2 ? 'Double Paw Trail' : 'Triple Stream';
+    $('emblemGlowOut').textContent = state.emblemGlow === 1 ? 'Soft' : state.emblemGlow === 2 ? 'Golden Edge' : 'Starlight Flare';
+    $('curvOut').textContent = state.ribbonCurv === 1 ? 'Gentle Flow' : state.ribbonCurv === 2 ? 'Graceful S-Flow' : 'Swirling Vortex';
+    $('dustOut').textContent = state.stardustDensity === 1 ? 'Subtle Specks' : state.stardustDensity === 2 ? 'Fine Painterly' : 'Dense Cloud';
+    $('planetOut').textContent = `${state.planetCount} Spheres`;
+    $('crossStarOut').textContent = `${state.crossStars} Stars`;
+  }
+
+  function handleInput() {
+    syncUI();
+    render();
+  }
+
+  function generateVariation(randomize = false) {
+    if (!randomize) {
+      // Generate Variation preserves the sketch-inspired B silhouette while changing
+      // the internal lattice scale/density and the surrounding organic composition.
+      $('logoStyle').value = 'talonForm';
+      $('bearInlay').value = 'starLatticePaw';
+      $('inlayDensity').value = Math.floor(prngRange(1, 6));
+      $('inlayScale').value = Math.floor(prngRange(78, 145));
+      state.layoutMode = true;
+      state.ribbonSpread = prngRange(28, 95);
+      state.planetLayout = Math.floor(prngRange(1, 5));
+      state.starLayout = Math.floor(prngRange(0, 5));
+    }
+    if (randomize) {
+      // Wide ranges make each click produce a genuinely different composition, not just new star speckles.
+      $('vortexX').value = Math.floor(prngRange(42, 84));
+      $('vortexY').value = Math.floor(prngRange(20, 66));
+      $('vortexAngle').value = Math.floor(prngRange(-60, 30));
+      $('vortexGlow').value = Math.floor(prngRange(1, 4));
+      $('logoScale').value = Math.floor(prngRange(75, 140));
+      $('logoStyle').value = 'talonForm';
+      $('bearInlay').value = 'starLatticePaw';
+      $('inlayScale').value = Math.floor(prngRange(65,151));
+      $('inlayDensity').value = Math.floor(prngRange(1,6));
+      $('logoX').value = Math.floor(prngRange(15, 44));
+      $('logoY').value = Math.floor(prngRange(53, 81));
+      $('pawTrail').value = Math.floor(prngRange(1, 4));
+      $('emblemGlow').value = Math.floor(prngRange(1, 4));
+      $('paletteSelect').value = ['reference', 'deepIndigo', 'violetDream', 'cyanGold'][Math.floor(prng() * 4)];
+      $('ribbonCurv').value = Math.floor(prngRange(1, 4));
+      $('stardustDensity').value = Math.floor(prngRange(1, 4));
+      $('planetCount').value = Math.floor(prngRange(2, 5));
+      $('crossStars').value = Math.floor(prngRange(5, 11));
+      $('frameSelect').value = 'circularEmblem';
+      state.layoutMode = true;
+      state.ribbonSpread = prngRange(85, 245);
+      state.planetLayout = Math.floor(prngRange(1, 5));
+      state.starLayout = Math.floor(prngRange(0, 5));
+    }
+    seed = (Math.floor(Math.random() * 0x7fffffff) + 1) >>> 0;
+    varCount++;
+    syncUI();
+    render();
+  }
+
+  function resetToImage() {
+    Object.keys(defaults).forEach(key => {
+      const el = $(key === 'palette' ? 'paletteSelect' : key === 'frame' ? 'frameSelect' : key);
+      if (el) el.value = defaults[key];
+    });
+    state.layoutMode = false;
+    state.ribbonSpread = 0;
+    state.planetLayout = 0;
+    state.starLayout = 0;
+    seed = 8129034;
+    varCount = 1;
+    syncUI();
+    render();
+    showToast('Reset to original reference painting composition.');
+  }
+
+  function showToast(msg) {
+    const toast = $('toast');
+    $('toastMsg').textContent = msg;
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    setTimeout(() => {
+      toast.classList.add('translate-y-24', 'opacity-0');
+    }, 2600);
+  }
+
+  // 1600 × 1600 px High-Res PNG Export
+  function exportPatch() {
+    try {
+      const exp = document.createElement('canvas');
+      exp.width = 1600;
+      exp.height = 1600;
+      const expCtx = exp.getContext('2d');
+      expCtx.imageSmoothingEnabled = true;
+      expCtx.imageSmoothingQuality = 'high';
+      expCtx.drawImage(canvas, 0, 0, 1600, 1600);
+
+      exp.toBlob(blob => {
+        if (!blob) {
+          showToast('Export failed. Please retry.');
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `baruch-ssep-cosmic-patch-${String(varCount).padStart(2, '0')}-1600px.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast('PNG Exported (1600 × 1600 px · 3.5" proportion)');
+      }, 'image/png');
+    } catch (e) {
+      showToast('Export error: ' + e.message);
+    }
+  }
+
+  // Event Listeners
+  document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('input', handleInput));
+  $('paletteSelect').addEventListener('change', handleInput);
+  $('frameSelect').addEventListener('change', handleInput);
+
+  $('btnGenerate').addEventListener('click', () => generateVariation(false));
+  $('btnRandomize').addEventListener('click', () => generateVariation(true));
+  $('logoStyle').addEventListener('change', handleInput);
+  $('bearInlay').addEventListener('change', handleInput);
+  $('btnReset').addEventListener('click', resetToImage);
+  $('btnExport').addEventListener('click', exportPatch);
+
+  syncUI();
+  render();
+})();
+</script>
+</body>
+</html>
