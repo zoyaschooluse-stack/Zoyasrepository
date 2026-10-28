@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosmic Mission Patch Generator — Version 2</title>
+<style>
+:root{--ink:#f4edff;--muted:#b9afd4;--panel:#141026;--line:#39305b;--gold:#f3c56c}
+*{box-sizing:border-box}body{margin:0;background:#080711;color:var(--ink);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}
+header{padding:26px clamp(18px,4vw,48px) 18px;border-bottom:1px solid #29213f;background:linear-gradient(115deg,#130c2a,#090914 65%)}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#d8b7ff;font-weight:800}
+h1{margin:6px 0;font-size:clamp(25px,4vw,38px);letter-spacing:-.04em}header p{max-width:760px;color:#c4badb;margin:0}
+main{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:22px;padding:22px clamp(14px,3vw,36px) 36px;max-width:1500px;margin:auto}
+.preview{background:radial-gradient(ellipse at 50% 45%,#241343,#0a0914 70%);border:1px solid #31264d;border-radius:20px;padding:clamp(10px,2vw,24px);display:flex;flex-direction:column;align-items:center;min-width:0}
+canvas{width:100%;max-width:850px;aspect-ratio:1;display:block;border-radius:12px}
+.status{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;width:100%;max-width:850px;color:#b9afd4;font-size:12px;margin-top:12px}
+.controls{background:#100d1c;border:1px solid #302744;border-radius:20px;padding:20px;height:max-content}
+h2{font-size:17px;margin:0 0 12px}.section{border-top:1px solid #302744;padding-top:16px;margin-top:16px}
+.control{margin:14px 0}.labelrow{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:7px}label{font-weight:650;font-size:13px}output{color:#e5c8ff;font-size:12px}
+input[type=range]{width:100%;accent-color:#b38aff}select{width:100%;background:#1b1630;color:#f5efff;border:1px solid #4a3b68;border-radius:9px;padding:10px;font:inherit}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}
+button{border:1px solid #554273;border-radius:11px;padding:12px 14px;background:#211837;color:#fff;font-weight:750;font:inherit;cursor:pointer}
+button:hover{filter:brightness(1.18)}button.primary{background:linear-gradient(100deg,#8457d7,#5c3caa);border-color:#a68be4}button.wide{grid-column:1/-1}
+.note{color:#b9afd4;font-size:12px;margin-top:14px}.pill{display:inline-block;border:1px solid #5b477c;border-radius:999px;padding:3px 8px;font-size:10px;letter-spacing:.08em;color:#e3ceff;margin-bottom:12px}
+@media(max-width:850px){main{grid-template-columns:1fr}.controls{order:2}.preview{order:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">SSEP · Mission patch study</div>
+  <h1>Cosmic Flow — Generator v2</h1>
+  <p>A reference-led generator for the painterly violet-and-gold patch: flowing Milky Way ribbons, an angular B emblem, a glowing tilted galaxy, and a starfield packed with miniature celestial objects.</p>
+</header>
+<main>
+<section class="preview">
+  <canvas id="art" width="1000" height="1000" aria-label="Generated circular cosmic mission patch"></canvas>
+  <div class="status"><span id="seedLabel">Variation 01</span><span>Circle patch · painterly cosmic style</span><span id="objectLabel">Tiny celestial scale</span></div>
+</section>
+<aside class="controls">
+  <div class="pill">STYLE LOCKED TO YOUR REFERENCE</div>
+  <h2>Generate a new variation</h2>
+  <p class="note" style="margin-top:0">Randomize the arrangement and paths while keeping the same visual language. The controls below change the actual drawing.</p>
+  <div class="buttons">
+    <button class="primary" id="randomize">↻ Random variation</button>
+    <button id="reset">Reset reference style</button>
+    <button class="wide" id="download">Download patch as PNG</button>
+  </div>
+  <div class="section">
+    <h2>Celestial scale &amp; density</h2>
+    <div class="control"><div class="labelrow"><label for="scale">Small object size / zoom</label><output id="scaleOut">Far view · tiny</output></div><input id="scale" type="range" min="0.45" max="2.7" step="0.05" value="0.72"></div>
+    <div class="control"><div class="labelrow"><label for="density">Starfield density</label><output id="densityOut">Very dense</output></div><input id="density" type="range" min="350" max="1500" step="50" value="1050"></div>
+    <div class="control"><div class="labelrow"><label for="planets">Planet count</label><output id="planetsOut">Many + miniature</output></div><input id="planets" type="range" min="8" max="34" step="1" value="23"></div>
+  </div>
+  <div class="section">
+    <h2>Flowing Milky Way</h2>
+    <div class="control"><div class="labelrow"><label for="ribbons">Orbital ribbon paths</label><output id="ribbonsOut">9</output></div><input id="ribbons" type="range" min="5" max="14" step="1" value="9"></div>
+    <div class="control"><div class="labelrow"><label for="zigzag">Zigzag / angular movement</label><output id="zigzagOut">Strong</output></div><input id="zigzag" type="range" min="0" max="100" step="5" value="65"></div>
+    <div class="control"><div class="labelrow"><label for="brush">Brush texture</label><output id="brushOut">Painterly</output></div><input id="brush" type="range" min="1" max="5" step="1" value="4"></div>
+  </div>
+  <div class="section">
+    <h2>B emblem variations</h2>
+    <div class="control"><div class="labelrow"><label for="bSize">B logo size</label><output id="bSizeOut">100%</output></div><input id="bSize" type="range" min="55" max="135" step="5" value="100"></div>
+    <div class="control"><div class="labelrow"><label for="bShape">Shape of the B's protruding tips</label></div><select id="bShape"><option value="sharp">Sharp, pointy teeth</option><option value="ears">Rounded ear-like tips</option><option value="circles">Circular / bubble-like tips</option><option value="swept">Long, flowing swept tips</option><option value="hybrid">Mixed sharp + rounded</option></select></div>
+    <div class="control"><div class="labelrow"><label for="bProtrusion">Tip length / roundness</label><output id="bProtrusionOut">Balanced</output></div><input id="bProtrusion" type="range" min="55" max="145" step="5" value="100"></div>
+  </div>
+  <div class="section">
+    <h2>Patch composition</h2>
+    <div class="control"><div class="labelrow"><label for="emblem">Large B emblem</label></div><select id="emblem"><option value="large">Large · left-center (reference)</option><option value="medium">Medium · left-center</option><option value="small">Small · left-center</option></select></div>
+    <div class="control"><div class="labelrow"><label for="galaxy">Galaxy prominence</label></div><select id="galaxy"><option value="bright">Bright glowing galaxy (reference)</option><option value="subtle">Subtle galaxy</option><option value="large">Oversized galaxy</option></select></div>
+    <div class="control"><div class="labelrow"><label for="palette">Color variation</label></div><select id="palette"><option value="reference">Violet + gold (reference)</option><option value="purple">Deep purple + lilac</option><option value="blue">Indigo + cobalt + gold</option><option value="plum">Plum + rose-violet + antique gold</option></select></div>
+  </div>
+  <p class="note">Tip: move <b>Small object size / zoom</b> left for a distant Milky Way packed with pinprick planets; move it right to enlarge tiny planets, ring systems, and geometric celestial marks. Use Random variation to redraw the paths and placements.</p>
+</aside>
+</main>
+<script>
+(() => {
+const c=document.getElementById('art'),ctx=c.getContext('2d');
+const $=id=>document.getElementById(id);
+const defaults={scale:.72,density:1050,planets:23,ribbons:9,zigzag:65,brush:4,emblem:'large',bSize:100,bShape:'sharp',bProtrusion:100,galaxy:'bright',palette:'reference'};
+let S={...defaults}, seed=381927, variation=1;
+const palettes={
+ reference:{bg:'#09051c',mid:'#1a0b38',deep:'#070416',gold:'#f3c56c',cream:'#fff0c8',violet:'#8953c9',lav:'#b49aff',blue:'#647ee8',rose:'#9a4bb4'},
+ purple:{bg:'#08051b',mid:'#1a0a36',deep:'#050311',gold:'#d9b8ff',cream:'#f8edff',violet:'#7545bc',lav:'#c7a6ff',blue:'#7774df',rose:'#a05ad1'},
+ blue:{bg:'#06112b',mid:'#102750',deep:'#030914',gold:'#f5c96c',cream:'#eaf6ff',violet:'#604bb6',lav:'#91a9ff',blue:'#377fd0',rose:'#8a64d7'},
+ plum:{bg:'#16071e',mid:'#2c1038',deep:'#090410',gold:'#e7b968',cream:'#ffe8d7',violet:'#8c48aa',lav:'#c18de3',blue:'#7567cb',rose:'#bd659e'}
+};
+function rng(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}
+function pick(a){return a[Math.floor(rng()*a.length)]}
+function rgba(hex,a){let n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
+function path(){ctx.beginPath()}
+function clipCircle(){path();ctx.arc(500,500,454,0,Math.PI*2);ctx.clip()}
+function background(p){
+ let g=ctx.createRadialGradient(455,405,5,500,500,540);g.addColorStop(0,p.mid);g.addColorStop(.62,p.bg);g.addColorStop(1,p.deep);ctx.fillStyle=g;ctx.fillRect(0,0,1000,1000);
+ // soft cloudy nebulae, kept subtle under the details
+ for(let i=0;i<18;i++){let x=150+rng()*700,y=150+rng()*700,r=50+rng()*170;let gr=ctx.createRadialGradient(x,y,0,x,y,r);gr.addColorStop(0,rgba(p.violet,.045+rng()*.055));gr.addColorStop(1,rgba(p.violet,0));ctx.fillStyle=gr;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}
+}
+function drawRibbonPath(p,idx){
+ // Each path meanders through the circle on a different diagonal/looping route.
+ let y0=170+idx*68+rng()*30, x0=70+rng()*120, x1=900-rng()*90;
+ let bend=(rng()-.5)*230, bend2=(rng()-.5)*260, zig=S.zigzag/100;
+ let width=(idx%4===0?18:idx%3===0?10:5)+rng()*14;
+ let points=[
+ [x0,y0],
+ [180+rng()*100,y0+bend*.35],
+ [300+rng()*80,250+idx*37+bend],
+ [440+rng()*80,170+idx*54+bend2],
+ [600+rng()*70,400+idx*26-bend],
+ [740+rng()*80,280+idx*48+bend2],
+ [930-rng()*80,360+idx*38+bend]
+ ];
+ // angled, almost zigzag turns are rounded into a flowing route
+ let wiggle=(rng()-.5)*zig*100;
+ points[2][1]+=wiggle;points[4][1]-=wiggle*.8;
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ function trace(offset=0){
+  ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]+offset);
+  for(let j=1;j<points.length-1;j++){let a=points[j],b=points[j+1];ctx.quadraticCurveTo(a[0],a[1]+offset,(a[0]+b[0])/2,(a[1]+b[1])/2+offset)}
+  let z=points[points.length-1];ctx.lineTo(z[0],z[1]+offset);
+ }
+ let grad=ctx.createLinearGradient(x0,y0,x1,points[6][1]);grad.addColorStop(0,rgba(p.blue,.04));grad.addColorStop(.24,rgba(p.violet,.20));grad.addColorStop(.55,rgba(p.lav,idx%3===0?.48:.27));grad.addColorStop(.8,rgba(p.rose,.20));grad.addColorStop(1,rgba(p.gold,.10));
+ trace();ctx.strokeStyle=grad;ctx.lineWidth=width;ctx.globalAlpha=.8;ctx.stroke();
+ // painterly parallel streaks give the wide paths a hand-brushed look
+ for(let k=0;k<S.brush*2;k++){trace((rng()-.5)*width*.8);ctx.strokeStyle=pick([p.lav,p.violet,p.blue,p.gold]);ctx.globalAlpha=.055+rng()*.13;ctx.lineWidth=.6+rng()*2.2;ctx.stroke()}
+ trace(-width*.17);ctx.strokeStyle=rgba(p.cream,.16);ctx.globalAlpha=.7;ctx.lineWidth=.8;ctx.stroke();
+ // a fine orbital line accompanies some ribbons
+ if(idx%2===0){trace(width*.7);ctx.strokeStyle=rgba(p.gold,.55);ctx.globalAlpha=.65;ctx.lineWidth=.8+rng()*1.2;ctx.stroke()}
+ ctx.restore();
+}
+function galaxy(p){
+ let x=692+(rng()-.5)*45,y=502+(rng()-.5)*48,rot=-.47+(rng()-.5)*.18;
+ let size=S.galaxy==='large'?1.22:S.galaxy==='subtle'?.78:1;
+ ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(size, size);
+ // halo and many uneven elliptical accretion rings
+ let halo=ctx.createRadialGradient(0,0,8,0,0,185);halo.addColorStop(0,rgba(p.gold,.35));halo.addColorStop(.42,rgba(p.rose,.12));halo.addColorStop(1,rgba(p.violet,0));ctx.fillStyle=halo;ctx.beginPath();ctx.ellipse(0,0,190,110,0,0,Math.PI*2);ctx.fill();
+ for(let i=0;i<28;i++){
+  ctx.beginPath();ctx.ellipse((rng()-.5)*12,(rng()-.5)*9,42+i*4.4,18+i*2.5,(rng()-.5)*.12,0,Math.PI*2);
+  ctx.strokeStyle=pick([p.gold,p.rose,p.violet,p.lav,p.cream]);ctx.globalAlpha=(S.galaxy==='subtle'?.07:.10)+rng()*.20;ctx.lineWidth=.8+rng()*4;ctx.stroke();
+ }
+ let g=ctx.createRadialGradient(-8,-3,1,0,0,76);g.addColorStop(0,p.cream);g.addColorStop(.17,p.gold);g.addColorStop(.39,'#f3a34c');g.addColorStop(.67,p.rose);g.addColorStop(1,rgba(p.violet,0));
+ ctx.globalAlpha=S.galaxy==='subtle'?.72:1;ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(0,0,82,47,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#fff7d8';ctx.beginPath();ctx.ellipse(-2,-1,19,10,0,0,Math.PI*2);ctx.fill();
+ ctx.restore();ctx.globalAlpha=1;
+}
+function drawB(p){
+ let preset=S.emblem==='small'?.73:S.emblem==='medium'?.86:1;
+ let scale=preset*(Number(S.bSize||100)/100), tip=Number(S.bProtrusion||100)/100, shape=S.bShape||'sharp';
+ ctx.save();ctx.translate(300,520);ctx.rotate(-.06);ctx.scale(scale,scale);
+ // The silhouette keeps a recognizable B, while its projecting tips can be redesigned.
+ ctx.beginPath();
+ if(shape==='sharp'){
+  ctx.moveTo(-155,-152);ctx.lineTo(-35,-171);ctx.quadraticCurveTo(62,-183,85,-122);
+  ctx.quadraticCurveTo(103,-75,50,-30);ctx.quadraticCurveTo(126,-14,114,49);
+  ctx.quadraticCurveTo(103,109,30,143);ctx.lineTo(-80,193*tip);ctx.lineTo(-38,112);
+  ctx.lineTo(-127,145);ctx.lineTo(-54,57);ctx.lineTo(-137,80);ctx.lineTo(-77,8);
+  ctx.lineTo(-166,-35);ctx.lineTo(-89,-48);ctx.closePath();
+ } else if(shape==='ears'){
+  ctx.moveTo(-150,-150);ctx.lineTo(-45,-168);ctx.quadraticCurveTo(55,-180,83,-120);
+  ctx.quadraticCurveTo(101,-76,49,-30);ctx.quadraticCurveTo(126,-12,113,48);
+  ctx.quadraticCurveTo(104,108,28,143);ctx.quadraticCurveTo(-7,159,-55,183*tip);
+  ctx.quadraticCurveTo(-35,132,-25,105);ctx.quadraticCurveTo(-87,145,-119,126);
+  ctx.quadraticCurveTo(-91,80,-50,54);ctx.quadraticCurveTo(-126,76,-145,52);
+  ctx.quadraticCurveTo(-111,7,-78,-17);ctx.quadraticCurveTo(-146,-19,-163,-45);
+  ctx.quadraticCurveTo(-100,-72,-86,-83);ctx.quadraticCurveTo(-127,-111,-150,-150);ctx.closePath();
+ } else if(shape==='circles'){
+  ctx.moveTo(-145,-148);ctx.quadraticCurveTo(-40,-178,25,-157);ctx.bezierCurveTo(91,-142,106,-87,65,-43);
+  ctx.bezierCurveTo(46,-23,44,-20,66,-12);ctx.bezierCurveTo(131,9,123,78,76,117);
+  ctx.quadraticCurveTo(34,151,-24,158);ctx.bezierCurveTo(-34,158,-42,169,-48,184*tip);
+  ctx.bezierCurveTo(-68,201*tip,-91,183*tip,-82,161*tip);ctx.quadraticCurveTo(-74,132,-48,106);
+  ctx.bezierCurveTo(-72,121,-105,139,-128,124);ctx.bezierCurveTo(-148,110,-137,86,-112,65);
+  ctx.quadraticCurveTo(-87,45,-65,34);ctx.bezierCurveTo(-99,47,-136,43,-145,24);
+  ctx.bezierCurveTo(-155,4,-127,-17,-99,-32);ctx.quadraticCurveTo(-76,-43,-60,-48);
+  ctx.bezierCurveTo(-105,-58,-151,-89,-145,-148);ctx.closePath();
+ } else if(shape==='swept'){
+  ctx.moveTo(-160,-150);ctx.lineTo(-35,-171);ctx.quadraticCurveTo(62,-183,85,-122);
+  ctx.quadraticCurveTo(103,-75,50,-30);ctx.quadraticCurveTo(126,-14,114,49);
+  ctx.quadraticCurveTo(103,109,30,143);ctx.bezierCurveTo(-8,162,-65,190*tip,-105,218*tip);
+  ctx.bezierCurveTo(-91,170,-64,127,-38,102);ctx.bezierCurveTo(-77,126,-133,159*tip,-158,147*tip);
+  ctx.bezierCurveTo(-127,103,-88,65,-54,47);ctx.bezierCurveTo(-96,65,-147,89*tip,-173,74*tip);
+  ctx.bezierCurveTo(-134,26,-104,-10,-77,-31);ctx.lineTo(-166,-35);ctx.lineTo(-89,-48);ctx.closePath();
+ } else { // hybrid: retain two sharp points and soften the lower tip into an ear-like curve
+  ctx.moveTo(-155,-152);ctx.lineTo(-35,-171);ctx.quadraticCurveTo(62,-183,85,-122);
+  ctx.quadraticCurveTo(103,-75,50,-30);ctx.quadraticCurveTo(126,-14,114,49);
+  ctx.quadraticCurveTo(103,109,30,143);ctx.quadraticCurveTo(-12,165,-66,184*tip);
+  ctx.quadraticCurveTo(-55,136,-30,104);ctx.lineTo(-127,145);ctx.lineTo(-54,57);
+  ctx.lineTo(-137,80);ctx.lineTo(-77,8);ctx.lineTo(-166,-35);ctx.lineTo(-89,-48);ctx.closePath();
+ }
+ let grad=ctx.createLinearGradient(-120,-150,90,170);grad.addColorStop(0,p.lav);grad.addColorStop(.3,p.blue);grad.addColorStop(.58,'#b7a4e8');grad.addColorStop(.79,p.gold);grad.addColorStop(1,'#f5c15e');
+ ctx.fillStyle=grad;ctx.shadowColor=rgba(p.lav,.35);ctx.shadowBlur=14;ctx.fill();ctx.shadowBlur=0;
+ ctx.strokeStyle=rgba(p.cream,.95);ctx.lineWidth=3;ctx.stroke();
+ // Interior counters are kept as negative space so the emblem still reads as a B.
+ ctx.beginPath();ctx.ellipse(-13,-100,43,23,-.12,0,Math.PI*2);ctx.fillStyle=p.deep;ctx.fill();ctx.strokeStyle=rgba(p.cream,.48);ctx.lineWidth=1.5;ctx.stroke();
+ ctx.beginPath();ctx.ellipse(-3,48,47,25,-.1,0,Math.PI*2);ctx.fillStyle=p.deep;ctx.fill();ctx.strokeStyle=rgba(p.cream,.42);ctx.stroke();
+ for(let i=0;i<70;i++){let x=-140+rng()*220,y=-160+rng()*330;if(rng()>.45){ctx.fillStyle=rgba(p.cream,.12+rng()*.22);ctx.beginPath();ctx.arc(x,y,rng()*2.2,0,Math.PI*2);ctx.fill()}}
+ ctx.restore();
+}
+function planet(x,y,r,p,idx){
+ ctx.save();ctx.translate(x,y);ctx.rotate((rng()-.5)*.7);
+ // Ring sits behind the sphere, with small variations in tilt
+ if(idx%3!==1){ctx.beginPath();ctx.ellipse(0,0,r*1.65,r*.46,-.24,0,Math.PI*2);ctx.strokeStyle=rgba(idx%2?p.gold:p.lav,.86);ctx.lineWidth=Math.max(.8,r*.11);ctx.stroke();ctx.beginPath();ctx.ellipse(0,0,r*1.46,r*.32,-.24,Math.PI,Math.PI*2);ctx.strokeStyle=rgba(p.cream,.55);ctx.lineWidth=Math.max(.6,r*.045);ctx.stroke()}
+ let g=ctx.createRadialGradient(-r*.36,-r*.42,1,0,0,r*1.2);g.addColorStop(0,p.cream);g.addColorStop(.22,idx%2?p.blue:p.rose);g.addColorStop(.67,idx%3?p.violet:p.gold);g.addColorStop(1,p.deep);
+ ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();ctx.strokeStyle=rgba(p.cream,.55);ctx.lineWidth=Math.max(.5,r*.06);ctx.stroke();
+ // striped / banded surface
+ ctx.save();ctx.beginPath();ctx.arc(0,0,r*.94,0,Math.PI*2);ctx.clip();
+ for(let j=-2;j<=2;j++){ctx.beginPath();ctx.ellipse(0,j*r*.35,r*1.05,r*.17,(rng()-.5)*.25,0,Math.PI*2);ctx.strokeStyle=rgba(j%2?p.cream:p.deep,.16+rng()*.2);ctx.lineWidth=Math.max(.5,r*.12);ctx.stroke()}
+ ctx.restore();ctx.restore();
+}
+function star(x,y,r,p,kind){
+ ctx.save();ctx.translate(x,y);ctx.rotate(rng()*Math.PI);
+ let color=pick([p.gold,p.cream,p.lav,p.blue]);
+ if(kind===0){ctx.fillStyle=rgba(color,.35+rng()*.55);ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill()}
+ else if(kind===1){ctx.fillStyle=rgba(color,.8);ctx.beginPath();ctx.moveTo(0,-r*2.7);ctx.lineTo(r*.36,-r*.36);ctx.lineTo(r*2.4,0);ctx.lineTo(r*.36,r*.36);ctx.lineTo(0,r*2.7);ctx.lineTo(-r*.36,r*.36);ctx.lineTo(-r*2.4,0);ctx.lineTo(-r*.36,-r*.36);ctx.closePath();ctx.fill()}
+ else{ctx.strokeStyle=rgba(color,.7);ctx.lineWidth=Math.max(.55,r*.24);ctx.beginPath();ctx.moveTo(-r*2.5,0);ctx.lineTo(r*2.5,0);ctx.moveTo(0,-r*3);ctx.lineTo(0,r*3);ctx.stroke();ctx.fillStyle=p.cream;ctx.beginPath();ctx.arc(0,0,r*.45,0,Math.PI*2);ctx.fill()}
+ ctx.restore();
+}
+function draw(){
+ const p=palettes[S.palette];seed=(seed+1)>>>0;ctx.clearRect(0,0,1000,1000);
+ ctx.fillStyle='#030208';ctx.fillRect(0,0,1000,1000);
+ // Outer dark violet edge and hand-painted gold rim
+ ctx.beginPath();ctx.arc(500,500,475,0,Math.PI*2);ctx.fillStyle='#2d1d71';ctx.fill();
+ ctx.beginPath();ctx.arc(500,500,463,0,Math.PI*2);ctx.fillStyle=p.gold;ctx.fill();
+ ctx.beginPath();ctx.arc(500,500,455,0,Math.PI*2);ctx.fillStyle=p.deep;ctx.fill();
+ ctx.save();clipCircle();background(p);
+ // Dense miniature stars first, so the ribbons sit in the same cosmic field
+ for(let i=0;i<S.density;i++){
+  let a=rng()*Math.PI*2,rr=Math.sqrt(rng())*445,x=500+Math.cos(a)*rr,y=500+Math.sin(a)*rr;
+  let z=(.35+rng()*1.15)*Math.min(1.55,S.scale);
+  star(x,y,z,p,rng()<.09?2:rng()<.18?1:0);
+ }
+ // The large orbital currents flow in different directions and cross like a Milky Way
+ for(let i=0;i<S.ribbons;i++)drawRibbonPath(p,i);
+ // A few very thin elliptical orbital loops add fine structure
+ for(let i=0;i<8;i++){ctx.save();ctx.translate(500+(rng()-.5)*160,500+(rng()-.5)*180);ctx.rotate((rng()-.5)*1.3);ctx.beginPath();ctx.ellipse(0,0,170+rng()*260,40+rng()*105,(rng()-.5)*.2,0,Math.PI*2);ctx.strokeStyle=rgba(pick([p.lav,p.gold,p.blue]),.14+rng()*.22);ctx.lineWidth=.6+rng()*1.3;ctx.stroke();ctx.restore()}
+ // Miniature objects are spread throughout the entire circle, not in a row or grid
+ let count=Number(S.planets);
+ for(let i=0;i<count;i++){
+  let a=rng()*Math.PI*2,rr=55+Math.sqrt(rng())*390,x=500+Math.cos(a)*rr,y=500+Math.sin(a)*rr;
+  // Keep central focal galaxy readable without leaving the rest empty
+  let r=(3.2+rng()*10.5)*S.scale;
+  if(i%5===0)r*=1.35;
+  planet(x,y,r,p,i);
+ }
+ // Many extra speck-sized moons, diamonds and micro-planets
+ for(let i=0;i<Math.floor(S.density*.34);i++){
+  let a=rng()*Math.PI*2,rr=Math.sqrt(rng())*445,x=500+Math.cos(a)*rr,y=500+Math.sin(a)*rr;
+  let r=(.8+rng()*2.5)*Math.min(1.9,S.scale);
+  if(rng()<.22){ctx.strokeStyle=rgba(pick([p.gold,p.lav,p.cream]),.55);ctx.lineWidth=.8;ctx.beginPath();ctx.ellipse(x,y,r*2.3,r*.7,rng()*2,0,Math.PI*2);ctx.stroke()}
+  star(x,y,r,p,rng()<.18?1:0);
+ }
+ galaxy(p);
+ drawB(p);
+ // Tiny highlights above the emblem and galaxy to add depth
+ for(let i=0;i<34;i++){let x=130+rng()*740,y=100+rng()*800;if(rng()>.48)star(x,y,1+rng()*2.5,p,1)}
+ ctx.restore();
+ // Slightly imperfect double rim
+ ctx.beginPath();ctx.arc(500,500,463,0,Math.PI*2);ctx.strokeStyle=rgba(p.cream,.65);ctx.lineWidth=1.3;ctx.stroke();
+ ctx.beginPath();ctx.arc(500,500,452,0,Math.PI*2);ctx.strokeStyle=rgba(p.violet,.65);ctx.lineWidth=1;ctx.stroke();
+ $('seedLabel').textContent='Variation '+String(variation).padStart(2,'0')+' · Seed '+seed;
+ $('objectLabel').textContent=S.scale<.85?'Far view · tiny objects':S.scale<1.55?'Mid view · visible details':'Close view · enlarged details';
+}
+function updateLabels(){
+ $('scaleOut').textContent=S.scale<.85?'Far view · tiny':S.scale<1.55?'Mid view · detailed':'Close view · enlarged';
+ $('densityOut').textContent=S.density<650?'Open starfield':S.density<1050?'Dense':'Very dense';
+ $('planetsOut').textContent=S.planets<15?'Scattered':S.planets<25?'Many + miniature':'Saturated cosmos';
+ $('ribbonsOut').textContent=S.ribbons;$('zigzagOut').textContent=S.zigzag<30?'Smooth':S.zigzag<70?'Strong':'Very angular';
+ $('brushOut').textContent=['Light','Soft','Mixed','Painterly','Heavy texture'][S.brush-1];
+ $('bSizeOut').textContent=S.bSize+'%';$('bProtrusionOut').textContent=S.bProtrusion<80?'Short / soft':S.bProtrusion<120?'Balanced':'Long / exaggerated';
+}
+function render(){updateLabels();draw()}
+['scale','density','planets','ribbons','zigzag','brush','bSize','bProtrusion'].forEach(id=>$(id).addEventListener('input',e=>{S[id]=Number(e.target.value);render()}));
+['emblem','bShape','galaxy','palette'].forEach(id=>$(id).addEventListener('change',e=>{S[id]=e.target.value;render()}));
+$('randomize').addEventListener('click',()=>{seed=(Math.random()*0xffffffff)>>>0;variation++;S.ribbons=Math.max(5,Math.min(14,S.ribbons+Math.floor(Math.random()*5)-2));$('ribbons').value=S.ribbons;render()});
+$('reset').addEventListener('click',()=>{S={...defaults};Object.keys(defaults).forEach(k=>{if($(k))$(k).value=defaults[k]});seed=381927;variation=1;render()});
+$('download').addEventListener('click',()=>{const a=document.createElement('a');a.download='cosmic-mission-patch-v2.png';a.href=c.toDataURL('image/png');a.click()});
+render();
+})();
+</script>
+</body>
+</html>
