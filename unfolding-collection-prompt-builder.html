@@ -1,0 +1,424 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Unfolding Collection | AI Prompt Studio</title>
+<style>
+:root {
+  --cream:#F5EFE6;
+  --rose:#D9A6A9;
+  --burgundy:#783D4B;
+  --sage:#A3AA8C;
+  --brown:#80634F;
+  --white:#fffdf9;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--cream);
+  color:var(--burgundy);
+  font-family:Arial,sans-serif;
+}
+header {
+  padding:35px 7%;
+  border-bottom:1px solid #d8c9bc;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+}
+.brand {
+  font-family:Georgia,serif;
+  font-size:25px;
+  letter-spacing:1px;
+}
+.header-note {
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--brown);
+}
+main {
+  max-width:1150px;
+  margin:auto;
+  padding:55px 25px 80px;
+}
+.intro {
+  max-width:720px;
+  margin-bottom:40px;
+}
+.eyebrow {
+  text-transform:uppercase;
+  letter-spacing:3px;
+  font-size:10px;
+  color:var(--brown);
+}
+h1 {
+  font-family:Georgia,serif;
+  font-weight:normal;
+  font-size:clamp(38px,6vw,62px);
+  line-height:1.08;
+  margin:15px 0;
+}
+.intro p {
+  color:#806c61;
+  line-height:1.8;
+  font-size:14px;
+}
+.workspace {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  align-items:start;
+}
+.panel {
+  background:var(--white);
+  border:1px solid #e4d8ce;
+  padding:28px;
+  border-radius:4px;
+}
+.panel h2 {
+  font-family:Georgia,serif;
+  font-weight:normal;
+  font-size:25px;
+  margin:0 0 8px;
+}
+.description {
+  font-size:12px;
+  color:#907b70;
+  line-height:1.6;
+  margin-bottom:25px;
+}
+label {
+  display:block;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  margin:18px 0 8px;
+  color:var(--brown);
+}
+select,input,textarea {
+  width:100%;
+  padding:12px;
+  border:1px solid #ddcfc4;
+  background:#fffefa;
+  color:var(--burgundy);
+  font:13px Arial,sans-serif;
+  border-radius:2px;
+}
+textarea {
+  min-height:80px;
+  resize:vertical;
+  line-height:1.6;
+}
+select:focus,input:focus,textarea:focus {
+  outline:2px solid var(--rose);
+  outline-offset:1px;
+}
+button {
+  border:0;
+  cursor:pointer;
+  padding:14px 18px;
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  transition:.2s;
+}
+.generate {
+  width:100%;
+  margin-top:25px;
+  background:var(--burgundy);
+  color:white;
+}
+.generate:hover {background:#5e2d3a}
+.copy {
+  background:var(--burgundy);
+  color:white;
+}
+.copy:hover {background:#5e2d3a}
+.secondary {
+  background:#eee3da;
+  color:var(--burgundy);
+}
+.output {
+  background:#f8f3ed;
+  border:1px solid #e5d9cf;
+  min-height:320px;
+  padding:20px;
+  font-family:Georgia,serif;
+  font-size:15px;
+  line-height:1.8;
+  color:#60434a;
+  white-space:pre-wrap;
+}
+.output.empty {
+  color:#aa9990;
+  font-style:italic;
+}
+.output-actions {
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+.output-actions button {flex:1}
+.checks {
+  margin-top:25px;
+  padding:18px;
+  background:#f3eee5;
+}
+.checks h3 {
+  font-family:Georgia,serif;
+  font-weight:normal;
+  margin:0 0 12px;
+  font-size:18px;
+}
+.checks p {
+  font-size:12px;
+  line-height:1.8;
+  margin:5px 0;
+  color:#756056;
+}
+.status {
+  color:#637052;
+  font-weight:bold;
+}
+.palette {
+  display:flex;
+  gap:7px;
+  margin-top:12px;
+}
+.swatch {
+  width:27px;
+  height:27px;
+  border-radius:50%;
+  border:1px solid #d6c8bc;
+}
+footer {
+  text-align:center;
+  padding:25px;
+  border-top:1px solid #ddcfc4;
+  color:var(--brown);
+  font-family:Georgia,serif;
+  font-style:italic;
+}
+@media(max-width:750px) {
+  .workspace {grid-template-columns:1fr}
+  header {padding:25px}
+  .header-note {display:none}
+  main {padding-top:35px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">The Unfolding Collection</div>
+  <div class="header-note">Penguin Classics · Creative Studio</div>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="eyebrow">Campaign Image Direction</div>
+    <h1>AI Image<br>Prompt Studio</h1>
+    <p>
+      Create beautiful, campaign-ready image prompts inspired by
+      The Unfolding Collection. Choose your subject, camera angle,
+      setting, and advertising format. Every prompt follows our
+      romantic editorial brand identity.
+    </p>
+    <div class="palette">
+      <div class="swatch" style="background:#F5EFE6"></div>
+      <div class="swatch" style="background:#D9A6A9"></div>
+      <div class="swatch" style="background:#783D4B"></div>
+      <div class="swatch" style="background:#A3AA8C"></div>
+      <div class="swatch" style="background:#80634F"></div>
+    </div>
+  </section>
+
+  <div class="workspace">
+
+    <section class="panel">
+      <h2>Build your image</h2>
+      <div class="description">
+        Select your creative direction. Your choices will be
+        translated into a detailed, on-brand AI image prompt.
+      </div>
+
+      <label for="imageType">Image type</label>
+      <select id="imageType">
+        <option value="Product photography featuring one featured romantic fiction book as the main subject">Product photography</option>
+        <option value="Lifestyle photography showing a person naturally reading or holding the featured book">Lifestyle photography</option>
+        <option value="Detailed close-up photography of book pages, paper textures, flowers, and ribbons">Detail photography</option>
+        <option value="Atmospheric romantic photography that communicates the emotional feeling of a literary story">Atmospheric photography</option>
+        <option value="Art-directed luxury literary campaign editorial photography">Campaign editorial</option>
+        <option value="Subtle editorial background photography with generous negative space for campaign typography">Background photography</option>
+      </select>
+
+      <label for="angle">Camera angle</label>
+      <select id="angle">
+        <option value="Overhead flat-lay composition">Overhead / Flat lay</option>
+        <option value="Intimate close-up composition">Close-up</option>
+        <option value="Three-quarter angle showing the book cover, spine, and page thickness">Three-quarter angle</option>
+        <option value="Eye-level editorial composition">Eye-level</option>
+        <option value="Wide cinematic editorial composition">Wide editorial shot</option>
+        <option value="Macro photography capturing delicate paper and floral textures">Macro detail</option>
+      </select>
+
+      <label for="setting">Setting</label>
+      <select id="setting">
+        <option value="A warm, softly lit reading room">Warm reading room</option>
+        <option value="A romantic garden with delicate flowers">Romantic garden</option>
+        <option value="A vintage-inspired writing desk with handwritten letters">Vintage writing desk</option>
+        <option value="A cozy window-side reading space">Window-side reading space</option>
+        <option value="A cream-colored linen surface styled as an elegant editorial studio">Editorial studio</option>
+        <option value="A peaceful rainy afternoon reading environment">Rainy afternoon</option>
+        <option value="A soft spring garden with subtle floral details">Spring garden</option>
+        <option value="A refined bedside table with delicate romantic details">Elegant bedside table</option>
+      </select>
+
+      <label for="lighting">Lighting</label>
+      <select id="lighting">
+        <option value="Soft natural window light with gentle shadows">Soft window light</option>
+        <option value="Warm afternoon sunlight with delicate highlights">Afternoon sunlight</option>
+        <option value="Soft diffused studio lighting">Diffused studio light</option>
+        <option value="Subtle overcast daylight with a nostalgic atmosphere">Overcast daylight</option>
+        <option value="Warm golden-hour light with gentle atmospheric shadows">Golden hour</option>
+      </select>
+
+      <label for="format">Advertising format</label>
+      <select id="format">
+        <option value="Billboard, wide landscape 16:9 composition, bold focal point visible from a distance">Billboard — landscape</option>
+        <option value="NYC subway advertisement, portrait 2:3 composition, clear focal point and space for headline">NYC Subway Poster — portrait</option>
+        <option value="Magazine advertisement, portrait 4:5 editorial composition">Magazine Advertisement</option>
+        <option value="Instagram feed advertisement, square 1:1 composition">Instagram Feed — square</option>
+        <option value="Instagram feed advertisement, portrait 4:5 composition">Instagram Feed — portrait</option>
+        <option value="Instagram Story, vertical 9:16 composition with safe space for interface overlays">Instagram Story — 9:16</option>
+        <option value="Instagram Reel cover, vertical 9:16 composition with central focal point">Instagram Reel — 9:16</option>
+        <option value="Website hero banner, wide 16:9 composition with negative space for text">Website Hero — landscape</option>
+      </select>
+
+      <label for="subject">Additional subject or idea (optional)</label>
+      <textarea id="subject" placeholder="Example: A hand placing a pressed rose between the pages of a romantic novel..."></textarea>
+
+      <label for="cover">Book cover reference (optional)</label>
+      <select id="cover">
+        <option value="Use a supplied reference image of the actual book cover and preserve its exact design">Actual cover reference will be supplied</option>
+        <option value="Show a neutral elegant book with a blank, unlettered cover; do not invent a title or author">Use a neutral placeholder book</option>
+        <option value="Focus on the atmosphere and reading details without showing the book cover">Do not show the cover</option>
+      </select>
+
+      <button class="generate" onclick="generatePrompt()">Generate On-Brand Prompt ✦</button>
+    </section>
+
+    <section class="panel">
+      <h2>Your generated prompt</h2>
+      <div class="description">
+        Your prompt will automatically include the campaign's
+        colors, mood, photography rules, and visual identity.
+      </div>
+
+      <div id="output" class="output empty">Your finished AI image prompt will appear here. Choose your settings and click Generate On-Brand Prompt.</div>
+
+      <div class="output-actions">
+        <button class="copy" onclick="copyPrompt()">Copy Prompt</button>
+        <button class="secondary" onclick="resetPrompt()">Reset</button>
+      </div>
+
+      <div class="checks">
+        <h3>Brand consistency check</h3>
+        <p><span class="status">✓</span> Romantic, dreamy, nostalgic mood</p>
+        <p><span class="status">✓</span> Official five-color campaign palette</p>
+        <p><span class="status">✓</span> Elegant editorial photography direction</p>
+        <p><span class="status">✓</span> Appropriate composition for selected format</p>
+        <p><span class="status">✓</span> Space reserved for accurate campaign typography</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  Every story opens a new world.
+</footer>
+
+<script>
+function generatePrompt() {
+  const imageType = document.getElementById("imageType").value;
+  const angle = document.getElementById("angle").value;
+  const setting = document.getElementById("setting").value;
+  const lighting = document.getElementById("lighting").value;
+  const format = document.getElementById("format").value;
+  const subject = document.getElementById("subject").value.trim();
+  const cover = document.getElementById("cover").value;
+
+  const prompt = `Create a professional, high-quality advertising photograph for "The Unfolding Collection", a new romantic fiction book launch campaign by Penguin Classics.
+
+IMAGE DIRECTION:
+${imageType}.
+
+SUBJECT AND CREATIVE IDEA:
+${subject || "One featured romantic fiction book, styled with thoughtful literary and floral details."}
+
+CAMERA AND COMPOSITION:
+${angle}. Use balanced editorial framing, intentional negative space, and a clear visual focal point.
+
+SETTING:
+${setting}.
+
+LIGHTING:
+${lighting}. Use soft natural highlights, gentle shadows, and warm atmospheric depth.
+
+BOOK COVER INSTRUCTIONS:
+${cover}. Do not invent a book title, author name, or publisher logo.
+
+CAMPAIGN COLOR PALETTE:
+Warm Cream #F5EFE6, Dusty Rose #D9A6A9, Burgundy #783D4B, Soft Sage #A3AA8C, and Warm Brown #80634F. Use warm cream as the dominant neutral, burgundy for visual emphasis, and the remaining colors as delicate accents.
+
+VISUAL STYLE:
+Romantic, dreamy, intimate, nostalgic, timeless, elegant, and editorial. The result should resemble sophisticated literary magazine photography or a luxury book campaign. Use realistic textures, believable materials, natural floral details, and carefully art-directed styling.
+
+ADVERTISING FORMAT:
+${format}. Ensure the composition is appropriate for the selected aspect ratio and intended placement. Keep important subjects away from areas likely to be covered by interface elements.
+
+TYPOGRAPHY AND LOGO:
+Leave suitable negative space for campaign text to be added later. Do not generate complex text, fake lettering, or additional logos. The official UC monogram and accurate campaign typography will be added separately.
+
+AVOID:
+Neon colors, cyberpunk aesthetics, cartoon graphics, harsh flash, clutter, generic stock photography, exaggerated poses, unrelated objects, and excessive decoration.
+
+FINAL RESULT:
+A cohesive, beautiful, emotionally engaging campaign image that feels unmistakably part of The Unfolding Collection.`;
+
+  const output = document.getElementById("output");
+  output.textContent = prompt;
+  output.classList.remove("empty");
+}
+
+function copyPrompt() {
+  const output = document.getElementById("output");
+  if (output.classList.contains("empty")) {
+    alert("Generate a prompt first.");
+    return;
+  }
+  navigator.clipboard.writeText(output.textContent)
+    .then(() => alert("Your prompt has been copied!"))
+    .catch(() => alert("Please select and copy the prompt manually."));
+}
+
+function resetPrompt() {
+  document.getElementById("imageType").selectedIndex = 0;
+  document.getElementById("angle").selectedIndex = 0;
+  document.getElementById("setting").selectedIndex = 0;
+  document.getElementById("lighting").selectedIndex = 0;
+  document.getElementById("format").selectedIndex = 0;
+  document.getElementById("cover").selectedIndex = 0;
+  document.getElementById("subject").value = "";
+  const output = document.getElementById("output");
+  output.textContent = "Your finished AI image prompt will appear here. Choose your settings and click Generate On-Brand Prompt.";
+  output.classList.add("empty");
+}
+</script>
+</body>
+</html>
