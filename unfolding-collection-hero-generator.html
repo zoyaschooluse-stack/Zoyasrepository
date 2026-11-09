@@ -1,0 +1,1002 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Unfolding Collection — Creative Studio</title>
+
+<style>
+:root {
+  --cream: #F5EFE6;
+  --rose: #D9A6A9;
+  --burgundy: #783D4B;
+  --sage: #A3AA8C;
+  --brown: #80634F;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #eee9e3;
+  color: var(--burgundy);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: white;
+  padding: 18px 4%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+header strong {
+  font: 22px Georgia, serif;
+}
+
+header small {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+main {
+  max-width: 1550px;
+  margin: auto;
+  padding: 25px 3%;
+}
+
+h1 {
+  font: 32px Georgia, serif;
+  margin: 0 0 7px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--brown);
+  margin-bottom: 22px;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.panel, .preview {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 3px 15px #0000000a;
+}
+
+.panel {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.panel h2 {
+  font: 21px Georgia, serif;
+  margin: 0 0 15px;
+}
+
+.group {
+  padding: 14px 0;
+  border-top: 1px solid #eee6df;
+}
+
+.group h3 {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--brown);
+}
+
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  margin: 11px 0 5px;
+}
+
+input[type=text], textarea, select {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #dfd4ca;
+  border-radius: 6px;
+  background: white;
+  font: 12px Arial;
+}
+
+textarea {
+  min-height: 65px;
+  resize: vertical;
+}
+
+input[type=color] {
+  width: 100%;
+  height: 32px;
+  border: 0;
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: var(--burgundy);
+}
+
+input[type=file] {
+  width: 100%;
+  font-size: 11px;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 30px;
+  padding: 11px 15px;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.primary {
+  background: var(--burgundy);
+  color: white;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.secondary {
+  background: #f1e8e1;
+  color: var(--burgundy);
+  width: 100%;
+  margin-top: 8px;
+}
+
+.layout-buttons {
+  display: grid;
+  gap: 7px;
+}
+
+.layout-buttons button {
+  border: 1px solid #dfd4ca;
+  background: white;
+  color: var(--brown);
+  text-align: left;
+}
+
+.layout-buttons button.active {
+  background: var(--burgundy);
+  color: white;
+}
+
+.preview-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.preview-head span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--brown);
+}
+
+.preview-head small {
+  font-size: 10px;
+  color: #95877e;
+}
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 650px;
+  background: var(--cream);
+  color: var(--burgundy);
+}
+
+.hero.texture-paper {
+  background-image: radial-gradient(#80634f13 .7px, transparent .7px);
+  background-size: 7px 7px;
+}
+
+.hero.texture-gradient {
+  background-image: linear-gradient(135deg, var(--cream), #ead5d1 55%, #e7e8d9);
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  min-height: 650px;
+  padding: 5%;
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.copy {
+  position: relative;
+  z-index: 3;
+  max-width: 540px;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--brown);
+  margin-bottom: 23px;
+}
+
+.title {
+  font: normal clamp(38px, 5vw, 68px)/1.05 Georgia, serif;
+  margin: 0 0 20px;
+  color: var(--burgundy);
+}
+
+.tagline {
+  font: 24px/1.4 Georgia, serif;
+  color: var(--brown);
+  margin: 0 0 13px;
+}
+
+.description {
+  font: 13px/1.8 Arial, sans-serif;
+  color: var(--brown);
+  max-width: 400px;
+  margin: 0 0 22px;
+}
+
+.cta {
+  display: inline-block;
+  background: var(--burgundy);
+  color: var(--cream);
+  padding: 14px 23px;
+  border-radius: 30px;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.note {
+  border-top: 1px solid var(--rose);
+  padding-top: 16px;
+  margin-top: 28px;
+  max-width: 400px;
+}
+
+.note strong {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.note p {
+  font: italic 15px/1.5 Georgia, serif;
+  color: var(--brown);
+}
+
+.note small {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--brown);
+}
+
+.flower-mark {
+  color: var(--sage);
+  font-size: 24px;
+  margin-top: 9px;
+}
+
+/* Larger video display */
+
+.visual {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 520px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  max-height: 600px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  cursor: grab;
+  transform-origin: center;
+}
+
+.media:active {
+  cursor: grabbing;
+}
+
+.placeholder {
+  width: 100%;
+  min-height: 450px;
+  background: #eadbd2;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 25px;
+  font: italic 22px Georgia, serif;
+  color: var(--burgundy);
+}
+
+.decor {
+  position: absolute;
+  z-index: 1;
+  color: var(--sage);
+  pointer-events: none;
+}
+
+.decor.one {
+  top: 5%;
+  right: 4%;
+  font-size: 38px;
+}
+
+.decor.two {
+  bottom: 8%;
+  left: 47%;
+  font-size: 28px;
+}
+
+.petals {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  color: var(--rose);
+  font-size: 18px;
+  animation: fall 8s linear infinite;
+}
+
+.petal:nth-child(1) { left: 12%; }
+.petal:nth-child(2) { left: 45%; animation-delay: -3s; }
+.petal:nth-child(3) { left: 78%; animation-delay: -5s; }
+
+@keyframes fall {
+  from { top: -10%; transform: translateX(0) rotate(0); }
+  to { top: 110%; transform: translateX(45px) rotate(240deg); }
+}
+
+/* Cinematic layout */
+
+.hero.cinematic .hero-inner {
+  display: block;
+  padding: 0;
+  min-height: 650px;
+}
+
+.hero.cinematic .visual {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  z-index: 0;
+}
+
+.hero.cinematic .media {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+  background: #e9dfd5;
+  opacity: .85;
+}
+
+.hero.cinematic .copy {
+  max-width: 650px;
+  padding: 80px 7%;
+  min-height: 650px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #f5efe6d9;
+}
+
+/* Magazine layout */
+
+.hero.magazine .hero-inner {
+  grid-template-columns: .8fr 1.2fr;
+  gap: 40px;
+}
+
+.hero.magazine .visual {
+  min-height: 550px;
+}
+
+.hero.magazine .media {
+  width: 100%;
+  max-height: 580px;
+}
+
+.hero.magazine .media {
+  box-shadow: 12px 12px 0 var(--rose);
+}
+
+/* Alignment */
+
+.hero.align-center .copy {
+  text-align: center;
+  margin: auto;
+}
+
+.hero.align-center .description,
+.hero.align-center .note {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero.align-right .copy {
+  text-align: right;
+  margin-left: auto;
+}
+
+/* Responsive */
+
+@media(max-width: 950px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    max-height: none;
+  }
+}
+
+@media(max-width: 650px) {
+  .hero-inner,
+  .hero.magazine .hero-inner {
+    grid-template-columns: 1fr;
+    padding: 8%;
+  }
+
+  .visual {
+    order: -1;
+    min-height: 340px;
+  }
+
+  .media {
+    max-height: 400px;
+  }
+
+  .hero.cinematic .copy {
+    min-height: 650px;
+    padding: 50px 8%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>The Unfolding Collection</strong>
+  <small>PENGUIN CLASSICS · CREATIVE STUDIO</small>
+</header>
+
+<main>
+<h1>Dynamic Hero Studio</h1>
+<p class="subtitle">Explore three compositions and customize your literary campaign.</p>
+
+<div class="workspace">
+
+<aside class="panel">
+<h2>Design controls</h2>
+
+<div class="group">
+<h3>01 · Layout</h3>
+<div class="layout-buttons">
+<button class="active" data-layout="split">01 — Editorial split</button>
+<button data-layout="cinematic">02 — Full-screen cinematic</button>
+<button data-layout="magazine">03 — Magazine editorial</button>
+</div>
+</div>
+
+<div class="group">
+<h3>02 · Campaign text</h3>
+
+<label>Campaign title</label>
+<input id="titleInput" type="text" value="The Unfolding Collection">
+
+<label>Tagline</label>
+<input id="taglineInput" type="text" value="Every story opens a new world.">
+
+<label>Description</label>
+<textarea id="descriptionInput">Step into stories of love, longing, and the beautiful moments that stay with us.</textarea>
+
+<label>Button text</label>
+<input id="buttonInput" type="text" value="Discover the Collection">
+
+<label>Collection label</label>
+<input id="noteInput" type="text" value="A COLLECTION OF TIMELESS LOVE STORIES">
+
+<label>Decorative quote</label>
+<input id="quoteInput" type="text" value="Some stories stay with us long after the final page.">
+
+<label>Text alignment</label>
+<select id="alignment">
+<option value="left">Left</option>
+<option value="center">Center</option>
+<option value="right">Right</option>
+</select>
+</div>
+
+<div class="group">
+<h3>03 · Visual media</h3>
+
+<label>Upload Brik video or image</label>
+<input id="mediaInput" type="file" accept="video/*,image/*">
+
+<label>Visual zoom</label>
+<input id="zoom" type="range" min="60" max="180" value="100">
+
+<label>Horizontal position</label>
+<input id="posX" type="range" min="-100" max="100" value="0">
+
+<label>Vertical position</label>
+<input id="posY" type="range" min="-100" max="100" value="0">
+
+</div>
+
+<div class="group">
+<h3>04 · Colors and background</h3>
+
+<label>Warm cream</label>
+<input id="cream" type="color" value="#F5EFE6">
+
+<label>Dusty rose</label>
+<input id="rose" type="color" value="#D9A6A9">
+
+<label>Burgundy</label>
+<input id="burgundy" type="color" value="#783D4B">
+
+<label>Soft sage</label>
+<input id="sage" type="color" value="#A3AA8C">
+
+<label>Warm brown</label>
+<input id="brown" type="color" value="#80634F">
+
+<label>Background texture</label>
+<select id="texture">
+<option value="plain">Plain</option>
+<option value="paper">Subtle paper grain</option>
+<option value="gradient">Soft gradient</option>
+</select>
+</div>
+
+<div class="group">
+<h3>05 · Typography</h3>
+
+<label>Heading font</label>
+<select id="font">
+<option value="Georgia">Georgia</option>
+<option value="Times New Roman">Times New Roman</option>
+<option value="Palatino">Palatino</option>
+<option value="Arial">Arial</option>
+</select>
+
+<label>Heading size</label>
+<input id="fontSize" type="range" min="32" max="100" value="68">
+
+<label>Letter spacing</label>
+<input id="letterSpace" type="range" min="-2" max="8" value="0">
+</div>
+
+<div class="group">
+<h3>06 · Decorative effects</h3>
+
+<label class="check">
+<input id="showFlowers" type="checkbox" checked>
+Show floral decorations
+</label>
+
+<label class="check">
+<input id="showPetals" type="checkbox">
+Animate floating petals
+</label>
+
+<label>Petal animation speed</label>
+<input id="petalSpeed" type="range" min="3" max="18" value="8">
+</div>
+
+<button class="primary" id="export">Export finished hero HTML</button>
+<button class="secondary" id="reset">Reset all settings</button>
+</aside>
+
+<section class="preview">
+<div class="preview-head">
+<span>LIVE CAMPAIGN PREVIEW</span>
+<small id="layoutName">EDITORIAL SPLIT</small>
+</div>
+
+<section class="hero" id="hero">
+
+<div class="decor one" id="decorOne">✿</div>
+<div class="decor two" id="decorTwo">❀</div>
+
+<div class="petals" id="petals" hidden>
+<span class="petal">✿</span>
+<span class="petal">❀</span>
+<span class="petal">✿</span>
+</div>
+
+<div class="hero-inner">
+
+<div class="copy" id="copy">
+<div class="eyebrow">PENGUIN CLASSICS</div>
+
+<h2 class="title" id="outTitle">The Unfolding Collection</h2>
+
+<p class="tagline" id="outTagline">Every story opens a new world.</p>
+
+<p class="description" id="outDescription">
+Step into stories of love, longing, and the beautiful moments that stay with us.
+</p>
+
+<a class="cta" id="outButton" href="#collection">Discover the Collection</a>
+
+<div class="note">
+<strong id="outNote">A COLLECTION OF TIMELESS LOVE STORIES</strong>
+<p id="outQuote">“Some stories stay with us long after the final page.”</p>
+<small>A WORLD WAITING TO UNFOLD</small>
+<div class="flower-mark">✿</div>
+</div>
+</div>
+
+<div class="visual" id="visual">
+<div class="placeholder">
+Upload your Brik video to see your animated book and flowers here.
+</div>
+</div>
+
+</div>
+</section>
+</section>
+</div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let currentLayout = "split";
+let mediaUrl = "";
+let mediaFile = null;
+let zoom = 1;
+let posX = 0;
+let posY = 0;
+
+/* Text controls */
+
+[
+["titleInput","outTitle"],
+["taglineInput","outTagline"],
+["descriptionInput","outDescription"],
+["buttonInput","outButton"],
+["noteInput","outNote"]
+].forEach(([input,output]) => {
+  $(input).addEventListener("input", () => {
+    $(output).textContent = $(input).value;
+  });
+});
+
+$("quoteInput").addEventListener("input", () => {
+  $("outQuote").textContent = "“" + $("quoteInput").value + "”";
+});
+
+/* Layout controls */
+
+function setLayout(layout) {
+  currentLayout = layout;
+
+  $("hero").classList.remove("cinematic","magazine");
+
+  if(layout !== "split") {
+    $("hero").classList.add(layout);
+  }
+
+  document.querySelectorAll("[data-layout]").forEach(button => {
+    button.classList.toggle("active",button.dataset.layout === layout);
+  });
+
+  $("layoutName").textContent = {
+    split:"EDITORIAL SPLIT",
+    cinematic:"FULL-SCREEN CINEMATIC",
+    magazine:"MAGAZINE EDITORIAL"
+  }[layout];
+}
+
+document.querySelectorAll("[data-layout]").forEach(button => {
+  button.addEventListener("click", () => setLayout(button.dataset.layout));
+});
+
+/* Colors */
+
+[
+["cream","--cream"],
+["rose","--rose"],
+["burgundy","--burgundy"],
+["sage","--sage"],
+["brown","--brown"]
+].forEach(([id,variable]) => {
+  $(id).addEventListener("input", () => {
+    document.documentElement.style.setProperty(variable,$(id).value);
+  });
+});
+
+/* Background texture */
+
+$("texture").addEventListener("input", () => {
+  $("hero").classList.remove("texture-paper","texture-gradient");
+  if($("texture").value === "paper") {
+    $("hero").classList.add("texture-paper");
+  }
+  if($("texture").value === "gradient") {
+    $("hero").classList.add("texture-gradient");
+  }
+});
+
+/* Typography */
+
+$("font").addEventListener("input", () => {
+  $("outTitle").style.fontFamily = $("font").value;
+});
+
+$("fontSize").addEventListener("input", () => {
+  $("outTitle").style.fontSize = $("fontSize").value + "px";
+});
+
+$("letterSpace").addEventListener("input", () => {
+  $("outTitle").style.letterSpacing = $("letterSpace").value + "px";
+});
+
+/* Alignment */
+
+$("alignment").addEventListener("input", () => {
+  $("hero").classList.remove("align-center","align-right");
+
+  if($("alignment").value !== "left") {
+    $("hero").classList.add("align-" + $("alignment").value);
+  }
+});
+
+/* Video and image upload */
+
+$("mediaInput").addEventListener("change", event => {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  if(mediaUrl) URL.revokeObjectURL(mediaUrl);
+
+  mediaFile = file;
+  mediaUrl = URL.createObjectURL(file);
+
+  let element;
+
+  if(file.type.startsWith("video")) {
+    element = document.createElement("video");
+    element.autoplay = true;
+    element.muted = true;
+    element.loop = true;
+    element.playsInline = true;
+    element.controls = true;
+  } else {
+    element = document.createElement("img");
+  }
+
+  element.className = "media";
+  element.src = mediaUrl;
+
+  $("visual").replaceChildren(element);
+
+  zoom = 1;
+  posX = 0;
+  posY = 0;
+
+  $("zoom").value = 100;
+  $("posX").value = 0;
+  $("posY").value = 0;
+
+  positionMedia();
+});
+
+/* Video position and zoom */
+
+function positionMedia() {
+  const element = $("visual").querySelector(".media");
+
+  if(element) {
+    element.style.transform =
+      `translate(${posX}px,${posY}px) scale(${zoom})`;
+  }
+}
+
+$("zoom").addEventListener("input", () => {
+  zoom = Number($("zoom").value) / 100;
+  positionMedia();
+});
+
+$("posX").addEventListener("input", () => {
+  posX = Number($("posX").value);
+  positionMedia();
+});
+
+$("posY").addEventListener("input", () => {
+  posY = Number($("posY").value);
+  positionMedia();
+});
+
+/* Floral effects */
+
+$("showFlowers").addEventListener("change", () => {
+  $("decorOne").hidden = !$("showFlowers").checked;
+  $("decorTwo").hidden = !$("showFlowers").checked;
+});
+
+$("showPetals").addEventListener("change", () => {
+  $("petals").hidden = !$("showPetals").checked;
+});
+
+$("petalSpeed").addEventListener("input", () => {
+  document.querySelectorAll(".petal").forEach(petal => {
+    petal.style.animationDuration = $("petalSpeed").value + "s";
+  });
+});
+
+/* Drag video */
+
+let dragging = false;
+let startX = 0;
+let startY = 0;
+let baseX = 0;
+let baseY = 0;
+
+$("visual").addEventListener("pointerdown", event => {
+  if(!event.target.classList.contains("media")) return;
+
+  dragging = true;
+  startX = event.clientX;
+  startY = event.clientY;
+  baseX = posX;
+  baseY = posY;
+
+  event.target.setPointerCapture(event.pointerId);
+});
+
+$("visual").addEventListener("pointermove", event => {
+  if(!dragging) return;
+
+  posX = baseX + event.clientX - startX;
+  posY = baseY + event.clientY - startY;
+
+  $("posX").value = Math.max(-100,Math.min(100,posX));
+  $("posY").value = Math.max(-100,Math.min(100,posY));
+
+  positionMedia();
+});
+
+$("visual").addEventListener("pointerup", () => dragging = false);
+$("visual").addEventListener("pointercancel", () => dragging = false);
+
+/* Export final standalone HTML */
+
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[character]);
+}
+
+$("export").addEventListener("click", () => {
+  if(!mediaFile) {
+    alert("Please upload your Brik video or image first.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const values = {
+      title:$("titleInput").value,
+      tagline:$("taglineInput").value,
+      description:$("descriptionInput").value,
+      button:$("buttonInput").value,
+      note:$("noteInput").value,
+      quote:$("quoteInput").value
+    };
+
+    const mediaTag = mediaFile.type.startsWith("video")
+      ? `<video class="media" src="${reader.result}" autoplay muted loop playsinline controls></video>`
+      : `<img class="media" src="${reader.result}" alt="Campaign artwork">`;
+
+    const finalHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHTML(values.title)}</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:${$("cream").value};color:${$("burgundy").value};font-family:Arial,sans-serif}
+.hero{min-height:100vh;background:${$("cream").value};position:relative;overflow:hidden}
+.inner{min-height:100vh;padding:5%;display:grid;grid-template-columns:.85fr 1.15fr;gap:30px;align-items:center}
+.copy{max-width:540px;text-align:${$("alignment").value}}
+.eyebrow{font-size:10px;letter-spacing:3px;color:${$("brown").value}}
+h1{font:${$("fontSize").value}px ${$("font").value};letter-spacing:${$("letterSpace").value}px;margin:23px 0}
+.tagline{font:24px Georgia,serif;color:${$("brown").value}}
+.description{font:13px/1.8 Arial;color:${$("brown").value}}
+.cta{display:inline-block;background:${$("burgundy").value};color:${$("cream").value};padding:14px 23px;border-radius:30px;text-decoration:none;margin-top:15px}
+.note{border-top:1px solid ${$("rose").value};padding-top:16px;margin-top:28px}
+.note p{font:italic 15px Georgia;color:${$("brown").value}}
+.visual{min-width:0;min-height:500px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media{width:100%;height:100%;max-height:600px;object-fit:contain;object-position:center;transform:translate(${posX}px,${posY}px) scale(${zoom})}
+.cinematic .inner{display:block;position:relative;padding:0}
+.cinematic .visual{position:absolute;inset:0;height:100%;z-index:0;background:#e9dfd5}
+.cinematic .media{height:100vh;max-height:none;opacity:.85}
+.cinematic .copy{position:relative;z-index:2;padding:8%;min-height:100vh;background:#f5efe6d9;max-width:650px}
+.magazine .inner{grid-template-columns:.8fr 1.2fr}
+.magazine .media{box-shadow:12px 12px 0 ${$("rose").value}}
+@media(max-width:650px){.inner,.magazine .inner{grid-template-columns:1fr;padding:8%}.visual{min-height:350px;order:-1}.media{max-height:400px}}
+</style>
+</head>
+<body>
+<section class="hero ${currentLayout}">
+<div class="inner">
+<div class="copy">
+<div class="eyebrow">PENGUIN CLASSICS</div>
+<h1>${escapeHTML(values.title)}</h1>
+<p class="tagline">${escapeHTML(values.tagline)}</p>
+<p class="description">${escapeHTML(values.description)}</p>
+<a class="cta" href="#collection">${escapeHTML(values.button)}</a>
+<div class="note">
+<strong>${escapeHTML(values.note)}</strong>
+<p>“${escapeHTML(values.quote)}”</p>
+<small>A WORLD WAITING TO UNFOLD</small>
+</div>
+</div>
+<div class="visual">${mediaTag}</div>
+</div>
+</section>
+</body>
+</html>`;
+
+    const blob = new Blob([finalHTML],{type:"text/html"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "the-unfolding-collection-hero.html";
+    link.click();
+
+    setTimeout(() => URL.revokeObjectURL(url),3000);
+  };
+
+  reader.readAsDataURL(mediaFile);
+});
+
+/* Reset */
+
+$("reset").addEventListener("click", () => location.reload());
+
+$("showFlowers").dispatchEvent(new Event("change"));
+</script>
+
+</body>
+</html>
