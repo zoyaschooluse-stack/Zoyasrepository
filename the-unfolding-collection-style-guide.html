@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Unfolding Collection — a romantic literary campaign style guide.">
+  <title>The Unfolding Collection | Style Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5EFE6;
+      --rose: #D9A6A9;
+      --burgundy: #783D4B;
+      --sage: #A3AA8C;
+      --brown: #80634F;
+      --ink: #382B2B;
+      --muted: #806F68;
+      --line: rgba(120, 61, 75, .22);
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "DM Sans", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: var(--sans);
+      line-height: 1.65;
+    }
+    .page { max-width: 1160px; margin: 0 auto; padding: 0 6.5%; }
+    .topline {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 25px 0; border-bottom: 1px solid var(--line);
+      color: var(--brown); font-size: .72rem; letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+    .hero {
+      min-height: 570px; display: grid; place-items: center; text-align: center;
+      padding: 90px 0 105px; position: relative;
+    }
+    .eyebrow { color: var(--burgundy); letter-spacing: .25em; text-transform: uppercase; font-size: .72rem; }
+    h1 {
+      font: 400 clamp(3.4rem, 8vw, 7.2rem)/1.03 var(--serif);
+      color: var(--burgundy); max-width: 900px; margin: 25px auto 18px;
+    }
+    .hero-sub { font: italic 1.45rem var(--serif); color: var(--brown); }
+    .hero-rule { width: 75px; height: 1px; background: var(--rose); margin: 34px auto; }
+    .hero-note { font-size: .72rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
+    section { padding: 78px 0; border-top: 1px solid var(--line); }
+    .section-kicker { color: var(--burgundy); text-transform: uppercase; letter-spacing: .2em; font-size: .7rem; }
+    h2 { font: 400 clamp(2.4rem, 5vw, 4rem)/1.1 var(--serif); color: var(--burgundy); margin: 10px 0 25px; }
+    h3 { font: 400 1.8rem var(--serif); color: var(--burgundy); margin: 0 0 8px; }
+    .intro { max-width: 760px; font: 1.2rem/1.8 var(--serif); color: #574640; }
+    .campaign-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 60px; align-items: start; }
+    .details { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 28px; }
+    .detail { border-top: 1px solid var(--line); padding-top: 12px; }
+    .detail b { display: block; color: var(--burgundy); font-size: .68rem; letter-spacing: .17em; text-transform: uppercase; margin-bottom: 5px; }
+    .detail span { font: 1.02rem/1.5 var(--serif); }
+    .image-frame {
+      background: #eee3d8; padding: 12px; border: 1px solid var(--line);
+      box-shadow: 0 18px 45px rgba(67, 42, 42, .07);
+    }
+    .image-frame img { display: block; width: 100%; height: auto; }
+    .image-caption { font-size: .7rem; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-top: 12px; }
+    .moodboard-note { color: var(--muted); font-size: .9rem; margin: -10px 0 25px; }
+    .palette { display: grid; grid-template-columns: repeat(5, 1fr); gap: 13px; margin-top: 32px; }
+    .swatch { min-width: 0; }
+    .swatch-color { height: 150px; border: 1px solid rgba(56,43,43,.12); }
+    .swatch-name { font: 1.05rem var(--serif); color: var(--burgundy); margin-top: 12px; }
+    .swatch-hex { font-size: .72rem; color: var(--muted); letter-spacing: .1em; }
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 30px; }
+    .type-card { border: 1px solid var(--line); padding: 30px; background: rgba(255,255,255,.24); }
+    .type-label { color: var(--muted); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; }
+    .type-sample-serif { font: 2.6rem/1.2 var(--serif); color: var(--burgundy); margin: 22px 0 15px; }
+    .type-sample-sans { font: 1.6rem/1.4 var(--sans); color: var(--brown); margin: 27px 0 20px; }
+    .type-card p { font-size: .88rem; color: var(--muted); margin-bottom: 0; }
+    .logo-area { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 45px; }
+    .logo-frame { background: #fffaf4; padding: 35px; border: 1px solid var(--line); display: grid; place-items: center; min-height: 280px; }
+    .logo-frame img { max-width: 100%; max-height: 250px; object-fit: contain; }
+    .logo-placeholder { font: 4rem var(--serif); color: var(--burgundy); border: 2px solid var(--burgundy); border-radius: 50%; width: 190px; height: 190px; display: grid; place-items: center; }
+    .closing { text-align: center; padding: 85px 0 100px; border-top: 1px solid var(--line); }
+    .closing p { font: italic 1.8rem var(--serif); color: var(--brown); }
+    footer { padding: 22px 0 35px; border-top: 1px solid var(--line); color: var(--muted); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; display: flex; justify-content: space-between; gap: 20px; }
+    @media (max-width: 760px) {
+      .page { padding: 0 6%; }
+      .hero { min-height: 450px; }
+      .campaign-grid, .logo-area, .type-grid { grid-template-columns: 1fr; gap: 30px; }
+      .details { gap: 18px; }
+      .palette { grid-template-columns: repeat(2, 1fr); }
+      .swatch-color { height: 105px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline">
+      <span>Penguin Classics · Concept Campaign</span>
+      <span>Creative Direction / Part One</span>
+    </div>
+
+    <header class="hero">
+      <div>
+        <div class="eyebrow">A celebration of stories</div>
+        <h1>The Unfolding<br>Collection</h1>
+        <div class="hero-sub">Every story opens a new world.</div>
+        <div class="hero-rule"></div>
+        <div class="hero-note">Dream · Read · Discover</div>
+      </div>
+    </header>
+
+    <section id="campaign">
+      <div class="section-kicker">01 / The idea</div>
+      <h2>The campaign</h2>
+      <div class="campaign-grid">
+        <div>
+          <p class="intro">The Unfolding Collection is a romantic literary campaign celebrating the beauty of stories, love, and discovery through books.</p>
+          <p>Inspired by the quiet rituals of reading, the campaign brings together books, flowers, handwritten letters, and delicate paper textures. Its visual world feels intimate, nostalgic, and thoughtfully collected—like a treasured letter tucked inside the pages of a favorite novel.</p>
+          <p>The campaign invites readers to slow down, discover new stories, and reconnect with the emotions that books leave behind.</p>
+        </div>
+        <div class="details">
+          <div class="detail"><b>Brand</b><span>Penguin Classics</span></div>
+          <div class="detail"><b>Campaign</b><span>The Unfolding Collection</span></div>
+          <div class="detail"><b>Audience</b><span>Romance and contemporary fiction readers</span></div>
+          <div class="detail"><b>Feeling</b><span>Romantic, dreamy, intimate, nostalgic</span></div>
+          <div class="detail"><b>Goal</b><span>Inspire readers to discover and reconnect with stories</span></div>
+          <div class="detail"><b>Tagline</b><span>Every story opens a new world.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="moodboard">
+      <div class="section-kicker">02 / Visual direction</div>
+      <h2>Moodboard</h2>
+      <p class="moodboard-note">A romantic visual language built from botanical details, handwritten notes, books, soft fabrics, and warm paper tones.</p>
+      <div class="image-frame">
+        <img src="moodboard.jpg" alt="The Unfolding Collection romantic campaign moodboard"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display:none; padding:55px 20px; text-align:center; color:#80634F;">
+          <strong>Moodboard image goes here</strong><br>
+          Upload your exported JPG to the same repository folder and name it <code>moodboard.jpg</code>.
+        </div>
+      </div>
+      <div class="image-caption">The Unfolding Collection · Mood and atmosphere</div>
+    </section>
+
+    <section id="palette">
+      <div class="section-kicker">03 / Color system</div>
+      <h2>Color palette</h2>
+      <p class="moodboard-note">A soft, warm palette with a deep literary burgundy for contrast and emphasis.</p>
+      <div class="palette">
+        <div class="swatch"><div class="swatch-color" style="background:#F5EFE6"></div><div class="swatch-name">Warm Cream</div><div class="swatch-hex">#F5EFE6</div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#D9A6A9"></div><div class="swatch-name">Dusty Rose</div><div class="swatch-hex">#D9A6A9</div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#783D4B"></div><div class="swatch-name">Burgundy</div><div class="swatch-hex">#783D4B</div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#A3AA8C"></div><div class="swatch-name">Soft Sage</div><div class="swatch-hex">#A3AA8C</div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#80634F"></div><div class="swatch-name">Warm Brown</div><div class="swatch-hex">#80634F</div></div>
+      </div>
+    </section>
+
+    <section id="type">
+      <div class="section-kicker">04 / Type system</div>
+      <h2>Typography</h2>
+      <p class="moodboard-note">A classic serif paired with a clean sans serif balances literary elegance with modern clarity.</p>
+      <div class="type-grid">
+        <div class="type-card">
+          <div class="type-label">Primary · Serif</div>
+          <div class="type-sample-serif">The art of<br>getting lost<br><em>in a story.</em></div>
+          <strong>Georgia</strong>
+          <p>For campaign titles, expressive headlines, and literary moments.</p>
+        </div>
+        <div class="type-card">
+          <div class="type-label">Secondary · Sans serif</div>
+          <div class="type-sample-sans">ROMANCE · STORIES<br>· DISCOVERY</div>
+          <strong>Montserrat</strong>
+          <p>For labels, supporting information, captions, and small details.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="logo">
+      <div class="section-kicker">05 / Brand mark</div>
+      <h2>Logomark</h2>
+      <div class="logo-area">
+        <div>
+          <p class="intro">The UC lettermark gives the collection a simple, recognizable signature.</p>
+          <p>Set in a classic serif and framed by a fine circular border, the mark carries the campaign's understated, timeless feeling. Use the burgundy version against warm cream backgrounds.</p>
+        </div>
+        <div class="logo-frame">
+          <img src="logomark.png" alt="The Unfolding Collection UC circular logomark"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='grid';">
+          <div class="logo-placeholder" style="display:none">UC</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="closing">
+      <div class="eyebrow">The Unfolding Collection</div>
+      <p>Every story opens a new world.</p>
+    </div>
+    <footer>
+      <span>Creative Director · Style Guide</span>
+      <span>Concept campaign for Penguin Classics</span>
+    </footer>
+  </main>
+</body>
+</html>
