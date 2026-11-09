@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Unfolding Collection</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5efe6;color:#783d4b;font-family:Arial,sans-serif}
+.hero{min-height:100vh;background:#f5efe6;position:relative;overflow:hidden}
+.inner{min-height:100vh;padding:5%;display:grid;grid-template-columns:.85fr 1.15fr;gap:30px;align-items:center}
+.copy{max-width:540px;text-align:left}
+.eyebrow{font-size:10px;letter-spacing:3px;color:#80634f}
+h1{font:68px Georgia;letter-spacing:0px;margin:23px 0}
+.tagline{font:24px Georgia,serif;color:#80634f}
+.description{font:13px/1.8 Arial;color:#80634f}
+.cta{display:inline-block;background:#783d4b;color:#f5efe6;padding:14px 23px;border-radius:30px;text-decoration:none;margin-top:15px}
+.note{border-top:1px solid #d9a6a9;padding-top:16px;margin-top:28px}
+.note p{font:italic 15px Georgia;color:#80634f}
+.visual{min-width:0;min-height:500px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media{width:100%;height:100%;max-height:600px;object-fit:contain;object-position:center;transform:translate(0px,0px) scale(1)}
+.cinematic .inner{display:block;position:relative;padding:0}
+.cinematic .visual{position:absolute;inset:0;height:100%;z-index:0;background:#e9dfd5}
+.cinematic .media{height:100vh;max-height:none;opacity:.85}
+.cinematic .copy{position:relative;z-index:2;padding:8%;min-height:100vh;background:#f5efe6d9;max-width:650px}
+.magazine .inner{grid-template-columns:.8fr 1.2fr}
+.magazine .media{box-shadow:12px 12px 0 #d9a6a9}
+@media(max-width:650px){.inner,.magazine .inner{grid-template-columns:1fr;padding:8%}.visual{min-height:350px;order:-1}.media{max-height:400px}}
+</style>
+</head>
+<body>
+<section class="hero split">
+<div class="inner">
+<div class="copy">
+<div class="eyebrow">PENGUIN CLASSICS</div>
+<h1>The Unfolding Collection</h1>
+<p class="tagline">Every story opens a new world.</p>
+<p class="description">Step into stories of love, longing, and the beautiful moments that stay with us.</p>
+<a class="cta" href="#collection">Discover the Collection</a>
+<div class="note">
+<strong>A COLLECTION OF TIMELESS LOVE STORIES</strong>
+<p>“Some stories stay with us long after the final page.”</p>
+<small>A WORLD WAITING TO UNFOLD</small>
+</div>
+</div>
+<div class="visual"><video class="media" src="brik-hero.mp4" autoplay muted loop playsinline controls></video></div>
+</div>
+</section>
+</body>
+</html>
