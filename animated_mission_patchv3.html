@@ -1,0 +1,2212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cosmic Mission Patch Generator — Version 4 (Extraction Studio)</title>
+<style>
+  :root {
+    --bg-dark: #080614;
+    --panel-bg: #120e26;
+    --panel-border: #2f254e;
+    --accent: #9a66ff;
+    --gold: #f5c86e;
+    --text-main: #f3edff;
+    --text-muted: #b1a4cf;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #160a30 0%, #090618 60%, #150c2d 100%);
+    border-bottom: 1px solid #2a2045;
+    padding: 14px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .title-group h1 {
+    font-size: clamp(20px, 2.5vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #fff, #ecd3ff 50%, var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    color: #e5bfff;
+    background: #28194d;
+    border: 1px solid #573b9e;
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 3px;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  button {
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: 1px solid #4a3a70;
+    background: #1e1738;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  button:hover {
+    filter: brightness(1.2);
+    border-color: #795cbd;
+    transform: translateY(-1px);
+  }
+  button:active { transform: translateY(0); }
+  button.primary {
+    background: linear-gradient(135deg, #814de6, #582db6);
+    border-color: #a47eff;
+    box-shadow: 0 4px 14px rgba(136, 80, 240, 0.35);
+  }
+  button.gold {
+    background: linear-gradient(135deg, #f5c86e, #c7952a);
+    border-color: #ffe6a0;
+    color: #170d00;
+    box-shadow: 0 4px 14px rgba(245, 200, 110, 0.3);
+  }
+  button.recording {
+    background: linear-gradient(135deg, #e63946, #c1121f) !important;
+    border-color: #ff8585 !important;
+    color: #fff !important;
+    box-shadow: 0 0 16px rgba(230, 57, 70, 0.6) !important;
+    animation: pulseRec 1s infinite alternate;
+  }
+  @keyframes pulseRec {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.3); }
+  }
+
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+    gap: 20px;
+    padding: 16px clamp(10px, 2.5vw, 32px) 32px;
+    max-width: 1700px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  @media(max-width: 950px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  /* Left Canvas Preview */
+  .preview-card {
+    background: radial-gradient(circle at 50% 40%, #1c133a 0%, #0a0717 80%);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: clamp(12px, 2vw, 24px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .canvas-container {
+    width: 100%;
+    max-width: 740px;
+    aspect-ratio: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas#patchCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 50%;
+    box-shadow: 0 0 50px rgba(78, 42, 148, 0.45);
+  }
+  .meta-bar {
+    width: 100%;
+    max-width: 740px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    background: #110d24;
+    border: 1px solid #292044;
+    padding: 8px 14px;
+    border-radius: 12px;
+  }
+  .meta-bar span strong { color: var(--gold); }
+
+  /* Right Control Panel */
+  .controls-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .panel-tabs {
+    display: flex;
+    background: #0d091e;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+    border: 1px solid #281d45;
+  }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 6px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    transform: none;
+    text-align: center;
+  }
+  .tab-btn.active {
+    background: #2a1b52;
+    color: #fff;
+    border: 1px solid #5a3ba8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .tab-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .tab-section.hidden { display: none; }
+
+  .control-group {
+    background: #171131;
+    border: 1px solid #2d224e;
+    border-radius: 14px;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .group-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: #d1b8ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .control-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .label-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  .val-badge {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--gold);
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 5px;
+    background: #281e49;
+    border-radius: 4px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(245, 200, 110, 0.6);
+  }
+  select {
+    width: 100%;
+    background: #211842;
+    color: #f1ecff;
+    border: 1px solid #43336d;
+    padding: 7px 10px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+  }
+  select:focus { border-color: var(--accent); }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  /* Image Upload Drop Area & Extractor Styles */
+  .drop-zone {
+    border: 2px dashed #4e3b79;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    background: #1a1236;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: #c7a4ff;
+    background: #221648;
+  }
+  .drop-zone-icon {
+    font-size: 26px;
+    color: #d1b8ff;
+  }
+  .drop-zone p {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .drop-zone strong { color: #f5c86e; }
+  .upload-preview-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #110d24;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #2d214c;
+  }
+  .thumb-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #080512;
+    border: 1px solid #413368;
+    flex-shrink: 0;
+  }
+  .thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .swatch-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1;
+  }
+  .swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+
+  /* Live Animation Bar */
+  .anim-toolbar {
+    width: 100%;
+    max-width: 740px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #140e2b;
+    border: 1px solid #362958;
+    padding: 8px 14px;
+    border-radius: 12px;
+  }
+  .anim-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .progress-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: #251a42;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #9a66ff, #f5c86e);
+    border-radius: 999px;
+    transition: width 0.1s linear;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-group">
+    <div class="badge">SSEP Mission Patch Studio · Session 4</div>
+    <h1>Cosmic Patch Generator (v4)</h1>
+  </div>
+  <div class="header-actions">
+    <button id="btnPlayPause" class="primary anim-btn">❚❚ Pause Animation</button>
+    <button id="btnRecordVideo" class="anim-btn">⏺ Record 5s Video (WebM)</button>
+    <button id="btnRandom">↻ Randomize</button>
+    <button id="btnReset">Reset Style</button>
+    <button class="gold" id="btnDownload">↓ Download PNG</button>
+  </div>
+</header>
+
+<main>
+  <!-- Canvas Preview -->
+  <section class="preview-card">
+    <div class="canvas-container">
+      <canvas id="patchCanvas" width="1000" height="1000"></canvas>
+    </div>
+    <div class="anim-toolbar">
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);display:flex;align-items:center;gap:6px">
+        <span>Speed</span>
+        <input id="animSpeed" type="range" min="0.2" max="2.5" step="0.1" value="1.0" style="width:75px">
+        <span class="val-badge" id="speedVal" style="width:28px">1.0x</span>
+      </div>
+      <div class="progress-wrap" id="recProgressWrap" style="visibility:hidden">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#ff9e9e">
+          <span id="recStatusText">Recording 60FPS video clip...</span>
+          <span id="recTimeText">0.0s / 5.0s</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="recProgressFill"></div></div>
+      </div>
+    </div>
+    <div class="meta-bar">
+      <span>Seed: <strong id="lblSeed">#381927</strong></span>
+      <span>Palette: <strong id="lblPalette">Violet + Cosmic Gold</strong></span>
+      <span>Extractor: <strong id="lblExtract">Reference Preset</strong></span>
+      <span>Logo: <strong id="lblShape">Liquid Silk B</strong></span>
+    </div>
+  </section>
+
+  <!-- Controls Panel -->
+  <aside class="controls-panel">
+    <nav class="panel-tabs">
+      <button class="tab-btn active" data-tab="tabExtract">Image Extract</button>
+      <button class="tab-btn" data-tab="tabLogo">B Logo &amp; Paws</button>
+      <button class="tab-btn" data-tab="tabCosmos">Cosmic Waves</button>
+      <button class="tab-btn" data-tab="tabPlanets">Planets &amp; Stars</button>
+    </nav>
+
+    <!-- TAB: IMAGE AUTO-EXTRACTION (SESSION 4 FEATURE) -->
+    <div id="tabExtract" class="tab-section">
+      <div class="control-group">
+        <div class="group-title">
+          <span>Image Palette &amp; Texture Extractor</span>
+          <span class="val-badge" id="uploadBadge">Awaiting Upload</span>
+        </div>
+        
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="imageInput" accept="image/*" style="display:none">
+          <div class="drop-zone-icon">⇪</div>
+          <p><strong>Click to choose image</strong> or drop reference patch here</p>
+          <span style="font-size:10.5px;color:#9b8ec0">(Mission patches, space telescope shots, artwork)</span>
+        </div>
+
+        <div id="extractedInfo" class="upload-preview-row" style="display:none">
+          <div class="thumb-wrap">
+            <img id="thumbImg" src="" alt="Thumbnail">
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:11px;font-weight:700;color:#e8d4ff">Extracted Palette</span>
+              <span id="contrastNote" style="font-size:10px;color:var(--gold)">Contrast: Mid</span>
+            </div>
+            <div class="swatch-bar" id="swatchContainer"></div>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <label class="label-line" for="extractMode"><span>Extraction Intelligence Mode</span></label>
+          <select id="extractMode">
+            <option value="harmony" selected>Full Harmony (Palette + Background + Cosmic Tints)</option>
+            <option value="colorsOnly">Colors Only (Keep Wave Structure &amp; Layout)</option>
+            <option value="texture">Color + Texture &amp; Density (Image contrast adjusts stars &amp; waves)</option>
+            <option value="composition">Color + Composition (Brightness center moves galaxy &amp; flows)</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <button id="btnReApplyExtract" class="primary" style="justify-content:center" disabled>Re-Apply Image</button>
+          <button id="btnClearExtract" style="justify-content:center">Restore Default Palette</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: B LOGO & PAWS -->
+    <div id="tabLogo" class="tab-section hidden">
+      <div class="control-group">
+        <div class="group-title">
+          <span>Liquid Flow &amp; Soft B Logo</span>
+          <span class="val-badge" id="shapeBadge">Liquid Silk</span>
+        </div>
+        <div class="control-row">
+          <label class="label-line" for="bShape"><span>Emblem Silhouette Style</span></label>
+          <select id="bShape">
+            <option value="soft" selected>Liquid Silk Ribbon (Deeply Softened)</option>
+            <option value="swept">Swept Wave Tendrils (Comet Feather)</option>
+            <option value="petals">Celestial Petals / Solar Wings</option>
+            <option value="bubbles">Organic Droplets / Nebula Nodes</option>
+            <option value="hybrid">S-Curve Fluid Morph</option>
+          </select>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bFloat">Wave Flex &amp; Bend (Amplitude)</label>
+              <span class="val-badge" id="bFloatVal">75%</span>
+            </div>
+            <input id="bFloat" type="range" min="0" max="150" step="5" value="75">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bFreq">Wave Frequency / Ripples</label>
+              <span class="val-badge" id="bFreqVal">1.2x</span>
+            </div>
+            <input id="bFreq" type="range" min="0.5" max="3.0" step="0.1" value="1.2">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bSoftness">Curvature Softness</label>
+              <span class="val-badge" id="bSoftnessVal">92%</span>
+            </div>
+            <input id="bSoftness" type="range" min="20" max="100" step="2" value="92">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bProtrusion">Flowing Tip Reach</label>
+              <span class="val-badge" id="bProtrusionVal">115%</span>
+            </div>
+            <input id="bProtrusion" type="range" min="40" max="220" step="5" value="115">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bWake">Fluid Wake &amp; Bow Glow</label>
+              <span class="val-badge" id="bWakeVal">80%</span>
+            </div>
+            <input id="bWake" type="range" min="10" max="100" step="5" value="80">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bScale">Logo Scale</label>
+              <span class="val-badge" id="bScaleVal">100%</span>
+            </div>
+            <input id="bScale" type="range" min="60" max="140" step="5" value="100">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bStroke">Light Outline Weight</label>
+              <span class="val-badge" id="bStrokeVal">1.2px</span>
+            </div>
+            <input id="bStroke" type="range" min="0.3" max="3.5" step="0.1" value="1.2">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="bStrokeAlpha">Outline Opacity &amp; Shimmer</label>
+              <span class="val-badge" id="bStrokeAlphaVal">75%</span>
+            </div>
+            <input id="bStrokeAlpha" type="range" min="15" max="100" step="5" value="75">
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="label-line">
+            <label for="bRotate">Orbital Drift Angle</label>
+            <span class="val-badge" id="bRotateVal">-5°</span>
+          </div>
+          <input id="bRotate" type="range" min="-30" max="30" step="1" value="-5">
+        </div>
+      </div>
+
+      <!-- BARUCH MASCOT PAWS SECTION -->
+      <div class="control-group">
+        <div class="group-title">
+          <span>Baruch Mascot Paws</span>
+          <span class="val-badge" id="pawsBadge">Matrix</span>
+        </div>
+        <div class="control-row">
+          <label class="label-line" for="pawPattern"><span>Interior Paw Pattern Arrangement</span></label>
+          <select id="pawPattern">
+            <option value="matrix" selected>All-Over Dense Wallpaper Matrix</option>
+            <option value="tracks">Walking Bearcat Tracks (Stride Trails)</option>
+            <option value="swirl">Radial Cosmic Swirl</option>
+            <option value="scatter">Floating Nebula Scatter</option>
+          </select>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="pawSize">Paw Print Size</label>
+              <span class="val-badge" id="pawSizeVal">1.0x</span>
+            </div>
+            <input id="pawSize" type="range" min="0.35" max="2.4" step="0.05" value="1.0">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="pawDensity">Paw Density</label>
+              <span class="val-badge" id="pawDensityVal">Dense</span>
+            </div>
+            <input id="pawDensity" type="range" min="15" max="90" step="5" value="50">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <label class="label-line" for="pawHarmony"><span>Paw Colors</span></label>
+            <select id="pawHarmony">
+              <option value="harmonized" selected>Harmonized (Sampled from Patch)</option>
+              <option value="pureGold">Radiant Solar Gold &amp; Cream</option>
+              <option value="baruchBlue">Baruch Athletics Blue &amp; Cyan</option>
+              <option value="subtle">Subtle Tone-on-Tone Dust</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <label class="label-line" for="pawClaws"><span>Paw Claws</span></label>
+            <select id="pawClaws">
+              <option value="sharp" selected>Sharp Bearcat Claws</option>
+              <option value="soft">Soft Rounded Pads</option>
+              <option value="stars">Starlight Flare Claws</option>
+            </select>
+          </div>
+        </div>
+        <div class="control-row">
+          <div class="label-line">
+            <label for="pawAlpha">Paw Opacity</label>
+            <span class="val-badge" id="pawAlphaVal">85%</span>
+          </div>
+          <input id="pawAlpha" type="range" min="20" max="100" step="5" value="85">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: COSMIC WAVES -->
+    <div id="tabCosmos" class="tab-section hidden">
+      <div class="control-group">
+        <div class="group-title"><span>Cosmic Palette &amp; Ribbons</span></div>
+        <div class="control-row">
+          <label class="label-line" for="paletteSel"><span>Patch Preset Theme</span></label>
+          <select id="paletteSel">
+            <option value="reference" selected>Violet + Cosmic Gold (Original Reference)</option>
+            <option value="deepSpace">Deep Space Indigo + Cobalt Gold</option>
+            <option value="stellarLilac">Midnight Lilac + Cyan Platinum</option>
+            <option value="plumSunset">Plum Violet + Sunset Rose Gold</option>
+            <option value="custom" disabled>Custom (From Uploaded Image)</option>
+          </select>
+        </div>
+        <div class="grid-2">
+          <div class="control-row">
+            <div class="label-line">
+              <label for="ribbonsCount">Milky Way Ribbons</label>
+              <span class="val-badge" id="ribbonsCountVal">9</span>
+            </div>
+            <input id="ribbonsCount" type="range" min="4" max="14" step="1" value="9">
+          </div>
+          <div class="control-row">
+            <div class="label-line">
+              <label for="zigzag">Meander / Zigzag</label>
+              <span class="val-badge" id="zigzagVal">55%</span>
+            </div>
+            <input id="zigzag" type="range" min="10" max="90" step="5" value="55">
+          </div>
+        </div>
+        <div class="control-row">
+          <label class="label-line" for="waveOrbit"><span>Universe Orbit Integration</span></label>
+          <select id="waveOrbit">
+            <option value="wrapped" selected>3D Waves Orbit Across &amp; Around B</option>
+            <option value="behind">Waves Float Behind B Only</option>
+            <option value="intense">Intense Gravitational Cosmic Wrap</option>
+          </select>
+        </div>
+        <div class="control-row">
+          <label class="label-line" for="galaxyMode"><span>Central Tilted Galaxy</span></label>
+          <select id="galaxyMode">
+            <option value="bright" selected>Bright Glowing Nucleus (Reference)</option>
+            <option value="large">Grand Spiral System</option>
+            <option value="subtle">Quiet Soft Glow</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PLANETS & STARS -->
+    <div id="tabPlanets" class="tab-section hidden">
+      <div class="control-group">
+        <div class="group-title"><span>Varied Celestial Bodies</span></div>
+        <div class="control-row">
+          <div class="label-line">
+            <label for="planetCount">Total Exoplanets</label>
+            <span class="val-badge" id="planetCountVal">20</span>
+          </div>
+          <input id="planetCount" type="range" min="6" max="36" step="1" value="20">
+        </div>
+        <div class="control-row">
+          <div class="label-line">
+            <label for="objZoom">Planet Size / Zoom</label>
+            <span class="val-badge" id="objZoomVal">0.9x</span>
+          </div>
+          <input id="objZoom" type="range" min="0.45" max="2.4" step="0.05" value="0.9">
+        </div>
+        <div class="control-row">
+          <div class="label-line">
+            <label for="density">Starfield Particles</label>
+            <span class="val-badge" id="densityVal">1100</span>
+          </div>
+          <input id="density" type="range" min="300" max="1800" step="50" value="1100">
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<script>
+(() => {
+  const canvas = document.getElementById('patchCanvas');
+  const ctx = canvas.getContext('2d');
+  const $ = id => document.getElementById(id);
+
+  // Studio State
+  const state = {
+    seed: 381927,
+    palette: 'reference',
+    extractMode: 'harmony',
+    customPalette: null,
+    uploadedMetrics: null,
+    // Logo B
+    bShape: 'soft',
+    bSoftness: 92,
+    bProtrusion: 115,
+    bScale: 100,
+    bRotate: -5,
+    bFloat: 75,
+    bFreq: 1.2,
+    bWake: 80,
+    bStroke: 1.2,
+    bStrokeAlpha: 75,
+    // Baruch Mascot Paws
+    pawPattern: 'matrix',
+    pawSize: 1.0,
+    pawDensity: 50,
+    pawHarmony: 'harmonized',
+    pawClaws: 'sharp',
+    pawAlpha: 85,
+    // Waves & Cosmos
+    ribbonsCount: 9,
+    zigzag: 55,
+    waveOrbit: 'wrapped',
+    galaxyMode: 'bright',
+    galaxyShiftX: 0,
+    galaxyShiftY: 0,
+    planetCount: 20,
+    objZoom: 0.9,
+    density: 1100
+  };
+
+  // Preset Palettes
+  const presetPalettes = {
+    reference: {
+      bg: '#09051c', mid: '#1c0c3b', deep: '#050212',
+      gold: '#f5c86e', cream: '#fff4d6',
+      violet: '#8850ca', lav: '#b69aff', blue: '#5b76e8', rose: '#9e46a8',
+      ember: '#fa7b3c', cyan: '#59d6e4'
+    },
+    deepSpace: {
+      bg: '#050a1c', mid: '#0f1f47', deep: '#02040e',
+      gold: '#ffd166', cream: '#eef8ff',
+      violet: '#6148c9', lav: '#9bb0ff', blue: '#3b86e8', rose: '#c74ab3',
+      ember: '#ff6f43', cyan: '#4be5c4'
+    },
+    stellarLilac: {
+      bg: '#0b0618', mid: '#231142', deep: '#050210',
+      gold: '#eed7a1', cream: '#ffffff',
+      violet: '#9b5de5', lav: '#d0bfff', blue: '#00bbf9', rose: '#f15bb5',
+      ember: '#fee440', cyan: '#00f5d4'
+    },
+    plumSunset: {
+      bg: '#170720', mid: '#2d0e38', deep: '#0a0212',
+      gold: '#f0ba65', cream: '#fff0e2',
+      violet: '#9642a8', lav: '#caa4e6', blue: '#6b58c2', rose: '#cf5389',
+      ember: '#fa7953', cyan: '#70d6ff'
+    }
+  };
+
+  // --- ANIMATION ENGINE STATE (SESSION 4) ---
+  let isPlaying = true;
+  let animSpeed = 1.0;
+  let animTime = 0;
+  let lastTimestamp = 0;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let isRecording = false;
+
+  // PRNG
+  let curSeed = state.seed;
+  function rng() {
+    curSeed = (Math.imul(curSeed, 1664525) + 1013904223) >>> 0;
+    return curSeed / 4294967296;
+  }
+  function pick(arr) { return arr[Math.floor(rng() * arr.length)]; }
+  function rgba(hex, a = 1) {
+    if (!hex) return `rgba(255,255,255,${a})`;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const n = parseInt(c, 16) || 0;
+    return `rgba(${n >> 16 & 255}, ${n >> 8 & 255}, ${n & 255}, ${a})`;
+  }
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => {
+      const hex = Math.min(255, Math.max(0, Math.round(x))).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
+  }
+
+  // Active Palette Resolution
+  function getActivePalette() {
+    if (state.palette === 'custom' && state.customPalette) {
+      return state.customPalette;
+    }
+    return presetPalettes[state.palette] || presetPalettes.reference;
+  }
+
+  // --- IMAGE EXTRACTION ENGINE (SESSION 4) ---
+  const dropZone = $('dropZone');
+  const imageInput = $('imageInput');
+
+  dropZone.addEventListener('click', () => imageInput.click());
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageFile(e.dataTransfer.files[0]);
+    }
+  });
+  imageInput.addEventListener('change', e => {
+    if (e.target.files && e.target.files[0]) {
+      handleImageFile(e.target.files[0]);
+    }
+  });
+
+  function handleImageFile(file) {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        $('thumbImg').src = ev.target.result;
+        $('extractedInfo').style.display = 'flex';
+        $('uploadBadge').textContent = 'Image Active';
+        $('btnReApplyExtract').removeAttribute('disabled');
+        processImageAnalysis(img);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function processImageAnalysis(img) {
+    // 1. Offscreen Sampling Canvas
+    const offCanvas = document.createElement('canvas');
+    const offCtx = offCanvas.getContext('2d');
+    const w = 140;
+    const h = Math.max(20, Math.round((img.height / img.width) * w));
+    offCanvas.width = w;
+    offCanvas.height = h;
+    offCtx.drawImage(img, 0, 0, w, h);
+
+    const imgData = offCtx.getImageData(0, 0, w, h).data;
+    const totalPixels = w * h;
+
+    // 2. Color Bucket & Median/Luminance Clustering
+    const buckets = [];
+    let sumR = 0, sumG = 0, sumB = 0;
+    let centroidX = 0, centroidY = 0, totalLuminance = 0;
+    let varianceSum = 0;
+
+    for (let i = 0; i < imgData.length; i += 4) {
+      const r = imgData[i];
+      const g = imgData[i + 1];
+      const b = imgData[i + 2];
+      const a = imgData[i + 3];
+      if (a < 120) continue;
+
+      const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+      totalLuminance += lum;
+      sumR += r; sumG += g; sumB += b;
+
+      const px = (i / 4) % w;
+      const py = Math.floor((i / 4) / w);
+      centroidX += px * lum;
+      centroidY += py * lum;
+
+      // Quantize to reduce noise (step 24)
+      const qr = Math.floor(r / 24) * 24;
+      const qg = Math.floor(g / 24) * 24;
+      const qb = Math.floor(b / 24) * 24;
+      buckets.push({ r: qr, g: qg, b: qb, lum, hex: rgbToHex(qr, qg, qb) });
+    }
+
+    // Mean & Variance calculation for texture/contrast
+    const meanLum = totalLuminance / (buckets.length || 1);
+    for (let k = 0; k < buckets.length; k++) {
+      varianceSum += Math.pow(buckets[k].lum - meanLum, 2);
+    }
+    const stdDev = Math.sqrt(varianceSum / (buckets.length || 1));
+    const contrastRatio = Math.min(1.0, stdDev / 90);
+
+    $('contrastNote').textContent = contrastRatio > 0.6 ? 'Contrast: High' : contrastRatio > 0.35 ? 'Contrast: Medium' : 'Contrast: Soft';
+
+    // Normalized Centroid (from -1 to 1)
+    const normCentroidX = (centroidX / (totalLuminance || 1) - (w / 2)) / (w / 2);
+    const normCentroidY = (centroidY / (totalLuminance || 1) - (h / 2)) / (h / 2);
+
+    // Sort buckets by luminance
+    buckets.sort((a, b) => a.lum - b.lum);
+
+    // Extract 8-color gradient palette: from deepest cosmic void to brightest star
+    const stepIdx = Math.floor(buckets.length / 8);
+    const sampled = [];
+    for (let s = 0; s < 8; s++) {
+      const b = buckets[Math.min(buckets.length - 1, s * stepIdx + Math.floor(stepIdx * 0.5))];
+      if (b) sampled.push(b.hex);
+    }
+
+    // Render Swatches in UI
+    const swatchContainer = $('swatchContainer');
+    swatchContainer.innerHTML = '';
+    sampled.forEach(col => {
+      const d = document.createElement('div');
+      d.className = 'swatch';
+      d.style.backgroundColor = col;
+      d.title = col;
+      swatchContainer.appendChild(d);
+    });
+
+    // Construct synthesized palette object
+    state.customPalette = {
+      deep: sampled[0] || '#050212',
+      bg: sampled[1] || '#0d0722',
+      mid: sampled[2] || '#1f0f42',
+      violet: sampled[3] || '#6d42b8',
+      blue: sampled[4] || '#4e6fd0',
+      rose: sampled[5] || '#a9489f',
+      lav: sampled[6] || '#c7b0ff',
+      gold: sampled[6] || '#f5c86e',
+      cream: sampled[7] || '#ffffff',
+      ember: sampled[5] || '#f37542',
+      cyan: sampled[4] || '#5be2df'
+    };
+
+    state.uploadedMetrics = {
+      contrast: contrastRatio,
+      centroidX: normCentroidX,
+      centroidY: normCentroidY
+    };
+
+    applyExtractionIntelligence();
+  }
+
+  function applyExtractionIntelligence() {
+    if (!state.customPalette) return;
+
+    state.palette = 'custom';
+    const optCustom = $('paletteSel').querySelector('option[value="custom"]');
+    if (optCustom) {
+      optCustom.removeAttribute('disabled');
+      optCustom.textContent = 'Custom (Extracted from Image)';
+      $('paletteSel').value = 'custom';
+    }
+
+    const mode = state.extractMode;
+
+    if (mode === 'texture' && state.uploadedMetrics) {
+      // Contrast drives star density & ribbon sharpness
+      const c = state.uploadedMetrics.contrast;
+      state.density = Math.round(500 + c * 1000);
+      state.zigzag = Math.round(30 + c * 50);
+      state.ribbonsCount = Math.round(6 + c * 6);
+      $('density').value = state.density;
+      $('zigzag').value = state.zigzag;
+      $('ribbonsCount').value = state.ribbonsCount;
+    } else if (mode === 'composition' && state.uploadedMetrics) {
+      // Centroid shifts galaxy & logo drift
+      state.galaxyShiftX = state.uploadedMetrics.centroidX * 65;
+      state.galaxyShiftY = state.uploadedMetrics.centroidY * 65;
+      state.bRotate = Math.round(state.uploadedMetrics.centroidX * -18);
+      $('bRotate').value = state.bRotate;
+    } else {
+      // Harmony or ColorsOnly resets composition offsets
+      state.galaxyShiftX = 0;
+      state.galaxyShiftY = 0;
+    }
+
+    sync();
+  }
+
+  $('extractMode').addEventListener('change', e => {
+    state.extractMode = e.target.value;
+    applyExtractionIntelligence();
+  });
+  $('btnReApplyExtract').addEventListener('click', applyExtractionIntelligence);
+  $('btnClearExtract').addEventListener('click', () => {
+    state.palette = 'reference';
+    state.customPalette = null;
+    state.uploadedMetrics = null;
+    state.galaxyShiftX = 0;
+    state.galaxyShiftY = 0;
+    $('paletteSel').value = 'reference';
+    $('uploadBadge').textContent = 'Preset Mode';
+    $('extractedInfo').style.display = 'none';
+    $('btnReApplyExtract').setAttribute('disabled', 'true');
+    sync();
+  });
+
+  // Tab controls
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      const target = $(btn.getAttribute('data-tab'));
+      if (target) target.classList.remove('hidden');
+    });
+  });
+
+  // Background Nebula
+  function drawBackground(p) {
+    const bgGrad = ctx.createRadialGradient(450, 420, 10, 500, 500, 550);
+    bgGrad.addColorStop(0, p.mid);
+    bgGrad.addColorStop(0.6, p.bg);
+    bgGrad.addColorStop(1, p.deep);
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 1000, 1000);
+
+    for (let i = 0; i < 20; i++) {
+      const cx = 150 + rng() * 700;
+      const cy = 150 + rng() * 700;
+      const cr = 60 + rng() * 220;
+      const col = pick([p.violet, p.lav, p.blue, p.rose]);
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr);
+      g.addColorStop(0, rgba(col, 0.05 + rng() * 0.06));
+      g.addColorStop(1, rgba(col, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Star Generator with Animated Twinkle
+  function drawStar(x, y, r, p, type, seedOffset = 0) {
+    ctx.save();
+    ctx.translate(x, y);
+    const color = pick([p.gold, p.cream, p.lav, p.blue]);
+    const twinkle = 0.75 + Math.sin(animTime * 2.8 + seedOffset * 10) * 0.25;
+    const rAnimated = r * twinkle;
+
+    if (type === 0) {
+      ctx.fillStyle = rgba(color, (0.4 + rng() * 0.55) * twinkle);
+      ctx.beginPath();
+      ctx.arc(0, 0, rAnimated, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (type === 1) {
+      ctx.fillStyle = rgba(color, 0.85 * twinkle);
+      ctx.beginPath();
+      ctx.moveTo(0, -rAnimated * 2.8);
+      ctx.lineTo(rAnimated * 0.4, -rAnimated * 0.4);
+      ctx.lineTo(rAnimated * 2.8, 0);
+      ctx.lineTo(rAnimated * 0.4, rAnimated * 0.4);
+      ctx.lineTo(0, rAnimated * 2.8);
+      ctx.lineTo(-rAnimated * 0.4, rAnimated * 0.4);
+      ctx.lineTo(-rAnimated * 2.8, 0);
+      ctx.lineTo(-rAnimated * 0.4, -rAnimated * 0.4);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.strokeStyle = rgba(color, 0.7 * twinkle);
+      ctx.lineWidth = Math.max(0.6, rAnimated * 0.25);
+      ctx.beginPath();
+      ctx.moveTo(-rAnimated * 2.6, 0); ctx.lineTo(rAnimated * 2.6, 0);
+      ctx.moveTo(0, -rAnimated * 2.6); ctx.lineTo(0, rAnimated * 2.6);
+      ctx.stroke();
+      ctx.fillStyle = p.cream;
+      ctx.beginPath();
+      ctx.arc(0, 0, rAnimated * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // Tilted Spiral Galaxy with Animated Slow Drift & Rotation
+  function drawGalaxy(p) {
+    const gx = 700 + (rng() - 0.5) * 40 + (state.galaxyShiftX || 0);
+    const gy = 510 + (rng() - 0.5) * 40 + (state.galaxyShiftY || 0);
+    const scale = state.galaxyMode === 'large' ? 1.3 : state.galaxyMode === 'subtle' ? 0.75 : 1.0;
+
+    ctx.save();
+    ctx.translate(gx, gy);
+    ctx.rotate(-0.46 + animTime * 0.08);
+    ctx.scale(scale, scale);
+
+    const halo = ctx.createRadialGradient(0, 0, 8, 0, 0, 190);
+    halo.addColorStop(0, rgba(p.gold, 0.35));
+    halo.addColorStop(0.4, rgba(p.rose, 0.14));
+    halo.addColorStop(1, rgba(p.violet, 0));
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 195, 115, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (let i = 0; i < 28; i++) {
+      ctx.beginPath();
+      ctx.ellipse((rng() - 0.5) * 10, (rng() - 0.5) * 8, 44 + i * 4.6, 19 + i * 2.7, (rng() - 0.5) * 0.15 + (animTime * 0.04), 0, Math.PI * 2);
+      ctx.strokeStyle = pick([p.gold, p.rose, p.lav, p.cream]);
+      ctx.globalAlpha = (state.galaxyMode === 'subtle' ? 0.08 : 0.15) + rng() * 0.2;
+      ctx.lineWidth = 0.8 + rng() * 3.5;
+      ctx.stroke();
+    }
+
+    const core = ctx.createRadialGradient(-6, -3, 1, 0, 0, 78);
+    core.addColorStop(0, p.cream);
+    core.addColorStop(0.2, p.gold);
+    core.addColorStop(0.45, p.ember || '#fa7b3c');
+    core.addColorStop(0.75, p.rose);
+    core.addColorStop(1, rgba(p.violet, 0));
+    ctx.globalAlpha = 1.0;
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 84, 48, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#fff9e8';
+    ctx.beginPath();
+    ctx.ellipse(-2, -1, 18, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  // 6 Procedurally Varied Exoplanets with Subtle Orbital Drift
+  function drawVariedPlanet(x, y, r, p, idx) {
+    const driftX = Math.cos(animTime * 0.6 + idx) * 3;
+    const driftY = Math.sin(animTime * 0.6 + idx) * 2.5;
+
+    ctx.save();
+    ctx.translate(x + driftX, y + driftY);
+    const archetype = idx % 6;
+
+    if (archetype === 0) {
+      // 1. Gas Giant with Split Ring System
+      ctx.rotate(-0.35 + Math.sin(animTime * 0.4 + idx) * 0.04);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 2.2, r * 0.55, 0, Math.PI, Math.PI * 2);
+      ctx.strokeStyle = rgba(p.gold, 0.8);
+      ctx.lineWidth = Math.max(1, r * 0.14);
+      ctx.stroke();
+
+      const g = ctx.createRadialGradient(-r * 0.35, -r * 0.35, 1, 0, 0, r * 1.15);
+      g.addColorStop(0, p.cream);
+      g.addColorStop(0.3, p.lav);
+      g.addColorStop(0.7, p.violet);
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.96, 0, Math.PI * 2); ctx.clip();
+      for (let j = -3; j <= 3; j++) {
+        ctx.beginPath();
+        ctx.ellipse(0, j * (r * 0.28), r * 1.1, r * 0.12, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = rgba(j % 2 === 0 ? p.cream : p.deep, 0.22);
+        ctx.lineWidth = Math.max(0.8, r * 0.1);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * 2.2, r * 0.55, 0, 0, Math.PI);
+      ctx.strokeStyle = rgba(p.gold, 0.85);
+      ctx.lineWidth = Math.max(1, r * 0.14);
+      ctx.stroke();
+
+    } else if (archetype === 1) {
+      // 2. Molten Magma World with Pulsing Glow
+      const pulse = 1 + Math.sin(animTime * 2.5 + idx) * 0.08;
+      const g = ctx.createRadialGradient(-r * 0.4, -r * 0.4, 1, 0, 0, r * pulse);
+      g.addColorStop(0, p.gold);
+      g.addColorStop(0.4, p.ember || '#fa7b3c');
+      g.addColorStop(0.85, '#420817');
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.95, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = rgba(p.gold, 0.7);
+      ctx.lineWidth = Math.max(0.6, r * 0.08);
+      for (let f = 0; f < 3; f++) {
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.8 + f * r * 0.6, -r * 0.5);
+        ctx.quadraticCurveTo(0, 0, r * 0.7 - f * r * 0.5, r * 0.6);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+    } else if (archetype === 2) {
+      // 3. Habitable Terran World with Orbiting Moonlet
+      const g = ctx.createRadialGradient(-r * 0.35, -r * 0.35, 1, 0, 0, r);
+      g.addColorStop(0, p.cyan || '#59d6e4');
+      g.addColorStop(0.5, p.blue);
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.95, 0, Math.PI * 2); ctx.clip();
+      ctx.fillStyle = rgba(p.cream, 0.3);
+      ctx.beginPath();
+      ctx.arc(r * 0.2, -r * 0.2, r * 0.45, 0, Math.PI * 2);
+      ctx.arc(-r * 0.3, r * 0.3, r * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      const moonAngle = animTime * 1.2 + idx;
+      const moonDist = r * 1.8;
+      ctx.fillStyle = p.cream;
+      ctx.beginPath();
+      ctx.arc(Math.cos(moonAngle) * moonDist, Math.sin(moonAngle) * moonDist * 0.4, Math.max(1.2, r * 0.2), 0, Math.PI * 2);
+      ctx.fill();
+
+    } else if (archetype === 3) {
+      // 4. Glacial Ice World
+      const g = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 1, 0, 0, r);
+      g.addColorStop(0, '#ffffff');
+      g.addColorStop(0.4, p.lav);
+      g.addColorStop(0.8, p.blue);
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.beginPath(); ctx.arc(0, 0, r * 0.95, 0, Math.PI * 2); ctx.clip();
+      ctx.strokeStyle = rgba('#ffffff', 0.6);
+      ctx.lineWidth = Math.max(0.6, r * 0.06);
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.7, -r * 0.2); ctx.lineTo(0, 0); ctx.lineTo(r * 0.6, r * 0.3);
+      ctx.moveTo(0, 0); ctx.lineTo(r * 0.2, -r * 0.6);
+      ctx.stroke();
+      ctx.restore();
+
+    } else if (archetype === 4) {
+      // 5. Shadowed Crescent World
+      const g = ctx.createRadialGradient(-r * 0.5, -r * 0.5, 1, 0, 0, r);
+      g.addColorStop(0, p.cream);
+      g.addColorStop(0.3, p.rose);
+      g.addColorStop(0.7, p.violet);
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = rgba(p.deep, 0.75);
+      ctx.beginPath();
+      ctx.arc(r * 0.35, r * 0.15, r * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else {
+      // 6. Cratered Asteroid
+      const g = ctx.createRadialGradient(-r * 0.4, -r * 0.4, 1, 0, 0, r);
+      g.addColorStop(0, p.cream);
+      g.addColorStop(0.5, p.violet);
+      g.addColorStop(1, p.deep);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = rgba(p.deep, 0.45);
+      ctx.strokeStyle = rgba(p.cream, 0.35);
+      ctx.lineWidth = 0.8;
+      const craters = [
+        { x: -r * 0.25, y: -r * 0.2, cr: r * 0.25 },
+        { x: r * 0.3, y: r * 0.25, cr: r * 0.2 },
+        { x: -r * 0.2, y: r * 0.35, cr: r * 0.15 }
+      ];
+      craters.forEach(cr => {
+        ctx.beginPath();
+        ctx.arc(cr.x, cr.y, cr.cr, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+    }
+
+    ctx.strokeStyle = rgba(p.cream, 0.4);
+    ctx.lineWidth = Math.max(0.6, r * 0.05);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // Draw Individual Bearcat Mascot Paw
+  function drawBearcatPaw(px, py, radius, angle, p, clawStyle, harmony, alpha) {
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(angle);
+
+    let padColor, toeColor, clawColor;
+    if (harmony === 'pureGold') {
+      padColor = rgba(p.gold, alpha * 0.95);
+      toeColor = rgba(p.cream, alpha);
+      clawColor = rgba(p.ember || p.gold, alpha * 0.9);
+    } else if (harmony === 'baruchBlue') {
+      padColor = rgba('#19346b', alpha * 0.95);
+      toeColor = rgba(p.cyan || '#59d6e4', alpha * 0.95);
+      clawColor = rgba(p.cream, alpha * 0.85);
+    } else if (harmony === 'subtle') {
+      padColor = rgba(p.violet, alpha * 0.65);
+      toeColor = rgba(p.lav, alpha * 0.7);
+      clawColor = rgba(p.gold, alpha * 0.6);
+    } else { // harmonized
+      padColor = rgba(p.gold, alpha * 0.9);
+      toeColor = rgba(p.lav, alpha * 0.95);
+      clawColor = rgba(p.cream, alpha * 0.9);
+    }
+
+    ctx.fillStyle = padColor;
+    ctx.beginPath();
+    ctx.moveTo(0, radius * 0.15);
+    ctx.bezierCurveTo(-radius * 0.58, -radius * 0.05, -radius * 0.68, radius * 0.66, 0, radius * 0.76);
+    ctx.bezierCurveTo(radius * 0.68, radius * 0.66, radius * 0.58, -radius * 0.05, 0, radius * 0.15);
+    ctx.fill();
+
+    const toes = [
+      { x: -radius * 0.48, y: -radius * 0.32, rx: radius * 0.18, ry: radius * 0.24, rot: -0.42 },
+      { x: -radius * 0.17, y: -radius * 0.56, rx: radius * 0.19, ry: radius * 0.27, rot: -0.15 },
+      { x: radius * 0.17,  y: -radius * 0.56, rx: radius * 0.19, ry: radius * 0.27, rot: 0.15 },
+      { x: radius * 0.48,  y: -radius * 0.32, rx: radius * 0.18, ry: radius * 0.24, rot: 0.42 }
+    ];
+
+    toes.forEach(toe => {
+      ctx.save();
+      ctx.translate(toe.x, toe.y);
+      ctx.rotate(toe.rot);
+
+      if (clawStyle === 'sharp') {
+        ctx.fillStyle = clawColor;
+        ctx.beginPath();
+        ctx.moveTo(-toe.rx * 0.55, -toe.ry * 0.35);
+        ctx.quadraticCurveTo(0, -toe.ry * 2.1, toe.rx * 0.25, -toe.ry * 2.3);
+        ctx.quadraticCurveTo(toe.rx * 0.55, -toe.ry * 0.35, toe.rx * 0.55, -toe.ry * 0.35);
+        ctx.fill();
+      } else if (clawStyle === 'stars') {
+        ctx.strokeStyle = clawColor;
+        ctx.lineWidth = Math.max(1, radius * 0.12);
+        ctx.beginPath();
+        ctx.moveTo(0, -toe.ry * 0.4);
+        ctx.lineTo(0, -toe.ry * 2.2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = toeColor;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, toe.rx, toe.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    });
+
+    ctx.restore();
+  }
+
+  // Harmonic Sine Wave Deformation Engine with Live Temporal Phase
+  function deformWave(x, y) {
+    const amp = (state.bFloat / 100) * 26;
+    if (amp === 0) return { x, y, slope: 0 };
+    const freq = (state.bFreq || 1.2) * 0.012;
+    const phase = ((state.seed % 1000) / 1000) * Math.PI * 2 + (animTime * 1.5);
+    
+    const alongWave = x * 0.9 + y * 0.42;
+    const acrossWave = -x * 0.42 + y * 0.9;
+    
+    const waveDisp = Math.sin(alongWave * freq + phase) * amp 
+                   + Math.cos(alongWave * freq * 2.1 - phase * 0.6) * (amp * 0.35)
+                   + Math.sin(acrossWave * 0.018 + phase * 0.5) * (amp * 0.2);
+
+    const dWave = (Math.cos(alongWave * freq + phase) * amp * freq 
+                - Math.sin(alongWave * freq * 2.1 - phase * 0.6) * (amp * 0.35 * freq * 2.1)) * 0.9;
+
+    return {
+      x: x - dWave * (amp * 0.45),
+      y: y + waveDisp,
+      slope: Math.atan2(dWave, 1)
+    };
+  }
+
+  // Draw Paws Inside B
+  function drawPawPatternInsideB(p, tip) {
+    const scale = state.pawSize;
+    const density = state.pawDensity;
+    const alpha = state.pawAlpha / 100;
+    const claws = state.pawClaws;
+    const harmony = state.pawHarmony;
+    const pattern = state.pawPattern;
+    const basePawSize = 13.5 * scale;
+
+    ctx.save();
+
+    if (pattern === 'matrix') {
+      const step = Math.max(15, (68 / Math.sqrt(density / 22))) * scale;
+      let row = 0;
+      for (let y = -220; y <= 250 * tip; y += step * 0.85) {
+        row++;
+        const shiftX = (row % 2) * (step * 0.5);
+        for (let x = -220 * tip; x <= 150; x += step) {
+          const jx = (rng() - 0.5) * (step * 0.25);
+          const jy = (rng() - 0.5) * (step * 0.25);
+          const rawX = x + shiftX + jx;
+          const rawY = y + jy;
+          const def = deformWave(rawX, rawY);
+          const ang = -0.15 + def.slope + (rng() - 0.5) * 0.3;
+          drawBearcatPaw(def.x, def.y, basePawSize * (0.85 + rng() * 0.25), ang, p, claws, harmony, alpha);
+        }
+      }
+
+    } else if (pattern === 'tracks') {
+      const numColumns = Math.max(3, Math.round(density / 14));
+      const steps = Math.max(8, Math.round(density * 0.38));
+      for (let col = 0; col < numColumns; col++) {
+        const startX = -170 * tip + col * (270 * tip / numColumns);
+        const startY = 210 * tip;
+        for (let s = 0; s < steps; s++) {
+          const frac = s / steps;
+          const px = startX + Math.sin(frac * Math.PI * 2) * 20 + (s % 2 === 0 ? -8 : 8);
+          const py = startY - frac * (420 + tip * 35);
+          const def = deformWave(px, py);
+          const ang = -0.35 + def.slope + (s % 2 === 0 ? -0.2 : 0.2);
+          drawBearcatPaw(def.x, def.y, basePawSize * 0.95, ang, p, claws, harmony, alpha);
+        }
+      }
+
+    } else if (pattern === 'swirl') {
+      const centers = [{ x: -10, y: -95 }, { x: 5, y: 50 }];
+      const rings = Math.max(3, Math.round(density / 12));
+      centers.forEach(c => {
+        for (let r = 1; r <= rings; r++) {
+          const radius = r * (28 * scale);
+          const countInRing = Math.round(r * 4.2);
+          for (let k = 0; k < countInRing; k++) {
+            const theta = (k / countInRing) * Math.PI * 2 + (r * 0.3) + (animTime * 0.3);
+            const rawX = c.x + Math.cos(theta) * radius * 1.25;
+            const rawY = c.y + Math.sin(theta) * radius * 0.85;
+            const def = deformWave(rawX, rawY);
+            drawBearcatPaw(def.x, def.y, basePawSize * (0.8 + (r / rings) * 0.35), theta + Math.PI / 2 + def.slope, p, claws, harmony, alpha);
+          }
+        }
+      });
+
+    } else {
+      const count = Math.round(density * 1.2);
+      for (let i = 0; i < count; i++) {
+        const rawX = -180 * tip + rng() * (310 * tip);
+        const rawY = -180 + rng() * (400 * tip);
+        const def = deformWave(rawX, rawY);
+        const ang = (rng() - 0.5) * Math.PI * 1.6 + def.slope;
+        drawBearcatPaw(def.x, def.y, basePawSize * (0.75 + rng() * 0.4), ang, p, claws, harmony, alpha);
+      }
+    }
+
+    ctx.restore();
+  }
+
+  // Construct Parametric B Path Geometry
+  function buildBPath(shape, tip, soft) {
+    const s = Math.min(1.0, Math.max(0.2, soft / 100));
+    ctx.beginPath();
+
+    function m(x, y) {
+      const p = deformWave(x, y);
+      ctx.moveTo(p.x, p.y);
+    }
+    function q(cx, cy, x, y) {
+      const cp = deformWave(cx, cy);
+      const ep = deformWave(x, y);
+      ctx.quadraticCurveTo(cp.x, cp.y, ep.x, ep.y);
+    }
+    function b(c1x, c1y, c2x, c2y, x, y) {
+      const cp1 = deformWave(c1x, c1y);
+      const cp2 = deformWave(c2x, c2y);
+      const ep = deformWave(x, y);
+      ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, ep.x, ep.y);
+    }
+
+    if (shape === 'swept') {
+      m(-145, -135);
+      b(-80, -165 * s, 10, -185 * s, 65, -145);
+      b(105, -115, 105, -60, 52, -28);
+      b(125, -5, 126, 75, 58, 128);
+      b(15, 160, -45 * tip, 185 * tip, -118 * tip, 230 * tip);
+      b(-85, 175, -50, 130, -32, 98);
+      b(-85 * tip, 132, -145 * tip, 168 * tip, -175 * tip, 142 * tip);
+      b(-125, 98, -80, 55, -48, 40);
+      b(-98 * tip, 58, -160 * tip, 82 * tip, -182 * tip, 60 * tip);
+      b(-132, 22, -95, -15, -68, -35);
+      b(-125 * tip, -50, -172 * tip, -45, -165 * tip, -70);
+      b(-155, -100, -135, -118, -145, -135);
+      ctx.closePath();
+
+    } else if (shape === 'petals') {
+      m(-135, -138);
+      b(-45, -185 * s, 45, -175 * s, 75, -130);
+      b(102, -95, 95, -55, 50, -25);
+      b(128, -2, 125, 75, 65, 122);
+      b(22, 160, -32, 180 * tip, -68 * tip, 218 * tip);
+      b(-55, 172, -32, 130, -20, 95);
+      b(-75 * tip, 132, -140 * tip, 160 * tip, -138 * tip, 125 * tip);
+      b(-102, 90, -68, 55, -42, 38);
+      b(-88 * tip, 58, -155 * tip, 78 * tip, -145 * tip, 48 * tip);
+      b(-108, 15, -78, -15, -62, -38);
+      b(-125 * tip, -52, -158 * tip, -50, -145 * tip, -82);
+      b(-128, -108, -115, -125, -135, -138);
+      ctx.closePath();
+
+    } else if (shape === 'bubbles') {
+      m(-135, -140);
+      b(-35, -180, 35, -165, 72, -125);
+      b(102, -90, 95, -50, 55, -22);
+      b(125, 2, 120, 78, 68, 120);
+      b(28, 152, -25, 165, -55 * tip, 195 * tip);
+      b(-82 * tip, 210 * tip, -95 * tip, 180 * tip, -68 * tip, 152 * tip);
+      q(-52, 120, -32, 92);
+      b(-75 * tip, 118, -120 * tip, 138 * tip, -132 * tip, 115 * tip);
+      b(-138 * tip, 92 * tip, -108, 62, -78, 46);
+      q(-55, 32, -45, 25);
+      b(-95 * tip, 42, -142 * tip, 35, -145 * tip, 10);
+      b(-145 * tip, -15, -118, -32, -88, -42);
+      b(-120 * tip, -60, -148 * tip, -98, -135, -140);
+      ctx.closePath();
+
+    } else if (shape === 'hybrid') {
+      m(-140, -142);
+      b(-45, -172, 45, -165, 78, -125);
+      b(102, -92, 96, -55, 52, -26);
+      b(126, 4, 120, 75, 62, 124);
+      b(12, 162, -40 * tip, 182 * tip, -92 * tip, 212 * tip);
+      b(-72, 168, -48, 128, -28, 96);
+      b(-82 * tip, 135, -132 * tip, 142 * tip, -122 * tip, 108 * tip);
+      b(-98, 78, -62, 52, -45, 38);
+      b(-95 * tip, 58, -148 * tip, 65 * tip, -138 * tip, 38 * tip);
+      b(-105, 12, -75, -15, -60, -38);
+      b(-125 * tip, -50, -158 * tip, -52, -145 * tip, -80);
+      b(-125, -112, -115, -128, -140, -142);
+      ctx.closePath();
+
+    } else {
+      // Liquid Silk Ribbon
+      m(-138, -140);
+      b(-42, -172 * s, 50, -168 * s, 80, -120);
+      b(104, -85, 96, -48, 52, -22);
+      b(124, 8, 120, 75, 62, 124);
+      b(18, 158, -25, 168 * tip, -65 * tip, 195 * tip);
+      b(-55, 160, -38, 126, -24, 96);
+      b(-78 * tip, 130 * s, -125 * tip, 135 * s, -120 * tip, 105 * tip);
+      b(-96, 75, -60, 52, -44, 38);
+      b(-92 * tip, 55 * s, -140 * tip, 58 * s, -135 * tip, 32 * tip);
+      b(-104, 10, -74, -16, -58, -38);
+      b(-120 * tip, -46 * s, -155 * tip, -48 * s, -145 * tip, -78);
+      b(-125, -110, -115, -126, -138, -140);
+      ctx.closePath();
+    }
+  }
+
+  // Draw Cosmic Wake Ripples
+  function drawCosmicWakeRipples(p, tip) {
+    const wakeAlpha = (state.bWake / 100) * 0.75;
+    if (wakeAlpha <= 0.05) return;
+
+    ctx.save();
+    const wakePoints = [
+      { x: -140 * tip, y: -50, r: 48 },
+      { x: -125 * tip, y: 55,  r: 54 },
+      { x: -115 * tip, y: 145, r: 62 },
+      { x: -60 * tip,  y: 195, r: 52 },
+      { x: 88,         y: 50,  r: 48 },
+      { x: 55,         y: -95, r: 42 }
+    ];
+
+    wakePoints.forEach(pt => {
+      const def = deformWave(pt.x, pt.y);
+      const radGrad = ctx.createRadialGradient(def.x, def.y, 2, def.x, def.y, pt.r * 1.6);
+      radGrad.addColorStop(0, rgba(p.lav, wakeAlpha * 0.55));
+      radGrad.addColorStop(0.35, rgba(p.blue, wakeAlpha * 0.28));
+      radGrad.addColorStop(0.7, rgba(p.violet, wakeAlpha * 0.12));
+      radGrad.addColorStop(1, rgba(p.violet, 0));
+
+      ctx.fillStyle = radGrad;
+      ctx.beginPath();
+      ctx.arc(def.x, def.y, pt.r * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(def.x, def.y);
+      ctx.rotate(def.slope);
+      ctx.strokeStyle = rgba(p.gold, wakeAlpha * 0.65);
+      ctx.lineWidth = 1.3;
+      ctx.beginPath();
+      ctx.arc(0, 0, pt.r * 0.8, -0.9, 1.3);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    ctx.restore();
+  }
+
+  // Draw Dynamic B Emblem with Fluid Oceanic Bobbing
+  function drawDynamicB(p) {
+    const scale = (state.bScale / 100);
+    const tip = state.bProtrusion / 100;
+    const soft = state.bSoftness;
+    const shape = state.bShape;
+    const rot = (state.bRotate * Math.PI) / 180 + Math.sin(animTime * 0.8) * 0.02;
+    const bobY = Math.sin(animTime * 1.4) * 6;
+
+    ctx.save();
+    ctx.translate(310, 520 + bobY);
+    ctx.rotate(rot);
+    ctx.scale(scale, scale);
+
+    drawCosmicWakeRipples(p, tip);
+
+    buildBPath(shape, tip, soft);
+    const grad = ctx.createLinearGradient(-130, -150, 100, 170);
+    grad.addColorStop(0, rgba(p.lav, 0.94));
+    grad.addColorStop(0.28, rgba(p.blue, 0.88));
+    grad.addColorStop(0.58, rgba(p.violet, 0.90));
+    grad.addColorStop(0.82, rgba(p.gold, 0.94));
+    grad.addColorStop(1, rgba(p.cream, 0.96));
+
+    ctx.fillStyle = grad;
+    ctx.shadowColor = rgba(p.lav, 0.58);
+    ctx.shadowBlur = 26;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Clip to B and paint paws
+    ctx.save();
+    buildBPath(shape, tip, soft);
+    ctx.clip();
+
+    const waveWash = ctx.createLinearGradient(-150, -100, 120, 100);
+    waveWash.addColorStop(0, rgba(p.blue, 0.28));
+    waveWash.addColorStop(0.5, rgba(p.violet, 0.18));
+    waveWash.addColorStop(1, rgba(p.gold, 0.22));
+    ctx.fillStyle = waveWash;
+    ctx.fillRect(-350, -350, 700, 700);
+
+    drawPawPatternInsideB(p, tip);
+    ctx.restore();
+
+    // Light Gossamer Stroke
+    const strokeW = Number(state.bStroke || 1.2);
+    const strokeA = (state.bStrokeAlpha || 75) / 100;
+
+    buildBPath(shape, tip, soft);
+    ctx.strokeStyle = rgba(p.cream, strokeA * 0.9);
+    ctx.lineWidth = strokeW;
+    ctx.stroke();
+
+    if (strokeW > 0.6) {
+      ctx.strokeStyle = rgba(p.gold, strokeA * 0.45);
+      ctx.lineWidth = Math.max(0.4, strokeW * 0.45);
+      ctx.stroke();
+    }
+
+    // Counters
+    const upperCounter = deformWave(-11, -95);
+    ctx.beginPath();
+    ctx.ellipse(upperCounter.x, upperCounter.y, 44, 24, -0.12 + upperCounter.slope * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = p.deep;
+    ctx.fill();
+    ctx.strokeStyle = rgba(p.cream, strokeA * 0.75);
+    ctx.lineWidth = Math.max(0.6, strokeW * 0.85);
+    ctx.stroke();
+
+    const lowerCounter = deformWave(-2, 48);
+    ctx.beginPath();
+    ctx.ellipse(lowerCounter.x, lowerCounter.y, 48, 26, -0.1 + lowerCounter.slope * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = p.deep;
+    ctx.fill();
+    ctx.strokeStyle = rgba(p.cream, strokeA * 0.7);
+    ctx.lineWidth = Math.max(0.6, strokeW * 0.85);
+    ctx.stroke();
+
+    // Starlight mist
+    for (let i = 0; i < 50; i++) {
+      const sx = -140 + rng() * 220;
+      const sy = -160 + rng() * 330;
+      if (rng() > 0.4) {
+        const def = deformWave(sx, sy);
+        ctx.fillStyle = rgba(p.cream, 0.18 + rng() * 0.28);
+        ctx.beginPath();
+        ctx.arc(def.x, def.y, rng() * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  // Draw 3D Orbiting Cosmic Waves with Dynamic Streaming
+  function drawMilkyWayRibbon(p, idx, isForeground) {
+    const y0 = 170 + idx * 70 + rng() * 30;
+    const x0 = 70 + rng() * 120;
+    const x1 = 930 - rng() * 90;
+    const bend = (rng() - 0.5) * 230;
+    const bend2 = (rng() - 0.5) * 260;
+    const zig = state.zigzag / 100;
+    const width = (idx % 4 === 0 ? 18 : idx % 3 === 0 ? 11 : 6) + rng() * 14;
+
+    const waveWave = Math.sin(animTime * 1.6 + idx * 0.8) * 16;
+    const pts = [
+      [x0, y0],
+      [180 + rng() * 100, y0 + bend * 0.35 + waveWave * 0.5],
+      [310 + rng() * 80, 260 + idx * 37 + bend + waveWave],
+      [440 + rng() * 80, 180 + idx * 54 + bend2 - waveWave * 0.8],
+      [600 + rng() * 70, 410 + idx * 26 - bend + waveWave * 0.6],
+      [740 + rng() * 80, 290 + idx * 48 + bend2 - waveWave],
+      [x1, 370 + idx * 38 + bend]
+    ];
+
+    const wiggle = (rng() - 0.5) * zig * 100;
+    pts[2][1] += wiggle;
+    pts[4][1] -= wiggle * 0.8;
+
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    function trace(offset = 0) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0][0], pts[0][1] + offset);
+      for (let j = 1; j < pts.length - 1; j++) {
+        const a = pts[j], b = pts[j + 1];
+        ctx.quadraticCurveTo(a[0], a[1] + offset, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + offset);
+      }
+      const z = pts[pts.length - 1];
+      ctx.lineTo(z[0], z[1] + offset);
+    }
+
+    const grad = ctx.createLinearGradient(x0, y0, x1, pts[6][1]);
+    if (isForeground) {
+      grad.addColorStop(0, rgba(p.blue, 0.05));
+      grad.addColorStop(0.3, rgba(p.gold, 0.45));
+      grad.addColorStop(0.55, rgba(p.cream, 0.6));
+      grad.addColorStop(0.8, rgba(p.lav, 0.35));
+      grad.addColorStop(1, rgba(p.violet, 0.1));
+    } else {
+      grad.addColorStop(0, rgba(p.blue, 0.04));
+      grad.addColorStop(0.24, rgba(p.violet, 0.2));
+      grad.addColorStop(0.55, rgba(p.lav, idx % 3 === 0 ? 0.48 : 0.27));
+      grad.addColorStop(0.8, rgba(p.rose, 0.2));
+      grad.addColorStop(1, rgba(p.gold, 0.1));
+    }
+
+    trace();
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = width * (isForeground ? 0.75 : 1.0);
+    ctx.globalAlpha = isForeground ? 0.75 : 0.8;
+    ctx.stroke();
+
+    for (let k = 0; k < 6; k++) {
+      trace((rng() - 0.5) * width * 0.8);
+      ctx.strokeStyle = pick([p.lav, p.violet, p.blue, p.gold, p.cream]);
+      ctx.globalAlpha = 0.05 + rng() * 0.13;
+      ctx.lineWidth = 0.6 + rng() * 2.2;
+      ctx.stroke();
+    }
+
+    if (idx % 2 === 0 || isForeground) {
+      trace(width * 0.4);
+      ctx.strokeStyle = rgba(p.gold, isForeground ? 0.85 : 0.55);
+      ctx.globalAlpha = 0.7;
+      ctx.lineWidth = 0.8 + rng() * 1.3;
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function drawBLogoOrbitRings(p) {
+    const scale = (state.bScale / 100);
+    ctx.save();
+    ctx.translate(310, 520);
+    ctx.scale(scale, scale);
+
+    for (let i = 0; i < 3; i++) {
+      ctx.save();
+      ctx.rotate(-0.35 + i * 0.24 + (animTime * (0.05 + i * 0.02)));
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 185 + i * 40, 55 + i * 20, -0.15, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba(i % 2 === 0 ? p.gold : p.lav, 0.28 + i * 0.08);
+      ctx.lineWidth = 1.2 + i * 0.5;
+      ctx.stroke();
+
+      for (let j = 0; j < 3; j++) {
+        const theta = rng() * Math.PI * 2 + animTime * 0.8;
+        const ox = Math.cos(theta) * (185 + i * 40);
+        const oy = Math.sin(theta) * (55 + i * 20);
+        ctx.fillStyle = rgba(p.cream, 0.85);
+        ctx.beginPath();
+        ctx.arc(ox, oy, 1.5 + rng() * 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  // Master Render Function
+  function render() {
+    const p = getActivePalette();
+    curSeed = state.seed;
+
+    ctx.clearRect(0, 0, 1000, 1000);
+
+    ctx.fillStyle = '#030208';
+    ctx.fillRect(0, 0, 1000, 1000);
+
+    // Embroidered Patch Outer Rims
+    ctx.beginPath(); ctx.arc(500, 500, 475, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(p.mid, 0.85); ctx.fill();
+
+    ctx.beginPath(); ctx.arc(500, 500, 463, 0, Math.PI * 2);
+    ctx.fillStyle = p.gold; ctx.fill();
+
+    ctx.beginPath(); ctx.arc(500, 500, 455, 0, Math.PI * 2);
+    ctx.fillStyle = p.deep; ctx.fill();
+
+    ctx.save();
+    ctx.beginPath(); ctx.arc(500, 500, 454, 0, Math.PI * 2); ctx.clip();
+
+    // 1. Nebula Background
+    drawBackground(p);
+
+    // 2. Starfield
+    const density = Number(state.density);
+    for (let i = 0; i < density; i++) {
+      const a = rng() * Math.PI * 2;
+      const rr = Math.sqrt(rng()) * 445;
+      const sx = 500 + Math.cos(a) * rr;
+      const sy = 500 + Math.sin(a) * rr;
+      const sz = (0.35 + rng() * 1.15) * Math.min(1.5, state.objZoom);
+      drawStar(sx, sy, sz, p, rng() < 0.08 ? 2 : rng() < 0.18 ? 1 : 0, i);
+    }
+
+    // 3. Background Waves
+    const countRibbons = Number(state.ribbonsCount);
+    const wrapMode = state.waveOrbit;
+    const bgRibbons = wrapMode === 'behind' ? countRibbons : Math.floor(countRibbons * 0.65);
+
+    for (let i = 0; i < bgRibbons; i++) {
+      drawMilkyWayRibbon(p, i, false);
+    }
+
+    for (let i = 0; i < 8; i++) {
+      ctx.save();
+      ctx.translate(500 + (rng() - 0.5) * 160, 500 + (rng() - 0.5) * 180);
+      ctx.rotate((rng() - 0.5) * 1.3);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 170 + rng() * 260, 40 + rng() * 105, (rng() - 0.5) * 0.2, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba(pick([p.lav, p.gold, p.blue]), 0.14 + rng() * 0.22);
+      ctx.lineWidth = 0.6 + rng() * 1.3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 4. Procedurally Varied Exoplanets
+    const pCount = Number(state.planetCount);
+    for (let i = 0; i < pCount; i++) {
+      const a = rng() * Math.PI * 2;
+      const rr = 55 + Math.sqrt(rng()) * 390;
+      const px = 500 + Math.cos(a) * rr;
+      const py = 500 + Math.sin(a) * rr;
+      let pr = (3.2 + rng() * 11.5) * state.objZoom;
+      if (i % 5 === 0) pr *= 1.35;
+      drawVariedPlanet(px, py, pr, p, i);
+    }
+
+    // 5. Galaxy
+    drawGalaxy(p);
+
+    // 6. Dynamic B Logo
+    drawDynamicB(p);
+
+    // 7. Foreground Waves
+    if (wrapMode !== 'behind') {
+      drawBLogoOrbitRings(p);
+      for (let i = bgRibbons; i < countRibbons; i++) {
+        drawMilkyWayRibbon(p, i, true);
+      }
+      if (wrapMode === 'intense') {
+        drawMilkyWayRibbon(p, countRibbons, true);
+      }
+    }
+
+    // Starlight highlights
+    for (let i = 0; i < 34; i++) {
+      const x = 130 + rng() * 740;
+      const y = 100 + rng() * 800;
+      if (rng() > 0.48) drawStar(x, y, 1 + rng() * 2.5, p, 1, i + 999);
+    }
+
+    ctx.restore();
+
+    // Rims
+    ctx.beginPath(); ctx.arc(500, 500, 463, 0, Math.PI * 2);
+    ctx.strokeStyle = rgba(p.cream, 0.7); ctx.lineWidth = 1.4; ctx.stroke();
+
+    ctx.beginPath(); ctx.arc(500, 500, 452, 0, Math.PI * 2);
+    ctx.strokeStyle = rgba(p.violet, 0.7); ctx.lineWidth = 1.1; ctx.stroke();
+
+    // Labels
+    $('lblSeed').textContent = '#' + state.seed;
+    $('lblExtract').textContent = state.palette === 'custom' ? `Image (${state.extractMode})` : 'Preset Palette';
+
+    const palNames = {
+      reference: 'Violet + Cosmic Gold',
+      deepSpace: 'Deep Space Indigo',
+      stellarLilac: 'Midnight Lilac',
+      plumSunset: 'Plum Sunset Rose',
+      custom: 'Custom (Extracted)'
+    };
+    $('lblPalette').textContent = palNames[state.palette] || state.palette;
+
+    const shapeNames = {
+      soft: 'Liquid Silk Ribbon B',
+      swept: 'Swept Wave Tendrils B',
+      petals: 'Celestial Petals B',
+      bubbles: 'Organic Droplets B',
+      hybrid: 'S-Curve Fluid B'
+    };
+    $('lblShape').textContent = shapeNames[state.bShape] || 'Custom Fluid B';
+    $('shapeBadge').textContent = shapeNames[state.bShape] || 'Liquid Flow';
+  }
+
+  // --- 60FPS RAF ANIMATION LOOP ---
+  function animationLoop(timestamp) {
+    if (!lastTimestamp) lastTimestamp = timestamp;
+    const delta = (timestamp - lastTimestamp) / 1000;
+    lastTimestamp = timestamp;
+
+    if (isPlaying) {
+      animTime += delta * animSpeed;
+      render();
+    }
+    requestAnimationFrame(animationLoop);
+  }
+
+  // --- WEBM RECORDER ENGINE (SESSION 4) ---
+  $('btnRecordVideo').addEventListener('click', () => {
+    if (isRecording) return;
+    startWebMRecording();
+  });
+
+  function startWebMRecording() {
+    isRecording = true;
+    isPlaying = true;
+    $('btnPlayPause').textContent = '❚❚ Pause Animation';
+
+    const recBtn = $('btnRecordVideo');
+    recBtn.classList.add('recording');
+    recBtn.textContent = '⏺ Recording...';
+    $('recProgressWrap').style.visibility = 'visible';
+    $('recProgressFill').style.width = '0%';
+
+    const stream = canvas.captureStream(60);
+    const mimeTypes = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    let chosenMime = mimeTypes.find(m => MediaRecorder.isTypeSupported(m)) || '';
+
+    try {
+      mediaRecorder = new MediaRecorder(stream, chosenMime ? { mimeType: chosenMime, videoBitsPerSecond: 6000000 } : undefined);
+    } catch (err) {
+      alert('MediaRecorder is not supported in this browser.');
+      isRecording = false;
+      recBtn.classList.remove('recording');
+      recBtn.textContent = '⏺ Record 5s Video (WebM)';
+      $('recProgressWrap').style.visibility = 'hidden';
+      return;
+    }
+
+    recordedChunks = [];
+    mediaRecorder.ondataavailable = e => {
+      if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.download = `cosmic-patch-ssep-${state.seed}-anim.webm`;
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      isRecording = false;
+      recBtn.classList.remove('recording');
+      recBtn.textContent = '⏺ Record 5s Video (WebM)';
+      $('recProgressWrap').style.visibility = 'hidden';
+    };
+
+    mediaRecorder.start(100);
+    const duration = 5000;
+    const startTime = performance.now();
+
+    const updateInterval = setInterval(() => {
+      if (!isRecording) {
+        clearInterval(updateInterval);
+        return;
+      }
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(100, (elapsed / duration) * 100);
+      $('recProgressFill').style.width = progress + '%';
+      $('recTimeText').textContent = (elapsed / 1000).toFixed(1) + 's / 5.0s';
+
+      if (elapsed >= duration) {
+        clearInterval(updateInterval);
+        if (mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+      }
+    }, 50);
+  }
+
+  // Play / Pause toggle
+  $('btnPlayPause').addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    $('btnPlayPause').textContent = isPlaying ? '❚❚ Pause Animation' : '▶ Play Animation';
+    if (!isPlaying) render();
+  });
+
+  // Speed slider
+  $('animSpeed').addEventListener('input', e => {
+    animSpeed = Number(e.target.value);
+    $('speedVal').textContent = animSpeed.toFixed(1) + 'x';
+  });
+
+  function updateUIReadouts() {
+    $('bFloatVal').textContent = state.bFloat + '%';
+    $('bFreqVal').textContent = Number(state.bFreq || 1.2).toFixed(1) + 'x';
+    $('bWakeVal').textContent = state.bWake + '%';
+    $('bSoftnessVal').textContent = state.bSoftness + '%';
+    $('bProtrusionVal').textContent = state.bProtrusion + '%';
+    $('bScaleVal').textContent = state.bScale + '%';
+    $('bStrokeVal').textContent = Number(state.bStroke || 1.2).toFixed(1) + 'px';
+    $('bStrokeAlphaVal').textContent = state.bStrokeAlpha + '%';
+    $('bRotateVal').textContent = state.bRotate + '°';
+    $('pawSizeVal').textContent = state.pawSize + 'x';
+    $('pawDensityVal').textContent = state.pawDensity < 35 ? 'Airy' : state.pawDensity < 65 ? 'Dense' : 'Wall-to-Wall';
+    $('pawAlphaVal').textContent = state.pawAlpha + '%';
+    $('ribbonsCountVal').textContent = state.ribbonsCount;
+    $('zigzagVal').textContent = state.zigzag + '%';
+    $('planetCountVal').textContent = state.planetCount;
+    $('objZoomVal').textContent = state.objZoom + 'x';
+    $('densityVal').textContent = state.density;
+
+    const pawBadges = {
+      matrix: 'Wallpaper Matrix',
+      tracks: 'Bearcat Tracks',
+      swirl: 'Cosmic Swirl',
+      scatter: 'Nebula Scatter'
+    };
+    $('pawsBadge').textContent = pawBadges[state.pawPattern] || 'Mascot Paws';
+  }
+
+  function sync() {
+    updateUIReadouts();
+    render();
+  }
+
+  // Sliders binding
+  const sliders = [
+    'bFloat', 'bFreq', 'bWake', 'bSoftness', 'bProtrusion', 'bScale', 'bRotate',
+    'bStroke', 'bStrokeAlpha',
+    'pawSize', 'pawDensity', 'pawAlpha',
+    'ribbonsCount', 'zigzag', 'planetCount', 'objZoom', 'density'
+  ];
+  sliders.forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.addEventListener('input', e => {
+        state[id] = Number(e.target.value);
+        sync();
+      });
+    }
+  });
+
+  const selects = ['bShape', 'pawPattern', 'pawHarmony', 'pawClaws', 'paletteSel', 'waveOrbit', 'galaxyMode'];
+  selects.forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.addEventListener('change', e => {
+        if (id === 'paletteSel') {
+          state.palette = e.target.value;
+          if (state.palette !== 'custom') {
+            state.galaxyShiftX = 0;
+            state.galaxyShiftY = 0;
+          }
+        } else {
+          state[id] = e.target.value;
+        }
+        sync();
+      });
+    }
+  });
+
+  $('btnRandom').addEventListener('click', () => {
+    state.seed = (Math.random() * 0xffffffff) >>> 0;
+    sync();
+  });
+
+  $('btnReset').addEventListener('click', () => {
+    state.seed = 381927;
+    state.palette = 'reference';
+    state.customPalette = null;
+    state.uploadedMetrics = null;
+    state.galaxyShiftX = 0;
+    state.galaxyShiftY = 0;
+    state.bShape = 'soft';
+    state.bSoftness = 92;
+    state.bProtrusion = 115;
+    state.bScale = 100;
+    state.bRotate = -5;
+    state.bFloat = 75;
+    state.bFreq = 1.2;
+    state.bWake = 80;
+    state.bStroke = 1.2;
+    state.bStrokeAlpha = 75;
+    state.pawPattern = 'matrix';
+    state.pawSize = 1.0;
+    state.pawDensity = 50;
+    state.pawHarmony = 'harmonized';
+    state.pawClaws = 'sharp';
+    state.pawAlpha = 85;
+    state.ribbonsCount = 9;
+    state.zigzag = 55;
+    state.waveOrbit = 'wrapped';
+    state.galaxyMode = 'bright';
+    state.planetCount = 20;
+    state.objZoom = 0.9;
+    state.density = 1100;
+
+    // Reset UI
+    $('bShape').value = state.bShape;
+    $('bFloat').value = state.bFloat;
+    if ($('bFreq')) $('bFreq').value = state.bFreq;
+    $('bWake').value = state.bWake;
+    $('bSoftness').value = state.bSoftness;
+    $('bProtrusion').value = state.bProtrusion;
+    $('bScale').value = state.bScale;
+    $('bRotate').value = state.bRotate;
+    if ($('bStroke')) $('bStroke').value = state.bStroke;
+    if ($('bStrokeAlpha')) $('bStrokeAlpha').value = state.bStrokeAlpha;
+    $('pawPattern').value = state.pawPattern;
+    $('pawSize').value = state.pawSize;
+    $('pawDensity').value = state.pawDensity;
+    $('pawHarmony').value = state.pawHarmony;
+    $('pawClaws').value = state.pawClaws;
+    $('pawAlpha').value = state.pawAlpha;
+    $('paletteSel').value = state.palette;
+    $('ribbonsCount').value = state.ribbonsCount;
+    $('zigzag').value = state.zigzag;
+    $('waveOrbit').value = state.waveOrbit;
+    $('galaxyMode').value = state.galaxyMode;
+    $('planetCount').value = state.planetCount;
+    $('objZoom').value = state.objZoom;
+    $('density').value = state.density;
+    $('uploadBadge').textContent = 'Awaiting Upload';
+    $('extractedInfo').style.display = 'none';
+    $('btnReApplyExtract').setAttribute('disabled', 'true');
+
+    sync();
+  });
+
+  $('btnDownload').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.download = `cosmic-patch-v4-extracted-${state.seed}.png`;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+
+  sync();
+  requestAnimationFrame(animationLoop);
+})();
+</script>
+</body>
+</html>
